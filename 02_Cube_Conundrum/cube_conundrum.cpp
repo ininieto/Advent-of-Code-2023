@@ -58,30 +58,46 @@ int main(){
     std::vector<std::string> splittedExample = split(example, "\n");
     std::vector<std::string> splittedInput = split(inputData, "\n");
 
+    int result = 0;
+
     std::unordered_map<std::string, int> colorCounter = {{"blue", 0}, {"red", 0}, {"green", 0}};
 
-    for(int i = 0; i < splittedExample.size(); i++){
+    for(int i = 0; i < splittedInput.size(); i++){
 
-        std::string line = splittedExample[i];
-        line = line.substr(line.find(':') + 2); // We don't need the Game i part
+        std::string game = splittedInput[i];
+        game = game.substr(game.find(':') + 2); // We don't need the Game i part
+
+        bool possibleGame = true;
         
         // Separate the cubes
-        std::vector<std::string> cubes = split(line, ";");  
+        std::vector<std::string> cubes = split(game, ";");  
         for(std::string cube: cubes){
+            std::vector<std::string> sets = split(cube, ",");
+            for(std::string set: sets){
+                if(set[0] == ' ')  set.erase(set.begin());   // Trim the string
+                
+                int numCubes = stoi(set.substr(0, set.find(' ')));
+                std::string color = set.substr(set.find(' ') + 1);
 
-            std::vector<std::string> balls = split(cube, ",");
-            for(std::string ball: balls){
-                std::string color = ball.substr(ball.find(' ') + 1);
-                std::cout << color << std::endl;
+                // Increase the color count
+                colorCounter[color] += numCubes;
             }
 
-        }
+            // Check if the set is possible
+            if(colorCounter["red"] > maxRed || colorCounter["blue"] > maxBlue || colorCounter["green"] > maxGreen){
+                possibleGame = false;
+                // std::cout << "Game " << i + 1 << " is not possible\n";
+                break;
+            }
 
+            // Reset colorCounter
+            colorCounter.clear();
+        }
+        if(possibleGame)    result += (i + 1);
+        possibleGame = true;
+        colorCounter.clear();
     }
 
-
-
-
-
+    std::cout << result << '\n';
     return 0;
 }
