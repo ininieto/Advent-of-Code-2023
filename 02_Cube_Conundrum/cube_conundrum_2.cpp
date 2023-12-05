@@ -50,8 +50,6 @@ std::string readInputText(std::string inputText){
 
 int main(){
 
-    const int maxRed = 12, maxGreen = 13, maxBlue = 14;
-
     std::string example = readInputText("example.txt");
     std::string inputData = readInputText("input.txt");
 
@@ -66,8 +64,6 @@ int main(){
 
         std::string game = splittedInput[i];
         game = game.substr(game.find(':') + 2); // We don't need the Game i part
-
-        bool possibleGame = true;
         
         // Separate the cubes
         std::vector<std::string> cubes = split(game, ";");  
@@ -83,8 +79,6 @@ int main(){
                 colorCounter[color] = (numCubes > colorCounter[color]) ? numCubes : colorCounter[color];
             }
         }
-        std::cout << "Game " << i + 1 << " needs " << colorCounter["red"] << " red cubes, " << colorCounter["green"] << " green cubes and " << colorCounter["blue"] << " blue cubes\n";
-        
         int power = colorCounter["red"] * colorCounter["green"] * colorCounter["blue"];
         result += power;
         
