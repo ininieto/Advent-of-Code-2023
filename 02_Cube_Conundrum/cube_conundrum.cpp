@@ -16,7 +16,7 @@
 std::vector<std::string> split(std::string text, std::string delim){
 
     std::vector<std::string> splittedText;
-    size_t pos = 0;
+	size_t pos = 0;
     std::string token;
 
     while((pos = text.find(delim)) != std::string::npos){
@@ -101,3 +101,4 @@ int main(){
     std::cout << result << '\n';
     return 0;
 }
+    size_t pos = 0;
