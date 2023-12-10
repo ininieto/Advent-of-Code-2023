@@ -77,11 +77,15 @@ int main(){
     //std::vector<std::string> splittedInput = split(inputData, "\n");
     std::vector<std::string> splittedInput = splittedExample;
 
+    // IDEA: Define a hashmap where key = cardNumber and value the string with the numbers
+    // That way I guess I can insert easily the copies
+
     int finalResult = 0;
 
     for(int i = 0; i < splittedInput.size(); i++){
 
         std::string card = splittedInput[i];
+        // TODO: Extract card number
         card = card.substr(card.find(':') + 2); // Trim the beginning of the string
 
         // Store the winning numbers in a vector
