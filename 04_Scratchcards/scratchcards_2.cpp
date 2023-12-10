@@ -12,7 +12,6 @@
 #include <vector>
 #include <algorithm> // To use sort()
 
-
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
 
@@ -49,7 +48,6 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
-
 std::vector<int> fillVector(std::string strNumbers){
 
     std::vector<int> numbersVector;
@@ -65,9 +63,7 @@ std::vector<int> fillVector(std::string strNumbers){
             }
         }
     }
-
     numbersVector.push_back(stoi(aux));
-
     return numbersVector;
 }
 
@@ -78,13 +74,14 @@ int main(){
 
     // Split the data
     std::vector<std::string> splittedExample = split(example, "\n");
-    std::vector<std::string> splittedInput = split(inputData, "\n");
-    //std::vector<std::string> splittedInput = splittedExample;
+    //std::vector<std::string> splittedInput = split(inputData, "\n");
+    std::vector<std::string> splittedInput = splittedExample;
 
     int finalResult = 0;
 
-    for(std::string card: splittedInput){
+    for(int i = 0; i < splittedInput.size(); i++){
 
+        std::string card = splittedInput[i];
         card = card.substr(card.find(':') + 2); // Trim the beginning of the string
 
         // Store the winning numbers in a vector
@@ -108,17 +105,14 @@ int main(){
         std::set_intersection(wininnigNumbers.begin(), wininnigNumbers.end(), myNumbers.begin(), myNumbers.end(), 
                               std::back_inserter(coincidences));
 
-        // Calculate the result
-        int result = 1;
-
-        if(coincidences.size() <= 1)    // If it's 0 or 1
-            result = coincidences.size();
-        else{
-            for(int i = 0; i < coincidences.size() - 1; i++){
-                result *= 2;
-            }
+        // Now we must make copies of the scratchcards 
+        // TODO: I must insert the copies in order. Whenever I get a copy of Card 2, it must go before all Card 3
+        for(int j = i + 1; j < coincidences.size(); j++){
+            
         }
-        finalResult += result;
+
+        finalResult ++;
+
     }
 
     std::cout << "The result is " << finalResult << '\n';
