@@ -14,7 +14,7 @@
 
 struct Number{
 
-    std::pair<int, int> firstDigitPosition;
+    std::vector<std::pair<int, int>> digitPositions;
     int value;
     bool checked = false;
 };
@@ -126,32 +126,20 @@ std::vector<std::pair<int, int>> getSurroundings(std::pair<int, int> position, i
         surroundings.push_back(downLeft);
     }
     else{   // No weird cases
-        surroundings.push_back(right); 
-        surroundings.push_back(left); 
-        surroundings.push_back(up); 
-        surroundings.push_back(down); 
-        surroundings.push_back(upRight); 
         surroundings.push_back(upLeft); 
-        surroundings.push_back(downRight); 
+        surroundings.push_back(up); 
+        surroundings.push_back(upRight); 
+        surroundings.push_back(left); 
+        surroundings.push_back(right); 
         surroundings.push_back(downLeft); 
+        surroundings.push_back(down); 
+        surroundings.push_back(downRight); 
+        
     }
     return surroundings;
 }
 
-// Function that checks the adjacent numbers to the symbol
-void checkSurroundings(std::vector<std::vector<char>> grid, std::vector<std::pair<int, int>> surroundings){
-
-    // Get all the surrounding values
-    for(auto pos: surroundings){
-        std::cout << grid[pos.first][pos.second] << ' ';
-    }
-    std::cout << '\n';
-
-
-
-}
-
-// Function to store all the numbers of the grid in a hashmap. This way we don't sum the same number more than once
+// Function to store all the numbers of the grid in a vector. This way we don't sum the same number more than once
 void readAllNumbers(std::vector<std::string> splittedInput, std::vector<Number> &allNumbers){
 
     int nrows = splittedInput.size(), ncols = splittedInput[0].size();
@@ -159,27 +147,59 @@ void readAllNumbers(std::vector<std::string> splittedInput, std::vector<Number> 
     for(int i = 0; i < nrows; i++){
         std::string row = splittedInput[i];
         std::string strNum;
-        bool firstDigit = true; // This will indicate if the digit read is the first of the number -> Must store its position
         Number num;
 
         for(int j = 0; j < ncols; j++){
             char c = row[j];
             if(isdigit(c)){
                 strNum.push_back(c);
-                if(firstDigit){
-                    num.firstDigitPosition = std::make_pair(i, j);
-                    firstDigit = false;
-                }
+                num.digitPositions.push_back(std::make_pair(i, j));
             }
             else{
                 if(strNum.length() > 0){
-                    num.value = stoi(strNum);
+                    num.value = stoi(strNum);;
                     allNumbers.push_back(num);
-                    firstDigit = true;
+                    num.digitPositions.clear();
                     strNum.clear();
                 }
             }
         }
+
+        // Numbers ending in the last column were not read otherwise
+        if (strNum.length() > 0){
+            num.value = stoi(strNum);
+            allNumbers.push_back(num);
+            num.digitPositions.clear();
+            strNum.clear();
+        }
+    }
+}
+
+// Function that checks the adjacent numbers to the symbol
+void checkSurroundings(std::vector<std::vector<char>> grid, std::vector<std::pair<int, int>> surroundings, std::vector<Number> allNumbers, int &result){
+
+    bool numberFoundForThisPos = false;
+
+    // Get all the surrounding values
+    for(auto pos: surroundings){
+        if(isdigit(grid[pos.first][pos.second])){
+            // Find the position in the allNumbers array
+            for(Number &num: allNumbers){
+                if(num.checked || numberFoundForThisPos){
+                    numberFoundForThisPos = false;
+                    continue;
+                }
+                for(auto digitPosition: num.digitPositions){
+                    if(digitPosition.first == pos.first && digitPosition.second == pos.second && !num.checked){
+                        result += num.value;
+                        num.checked = true;
+                        numberFoundForThisPos = true;
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 }
 
@@ -191,19 +211,19 @@ int main(){
 
     // Split the data
     std::vector<std::string> splittedExample = split(example, "\n");
-    //std::vector<std::string> splittedInput = split(example, "\n");
-    std::vector<std::string> splittedInput = splittedExample;
+    std::vector<std::string> splittedInput = split(inputData, "\n");
+    //std::vector<std::string> splittedInput = splittedExample;
     
     // Store the data in a grid
     int nrows = splittedInput.size(), ncols = splittedInput[0].size();
     std::vector<std::vector<char>> grid(nrows, std::vector<char>(ncols));
 
-    // Store the data in a grid
     int i = 0;
     for(auto &row: grid){
         for(auto &element: row){
-            if(example[i] == '\n') i++;
-            element = example[i];
+            if(inputData[i] == '\n') 
+                i++;
+            element = inputData[i];
             i++;
         }
     }
@@ -211,6 +231,8 @@ int main(){
     // Save all the numbers in an array. They belong to a struct with its position and whether they're checked or not
     std::vector<Number> allNumbers;
     readAllNumbers(splittedInput, allNumbers);
+
+    int result = 0;
 
    // Read the grid looking for symbols. If found, check surroundings
     for (int i = 0; i < nrows; i++){
@@ -220,10 +242,12 @@ int main(){
             if (!isdigit(c) && c != '.'){ // Symbol detected
                 std::pair<int, int> position = std::make_pair(i, j);
                 std::vector<std::pair<int, int>> surroundings = getSurroundings(position, nrows, ncols);
-                checkSurroundings(grid, surroundings);
+                checkSurroundings(grid, surroundings, allNumbers, result);
             }
         }
     }
+
+    std::cout << "The result is " << result << '\n';
 
     return 0;
 }
