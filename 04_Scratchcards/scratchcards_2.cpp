@@ -84,41 +84,54 @@ int main(){
 
     // Split the data
     std::vector<std::string> splittedExample = split(example, "\n");
-    std::vector<std::string> splittedInput = split(inputData, "\n");
-    //std::vector<std::string> splittedInput = splittedExample;
+    //std::vector<std::string> splittedInput = split(inputData, "\n");
+    std::vector<std::string> splittedInput = splittedExample;
+
+    // This map will store the result of every card. Will avoid redundances
+    std::unordered_map<int, std::vector<int>> alreadySolvedCard;
+
+    // This map will know how many copies of a Card have been created
+    std::unordered_map<int, int> howManyCards;
+
+    // Initialize the map
+    for(int i = 0; i < splittedInput.size(); i++)   howManyCards[i + 1] = 1;
 
     for(int i = 0; i < splittedInput.size(); i++){
 
-        std::cout << splittedInput.size() << '\n';
+        // std::cout << splittedInput.size() << '\n';
 
         std::string card = splittedInput[i];
         int numCard = getCardNumber(card);
-        card = card.substr(card.find(':') + 2); // Trim the beginning of the string
+        std::vector<int> coincidences = alreadySolvedCard[numCard];
 
-        // Store the winning numbers in a vector
-        std::string strWinningNumbers = card.substr(0, card.find('|') - 1);
-        std::vector<int> wininnigNumbers = fillVector(strWinningNumbers);
+        if(coincidences.size() == 0){
 
-        // Store your numbers in another vector
-        std::string strMyNumbers = card.substr(card.find('|') + 2);
-        std::vector<int> myNumbers = fillVector(strMyNumbers);
+            card = card.substr(card.find(':') + 2); // Trim the beginning of the string
 
-        // The first obvious approach is to double-for loop the arrays, but that's not very efficient. I will use
-        // the built-in set_intersection() function
+            // Store the winning numbers in a vector
+            std::string strWinningNumbers = card.substr(0, card.find('|') - 1);
+            std::vector<int> wininnigNumbers = fillVector(strWinningNumbers);
 
-        // First, we define a third vector who will hold all the repeated numbers
-        std::vector<int> coincidences;
+            // Store your numbers in another vector
+            std::string strMyNumbers = card.substr(card.find('|') + 2);
+            std::vector<int> myNumbers = fillVector(strMyNumbers);
 
-        // In order to use this function, the arrays must be sorted
-        sort(wininnigNumbers.begin(), wininnigNumbers.end());
-        sort(myNumbers.begin(), myNumbers.end());
+            // The first obvious approach is to double-for loop the arrays, but that's not very efficient. I will use
+            // the built-in set_intersection() function
 
-        std::set_intersection(wininnigNumbers.begin(), wininnigNumbers.end(), myNumbers.begin(), myNumbers.end(), 
-                              std::back_inserter(coincidences));
+            // In order to use this function, the arrays must be sorted
+            sort(wininnigNumbers.begin(), wininnigNumbers.end());
+            sort(myNumbers.begin(), myNumbers.end());
 
-        // Now we must make copies of the scratchcards 
-        // IDEA: Tener un hashmap en el que registre el número de instancias de cada carta. Si el numCard no es el desired, saltar directamente
-        std::unordered_map<int, int> numCardsMap;
+            // Store the matching numbers in the coincidences vector
+            std::set_intersection(wininnigNumbers.begin(), wininnigNumbers.end(), myNumbers.begin(), myNumbers.end(),
+                                  std::back_inserter(coincidences));
+
+            // Store the result in the map
+            alreadySolvedCard[numCard] = coincidences;
+        }   
+
+
         int desiredCardNumber = numCard;
 
         for(int j = 0; j < coincidences.size(); j++){
@@ -132,7 +145,7 @@ int main(){
                 
                 if(getCardNumber(splittedInput[k]) == desiredCardNumber){   
                     splittedInput.insert(splittedInput.begin() + k, splittedInput[k]);
-                    numCardsMap[desiredCardNumber] ++;
+                    howManyCards[desiredCardNumber]++;
                     break;
                 }
             }
