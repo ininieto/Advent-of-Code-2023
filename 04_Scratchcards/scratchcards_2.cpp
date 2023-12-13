@@ -94,6 +94,7 @@ int main(){
     std::unordered_map<int, int> howManyCards;
 
     // Initialize the map
+    int totalNumCards = splittedInput.size();
     for(int i = 0; i < splittedInput.size(); i++)   howManyCards[i + 1] = 1;
 
     for(int i = 0; i < splittedInput.size(); i++){
@@ -140,10 +141,19 @@ int main(){
 
             // Find where should I place the copies
             for(int k = 0; k < splittedInput.size(); k++){  // There might be a more efficient solution but I don't have time for it
-                //if(getCardNumber(splittedInput[k]) != desiredCardNumber)
-                //    k += numCardsMap[k];
+                //TODO: Refine search in the array thank to howManyCards
+
+                int currentCardNumber = getCardNumber(splittedInput[k]);
+
+                if(getCardNumber(splittedInput[k]) != desiredCardNumber){ 
+                    int indexJump = 0;
+                    for(int l = 0; l < desiredCardNumber - 1; l++)  indexJump += howManyCards[l + 1];
+                    k += indexJump;
+                }
+
+                currentCardNumber = getCardNumber(splittedInput[k]);
                 
-                if(getCardNumber(splittedInput[k]) == desiredCardNumber){   
+                if(currentCardNumber == desiredCardNumber){   
                     splittedInput.insert(splittedInput.begin() + k, splittedInput[k]);
                     howManyCards[desiredCardNumber]++;
                     break;
