@@ -84,17 +84,12 @@ int main(){
 
     // Split the data
     std::vector<std::string> splittedExample = split(example, "\n");
-    //std::vector<std::string> splittedInput = split(inputData, "\n");
-    std::vector<std::string> splittedInput = splittedExample;
-
-    // IDEA: Define a hashmap where key = cardNumber and value the string with the numbers
-    // That way I guess I can insert easily the copies
-
-    std::unordered_map<int, std::string> cardsMap; 
-
-    int finalResult = 0;
+    std::vector<std::string> splittedInput = split(inputData, "\n");
+    //std::vector<std::string> splittedInput = splittedExample;
 
     for(int i = 0; i < splittedInput.size(); i++){
+
+        std::cout << splittedInput.size() << '\n';
 
         std::string card = splittedInput[i];
         int numCard = getCardNumber(card);
@@ -122,16 +117,30 @@ int main(){
                               std::back_inserter(coincidences));
 
         // Now we must make copies of the scratchcards 
-        // TODO: I must insert the copies in order. Whenever I get a copy of Card 2, it must go before all Card 3
-        for(int j = i + 1; j < coincidences.size(); j++){
-            
+        // IDEA: Tener un hashmap en el que registre el número de instancias de cada carta. Si el numCard no es el desired, saltar directamente
+        std::unordered_map<int, int> numCardsMap;
+        int desiredCardNumber = numCard;
+
+        for(int j = 0; j < coincidences.size(); j++){
+
+            desiredCardNumber ++;
+
+            // Find where should I place the copies
+            for(int k = 0; k < splittedInput.size(); k++){  // There might be a more efficient solution but I don't have time for it
+                //if(getCardNumber(splittedInput[k]) != desiredCardNumber)
+                //    k += numCardsMap[k];
+                
+                if(getCardNumber(splittedInput[k]) == desiredCardNumber){   
+                    splittedInput.insert(splittedInput.begin() + k, splittedInput[k]);
+                    numCardsMap[desiredCardNumber] ++;
+                    break;
+                }
+            }
         }
-
-        finalResult ++;
-
     }
 
-    std::cout << "The result is " << finalResult << '\n';
+
+    std::cout << "The result is " << splittedInput.size() << '\n';
 
     return 0;
 }
