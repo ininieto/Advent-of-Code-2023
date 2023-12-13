@@ -11,6 +11,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm> // To use sort()
+#include <unordered_map>
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -48,6 +49,15 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
+// Simple fnuction to extract the number of the card
+int getCardNumber(std::string strCard){
+
+    strCard = strCard.substr(0, strCard.find(':'));
+    strCard = strCard.substr(strCard.find(' ') + 1);
+
+    return stoi(strCard);
+}
+
 std::vector<int> fillVector(std::string strNumbers){
 
     std::vector<int> numbersVector;
@@ -80,12 +90,14 @@ int main(){
     // IDEA: Define a hashmap where key = cardNumber and value the string with the numbers
     // That way I guess I can insert easily the copies
 
+    std::unordered_map<int, std::string> cardsMap; 
+
     int finalResult = 0;
 
     for(int i = 0; i < splittedInput.size(); i++){
 
         std::string card = splittedInput[i];
-        // TODO: Extract card number
+        int numCard = getCardNumber(card);
         card = card.substr(card.find(':') + 2); // Trim the beginning of the string
 
         // Store the winning numbers in a vector
