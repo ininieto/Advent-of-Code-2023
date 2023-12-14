@@ -49,7 +49,7 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
-// Simple fnuction to extract the number of the card
+// Simple function to extract the number of the card
 int getCardNumber(std::string strCard){
 
     strCard = strCard.substr(0, strCard.find(':'));
@@ -83,77 +83,74 @@ int main(){
     std::string inputData = readInputText("input.txt");
 
     // Split the data
-    std::vector<std::string> splittedExample = split(example, "\n");
+    //std::vector<std::string> splittedExample = split(example, "\n");
     std::vector<std::string> splittedInput = split(inputData, "\n");
-    //std::vector<std::string> splittedInput = splittedExample;
 
-    // This map will store the result of every card. Will avoid redundances
-    std::unordered_map<int, std::vector<int>> alreadySolvedCard;
+    // This map will store how many coincidences are in each card
+    std::unordered_map<int, int> numberOfCoincidences;
 
     // This map will know how many copies of a Card have been created
     std::unordered_map<int, int> howManyCards;
 
-    // Initialize the map
+    // Initialize the map 
     int totalNumCards = splittedInput.size();
-    for(int i = 0; i < splittedInput.size(); i++)   howManyCards[i + 1] = 1;
+    for(int i = 0; i < totalNumCards; i++)   howManyCards[i + 1] = 1;
 
-    for(int i = 0; i < splittedInput.size(); i++){
+    /*
+        Must be redefined. I want to calculate the coincidences of all the cards, and then iterate howManyCards.
+        With the number of coincidences of the card, increase the number of the next cards. Should work
+    */
 
-        std::string card = splittedInput[i];
+   // Fill in howManyCards
+    for(std::string card: splittedInput){
+
         int numCard = getCardNumber(card);
-        std::vector<int> coincidences = alreadySolvedCard[numCard];
+        card = card.substr(card.find(':') + 2); // Trim the beginning of the string
 
-        // Debug
-        std::cout << splittedInput.size() << "  Card Number: " << numCard << '\n';
+        // Store the winning numbers in a vector
+        std::string strWinningNumbers = card.substr(0, card.find('|') - 1);
+        std::vector<int> wininnigNumbers = fillVector(strWinningNumbers);
 
-        if(coincidences.size() == 0){
+        // Store your numbers in another vector
+        std::string strMyNumbers = card.substr(card.find('|') + 2);
+        std::vector<int> myNumbers = fillVector(strMyNumbers);
 
-            card = card.substr(card.find(':') + 2); // Trim the beginning of the string
+        // The first obvious approach is to double-for loop the arrays, but that's not very efficient. I will use
+        // the built-in set_intersection() function
 
-            // Store the winning numbers in a vector
-            std::string strWinningNumbers = card.substr(0, card.find('|') - 1);
-            std::vector<int> wininnigNumbers = fillVector(strWinningNumbers);
+        // In order to use this function, the arrays must be sorted
+        sort(wininnigNumbers.begin(), wininnigNumbers.end());
+        sort(myNumbers.begin(), myNumbers.end());
 
-            // Store your numbers in another vector
-            std::string strMyNumbers = card.substr(card.find('|') + 2);
-            std::vector<int> myNumbers = fillVector(strMyNumbers);
+        // Create the vector that will contain the coincidences
+        std::vector<int> coincidences;
 
-            // The first obvious approach is to double-for loop the arrays, but that's not very efficient. I will use
-            // the built-in set_intersection() function
+        // Store the matching numbers in the coincidences vector
+        std::set_intersection(wininnigNumbers.begin(), wininnigNumbers.end(), myNumbers.begin(), myNumbers.end(),
+                              std::back_inserter(coincidences));
 
-            // In order to use this function, the arrays must be sorted
-            sort(wininnigNumbers.begin(), wininnigNumbers.end());
-            sort(myNumbers.begin(), myNumbers.end());
+        // Store the number of coincidences in the map
+        numberOfCoincidences[numCard] = coincidences.size();
+    }
 
-            // Store the matching numbers in the coincidences vector
-            std::set_intersection(wininnigNumbers.begin(), wininnigNumbers.end(), myNumbers.begin(), myNumbers.end(),
-                                  std::back_inserter(coincidences));
+    // Do the magic
+    for (int i = 0; i < totalNumCards; i++){
 
-            // Store the result in the map
-            alreadySolvedCard[numCard] = coincidences;
-        }   
+        // Take how many cards there are of this number
+        int numCards = howManyCards.at(i + 1);
 
-        // TODO: I guess I could, in a clever way, erase unnecessary parts of the vector and simply increase the "size" in a variable
+        for (int j = 0; j < numCards; j++){
 
-        int desiredCardNumber = numCard;
+            // Take how many coincidences exist for this card
+            int numCoincidences = numberOfCoincidences.at(i + 1);
 
-        for(int j = 0; j < coincidences.size(); j++){
-
-            int indexJump = 0;
-            desiredCardNumber ++;
-
-            for (int l = numCard - 1; l < desiredCardNumber - 1; l++) indexJump += howManyCards[l + 1];
-
-            splittedInput.insert(splittedInput.begin() + indexJump, splittedInput[indexJump]);
-            howManyCards[desiredCardNumber]++;
+            // For every coincidence, create new scratchcards
+            for (int k = 0; k < numCoincidences; k++)   howManyCards[i + 1 + k + 1]++;
         }
-        // Erase the card that we've already read
-        splittedInput.erase(splittedInput.begin());
-        i--;    // We make sure to take the first element of the array
     }
 
     int finalResult = 0;
-    for(int l = 0; l < totalNumCards; l++)  finalResult += howManyCards[l + 1];
+    for(int l = 0; l < totalNumCards; l++)  finalResult += howManyCards.at(l + 1);
 
     std::cout << "The result is " << finalResult << '\n';
 
