@@ -99,7 +99,8 @@ int main(){
 
     for(int i = 0; i < splittedInput.size(); i++){
 
-        // std::cout << splittedInput.size() << '\n';
+        if(splittedInput.size() % 100 == 0)
+            std::cout << splittedInput.size() << '\n';
 
         std::string card = splittedInput[i];
         int numCard = getCardNumber(card);
@@ -132,36 +133,19 @@ int main(){
             alreadySolvedCard[numCard] = coincidences;
         }   
 
-
         int desiredCardNumber = numCard;
 
         for(int j = 0; j < coincidences.size(); j++){
 
+            int indexJump = 0;
             desiredCardNumber ++;
 
-            // Find where should I place the copies
-            for(int k = 0; k < splittedInput.size(); k++){  // There might be a more efficient solution but I don't have time for it
-                //TODO: Refine search in the array thank to howManyCards
+            for (int l = 0; l < desiredCardNumber - 1; l++) indexJump += howManyCards[l + 1];
 
-                int currentCardNumber = getCardNumber(splittedInput[k]);
-
-                if(getCardNumber(splittedInput[k]) != desiredCardNumber){ 
-                    int indexJump = 0;
-                    for(int l = 0; l < desiredCardNumber - 1; l++)  indexJump += howManyCards[l + 1];
-                    k += indexJump;
-                }
-
-                currentCardNumber = getCardNumber(splittedInput[k]);
-                
-                if(currentCardNumber == desiredCardNumber){   
-                    splittedInput.insert(splittedInput.begin() + k, splittedInput[k]);
-                    howManyCards[desiredCardNumber]++;
-                    break;
-                }
-            }
+                splittedInput.insert(splittedInput.begin() + indexJump, splittedInput[indexJump]);
+                howManyCards[desiredCardNumber]++;
         }
     }
-
 
     std::cout << "The result is " << splittedInput.size() << '\n';
 
