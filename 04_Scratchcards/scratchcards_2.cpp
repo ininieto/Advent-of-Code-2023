@@ -84,8 +84,8 @@ int main(){
 
     // Split the data
     std::vector<std::string> splittedExample = split(example, "\n");
-    //std::vector<std::string> splittedInput = split(inputData, "\n");
-    std::vector<std::string> splittedInput = splittedExample;
+    std::vector<std::string> splittedInput = split(inputData, "\n");
+    //std::vector<std::string> splittedInput = splittedExample;
 
     // This map will store the result of every card. Will avoid redundances
     std::unordered_map<int, std::vector<int>> alreadySolvedCard;
@@ -99,12 +99,12 @@ int main(){
 
     for(int i = 0; i < splittedInput.size(); i++){
 
-        if(splittedInput.size() % 100 == 0)
-            std::cout << splittedInput.size() << '\n';
-
         std::string card = splittedInput[i];
         int numCard = getCardNumber(card);
         std::vector<int> coincidences = alreadySolvedCard[numCard];
+
+        // Debug
+        std::cout << splittedInput.size() << "  Card Number: " << numCard << '\n';
 
         if(coincidences.size() == 0){
 
@@ -133,6 +133,8 @@ int main(){
             alreadySolvedCard[numCard] = coincidences;
         }   
 
+        // TODO: I guess I could, in a clever way, erase unnecessary parts of the vector and simply increase the "size" in a variable
+
         int desiredCardNumber = numCard;
 
         for(int j = 0; j < coincidences.size(); j++){
@@ -140,14 +142,20 @@ int main(){
             int indexJump = 0;
             desiredCardNumber ++;
 
-            for (int l = 0; l < desiredCardNumber - 1; l++) indexJump += howManyCards[l + 1];
+            for (int l = numCard - 1; l < desiredCardNumber - 1; l++) indexJump += howManyCards[l + 1];
 
-                splittedInput.insert(splittedInput.begin() + indexJump, splittedInput[indexJump]);
-                howManyCards[desiredCardNumber]++;
+            splittedInput.insert(splittedInput.begin() + indexJump, splittedInput[indexJump]);
+            howManyCards[desiredCardNumber]++;
         }
+        // Erase the card that we've already read
+        splittedInput.erase(splittedInput.begin());
+        i--;    // We make sure to take the first element of the array
     }
 
-    std::cout << "The result is " << splittedInput.size() << '\n';
+    int finalResult = 0;
+    for(int l = 0; l < totalNumCards; l++)  finalResult += howManyCards[l + 1];
+
+    std::cout << "The result is " << finalResult << '\n';
 
     return 0;
 }
