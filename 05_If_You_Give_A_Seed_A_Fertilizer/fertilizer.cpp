@@ -48,13 +48,11 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
-// Function to fill in seeds vector
-std::vector<int> fillInSeedVector(std::string strSeeds){
+// Function to fill in any vector
+std::vector<int> fillInVector(std::string strSeeds){
 
     std::vector<int> seedVector;
     std::string aux;
-
-    strSeeds = strSeeds.substr(strSeeds.find(' ') + 1); // Get rid of the letters 
 
     for (int i = 0; i < strSeeds.length(); i++){
         if (strSeeds[i] != ' ')
@@ -94,15 +92,36 @@ int main(){
     std::unordered_map<int, int> temperature_to_humidity;
     std::unordered_map<int, int> humidity_to_location;
 
-    // Read the input and fill in the maps
-    for(std::string line: splittedInput){
+    // Map of maps to read the input
+    std::unordered_map<std::string, std::unordered_map<int, int> *> str_to_map = {{"seed-to-soil map:",             &seed_to_soil},
+                                                                                  {"soil-to-fertilizer map:",       &soil_to_fertilizer},
+                                                                                  {"fertilizer-to-water map:",      &fertilizer_to_water},
+                                                                                  {"water-to-light map:",           &water_to_light},
+                                                                                  {"light-to-temperature map:",     &light_to_temperature},
+                                                                                  {"temperature-to-humidity map:",  &temperature_to_humidity},
+                                                                                  {"humidity-to-location map:",     &humidity_to_location}};
 
-        if(line.substr(0, line.find(':')) == "seeds")
-            seedVector = fillInSeedVector(line); 
-        else if(line.length() == 0)
+    // Read the input and fill in the maps
+    for(int i = 0; i < splittedInput.size(); i++){
+
+        std::string line = splittedInput[i];
+
+        if(line.substr(0, line.find(':')) == "seeds"){
+            line = line.substr(line.find(' ') + 1); // Get rid of the letters 
+            seedVector = fillInVector(line); 
+        }  
+        else if(line.length() == 0 || isdigit(line[0]))
             continue;
         else{
-            // Fill in the maps
+            std::unordered_map<int, int>* currentMap = str_to_map[line];
+            int jumpIndex = 1;
+            
+            // Must read all the lines that begin with numbers
+            while(i + jumpIndex < splittedInput.size() && isdigit(splittedInput[i + jumpIndex][0])){    // Must check that we're not out of bounds BEFORE checking isdigit
+                std::vector<int> nums = fillInVector(splittedInput[i + jumpIndex]);
+                (*currentMap)[nums[1]] = nums[0];
+                jumpIndex ++;
+            }
         }
     }
 
