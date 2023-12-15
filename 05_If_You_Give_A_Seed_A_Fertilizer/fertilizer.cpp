@@ -49,26 +49,28 @@ std::string readInputText(std::string inputText){
 }
 
 // Function to fill in any vector
-std::vector<int> fillInVector(std::string strSeeds){
+std::vector<uint64_t> fillInVector(std::string strSeeds){
 
-    std::vector<int> seedVector;
-    std::string aux;
+    std::vector<std::string> strVector = split(strSeeds, " ");
+    std::vector<uint64_t> seedVector;
 
-    for (int i = 0; i < strSeeds.length(); i++){
-        if (strSeeds[i] != ' ')
-            aux.push_back(strSeeds[i]);
-        else{
-            if (aux.length() > 0){
-                seedVector.push_back(stoi(aux));
-                aux.clear();
-            }
-        }
+    for(std::string strNum: strVector){
+        seedVector.push_back(stoull(strNum));
     }
 
-    seedVector.push_back(stoi(aux));
     return seedVector;
 }
 
+// Function to assign the value even though the key is not found
+uint64_t tryToAssignFromMap(uint64_t key, std::unordered_map<uint64_t, uint64_t> map){
+
+    auto found = map.find(key);
+
+    if(found != map.end())  // Found it
+        return map.at(key);
+    else    // Not found
+        return key;
+}
 
 int main(){
 
@@ -77,32 +79,32 @@ int main(){
     std::string input = readInputText("input.txt");
 
     std::vector<std::string> splittedExample = split(example, "\n");
-    // std::vector<std::string> splittedInput = split(input, "\n");
-    std::vector<std::string> splittedInput = splittedExample;
+    std::vector<std::string> splittedInput = split(input, "\n");
+    //std::vector<std::string> splittedInput = splittedExample;
 
     // Define the seeds vector
-    std::vector<int> seedVector;
+    std::vector<uint64_t> seedVector;
 
     // Declare all the hashmaps
-    std::unordered_map<int, int> seed_to_soil;
-    std::unordered_map<int, int> soil_to_fertilizer;
-    std::unordered_map<int, int> fertilizer_to_water;
-    std::unordered_map<int, int> water_to_light;
-    std::unordered_map<int, int> light_to_temperature;
-    std::unordered_map<int, int> temperature_to_humidity;
-    std::unordered_map<int, int> humidity_to_location;
+    std::unordered_map<uint64_t, uint64_t> seed_to_soil;
+    std::unordered_map<uint64_t, uint64_t> soil_to_fertilizer;
+    std::unordered_map<uint64_t, uint64_t> fertilizer_to_water;
+    std::unordered_map<uint64_t, uint64_t> water_to_light;
+    std::unordered_map<uint64_t, uint64_t> light_to_temperature;
+    std::unordered_map<uint64_t, uint64_t> temperature_to_humidity;
+    std::unordered_map<uint64_t, uint64_t> humidity_to_location;
 
     // Map of maps to read the input
-    std::unordered_map<std::string, std::unordered_map<int, int> *> str_to_map = {{"seed-to-soil map:",             &seed_to_soil},
-                                                                                  {"soil-to-fertilizer map:",       &soil_to_fertilizer},
-                                                                                  {"fertilizer-to-water map:",      &fertilizer_to_water},
-                                                                                  {"water-to-light map:",           &water_to_light},
-                                                                                  {"light-to-temperature map:",     &light_to_temperature},
-                                                                                  {"temperature-to-humidity map:",  &temperature_to_humidity},
-                                                                                  {"humidity-to-location map:",     &humidity_to_location}};
+    std::unordered_map<std::string, std::unordered_map<uint64_t, uint64_t> *> str_to_map = {{"seed-to-soil map:",            &seed_to_soil},
+                                                                                            {"soil-to-fertilizer map:",      &soil_to_fertilizer},
+                                                                                            {"fertilizer-to-water map:",     &fertilizer_to_water},
+                                                                                            {"water-to-light map:",          &water_to_light},
+                                                                                            {"light-to-temperature map:",    &light_to_temperature},
+                                                                                            {"temperature-to-humidity map:", &temperature_to_humidity},
+                                                                                            {"humidity-to-location map:",    &humidity_to_location}};
 
     // Read the input and fill in the maps
-    for(int i = 0; i < splittedInput.size(); i++){
+    for(uint64_t i = 0; i < splittedInput.size(); i++){
 
         std::string line = splittedInput[i];
 
@@ -113,36 +115,42 @@ int main(){
         else if(line.length() == 0 || isdigit(line[0]))
             continue;
         else{
-            std::unordered_map<int, int>* currentMap = str_to_map[line];
-            int jumpIndex = 1;
+            std::unordered_map<uint64_t, uint64_t>* currentMap = str_to_map[line];
+            uint64_t jumpIndex = 1;
             
             // Must read all the lines that begin with numbers
             while(i + jumpIndex < splittedInput.size() && isdigit(splittedInput[i + jumpIndex][0])){    // Must check that we're not out of bounds BEFORE checking isdigit
-                std::vector<int> nums = fillInVector(splittedInput[i + jumpIndex]);
-                for(int j = 0; j < nums[2]; j++)
+                std::cout << splittedInput[i + jumpIndex] << '\n';
+                std::vector<uint64_t> nums = fillInVector(splittedInput[i + jumpIndex]);
+                for(uint64_t j = 0; j < nums[2]; j++)
                     (*currentMap)[nums[1] + j] = nums[0] + j;
                 jumpIndex ++;
             }
         }
     }
 
-    // Iterate through the seeds
-    for(int seed: seedVector){
+    // Iterate through the seeds and store the locations in a map
+    std::unordered_map<uint64_t, uint64_t> locations;
 
-        // TODO: Handle exceptions. If the number doesn't exist in the map, assign itself
-        int soil = seed_to_soil.at(seed);
-        int fert = soil_to_fertilizer.at(soil);
-        int water = fertilizer_to_water.at(fert);
-        int light = water_to_light.at(water);
-        int temp = light_to_temperature.at(light);
-        int humid = temperature_to_humidity.at(temp);
-        int location = humidity_to_location.at(humid);
+    for(uint64_t seed: seedVector){
 
+        // Must handle the exceptions. Created a function for that
+        uint64_t soil = tryToAssignFromMap(seed, seed_to_soil);
+        uint64_t fert = tryToAssignFromMap(soil, soil_to_fertilizer);
+        uint64_t water = tryToAssignFromMap(fert, fertilizer_to_water);
+        uint64_t light = tryToAssignFromMap(water, water_to_light);
+        uint64_t temp = tryToAssignFromMap(light, light_to_temperature);
+        uint64_t humid = tryToAssignFromMap(temp, temperature_to_humidity);
+        uint64_t location = tryToAssignFromMap(humid, humidity_to_location);
+
+        locations[seed] = location;
     }
 
-    // Maybe I could create another map seed_to_location and find the minimum
+    // Find the minimum location
+    uint64_t result = INT_MAX;
+    for(auto loc: locations) result = (loc.second < result) ? loc.second : result;
     
-
+    std::cout << "The result is " << result << '\n';
 
     return 0;
 }
