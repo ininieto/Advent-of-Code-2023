@@ -119,7 +119,8 @@ int main(){
             // Must read all the lines that begin with numbers
             while(i + jumpIndex < splittedInput.size() && isdigit(splittedInput[i + jumpIndex][0])){    // Must check that we're not out of bounds BEFORE checking isdigit
                 std::vector<int> nums = fillInVector(splittedInput[i + jumpIndex]);
-                for(int j = 0; j < nums[2]; j++)    (*currentMap)[nums[1] + j] = nums[0] + j;
+                for(int j = 0; j < nums[2]; j++)
+                    (*currentMap)[nums[1] + j] = nums[0] + j;
                 jumpIndex ++;
             }
         }
@@ -128,11 +129,14 @@ int main(){
     // Iterate through the seeds
     for(int seed: seedVector){
 
-        // seed to soil
-
-        // soil to fertilizer
-
-        // ...
+        // TODO: Handle exceptions. If the number doesn't exist in the map, assign itself
+        int soil = seed_to_soil.at(seed);
+        int fert = soil_to_fertilizer.at(soil);
+        int water = fertilizer_to_water.at(fert);
+        int light = water_to_light.at(water);
+        int temp = light_to_temperature.at(light);
+        int humid = temperature_to_humidity.at(temp);
+        int location = humidity_to_location.at(humid);
 
     }
 
