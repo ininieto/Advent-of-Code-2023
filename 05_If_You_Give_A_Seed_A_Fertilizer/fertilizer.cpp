@@ -119,7 +119,7 @@ int main(){
             // Must read all the lines that begin with numbers
             while(i + jumpIndex < splittedInput.size() && isdigit(splittedInput[i + jumpIndex][0])){    // Must check that we're not out of bounds BEFORE checking isdigit
                 std::vector<int> nums = fillInVector(splittedInput[i + jumpIndex]);
-                (*currentMap)[nums[1]] = nums[0];
+                for(int j = 0; j < nums[2]; j++)    (*currentMap)[nums[1] + j] = nums[0] + j;
                 jumpIndex ++;
             }
         }
