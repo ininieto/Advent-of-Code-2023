@@ -136,14 +136,9 @@ int main(){
             std::unordered_map<uint64_t, std::pair<uint64_t, uint64_t>>* currentMap = str_to_map[line];
             uint64_t jumpIndex = 1;
 
-            // TODO: I cannot store so many values. I have to keep just the limits of the ranges and play with thatñ
-            
             // Must read all the lines that begin with numbers
             while(i + jumpIndex < splittedInput.size() && isdigit(splittedInput[i + jumpIndex][0])){    // Must check that we're not out of bounds BEFORE checking isdigit
                 std::vector<uint64_t> nums = fillInVector(splittedInput[i + jumpIndex]);
-                /*for(uint64_t j = 0; j < nums[2]; j++)
-                    (*currentMap)[nums[1] + j] = nums[0] + j;
-                    */
                 (*currentMap)[nums[1]] = std::make_pair(nums[0], nums[2]);
                 jumpIndex ++;
             }
