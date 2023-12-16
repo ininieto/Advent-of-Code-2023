@@ -48,10 +48,10 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
-// Function to fill in any vector
-std::vector<uint64_t> fillInVector(std::string strSeeds){
+// Function to fill in a int vector given a string
+std::vector<uint64_t> fillInVector(std::string str){
 
-    std::vector<std::string> strVector = split(strSeeds, " ");
+    std::vector<std::string> strVector = split(str, " ");
     std::vector<uint64_t> seedVector;
 
     for(std::string strNum: strVector){
