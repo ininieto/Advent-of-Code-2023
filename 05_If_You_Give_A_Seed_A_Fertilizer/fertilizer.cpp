@@ -156,8 +156,7 @@ int main(){
         uint64_t humid = tryToAssignFromMap(temp, temperature_to_humidity);
         uint64_t location = tryToAssignFromMap(humid, humidity_to_location);
 
-        if(location < minLocation)
-            minLocation = location;
+        minLocation = (location < minLocation) ? location : minLocation;
     }
     
     std::cout << "The result is " << minLocation << '\n';
