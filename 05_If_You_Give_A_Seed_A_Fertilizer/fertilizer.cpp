@@ -61,19 +61,18 @@ std::vector<uint64_t> fillInVector(std::string str){
     return seedVector;
 }
 
-// Function to assign the value even though the key is not found
+/*
+    Function to assign the value even though the key is not found
+    Example: In the second line of the example we have 52 50 48
+    This means that map[50] = 52, map[51] = 53, map[52] = 54, ..., map[97] = 99
+    The relation between the key and value is (52 - 50) = 2 --> diff
+*/
 uint64_t tryToAssignFromMap(uint64_t key, std::unordered_map<uint64_t, std::pair<uint64_t, uint64_t>> map){
 
     for(auto mapElement: map){  // Iterate all the elements of the map
 
         int range = mapElement.second.second;   // Covers the amount of numbers in range
         int diff = mapElement.second.first - mapElement.first;  // The relation between the starting points defines all the range
-
-        /*
-            Example: In the second line of the example we have 52 50 48
-            This means that map[50] = 52, map[51] = 53, map[52] = 54, ..., map[97] = 99
-            The relation between the key and value is (52 - 50) = 2 --> diff
-        */
 
         // Check if the key doesn't belong to the map 
         if(key < mapElement.first || key > mapElement.first + range)
@@ -85,7 +84,6 @@ uint64_t tryToAssignFromMap(uint64_t key, std::unordered_map<uint64_t, std::pair
 
     // If key not found
     return key;
-
 }
 
 int main(){
