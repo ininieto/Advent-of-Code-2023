@@ -94,11 +94,11 @@ uint64_t tryToAssignFromMap(uint64_t key, std::unordered_map<uint64_t, std::pair
 
     for(auto mapElement: map){  // Iterate all the elements of the map
 
-        int range = mapElement.second.second;   // Covers the amount of numbers in range
-        int diff = mapElement.second.first - mapElement.first;  // The relation between the starting points defines all the range
+        uint64_t range = mapElement.second.second;   // Covers the amount of numbers in range
+        uint64_t diff = mapElement.second.first - mapElement.first;  // The relation between the starting points defines all the range
 
         // Check if the key doesn't belong to the map 
-        if(key < mapElement.first || key > mapElement.first + range)
+        if(key < mapElement.first || key >= mapElement.first + range)
             continue;
         // The key is in the map
         else
@@ -116,8 +116,8 @@ int main(){
     std::string input = readInputText("input.txt");
 
     std::vector<std::string> splittedExample = split(example, "\n");
-    //std::vector<std::string> splittedInput = split(input, "\n");
-    std::vector<std::string> splittedInput = splittedExample;
+    std::vector<std::string> splittedInput = split(input, "\n");
+    //std::vector<std::string> splittedInput = splittedExample;
 
     // Define the seeds vector. It will contain pairs (starting point, range)
     std::vector<std::pair<uint64_t, uint64_t>> seedVector;
@@ -174,13 +174,7 @@ int main(){
 
         for (int i = 0; i < seedPair.second; i++){
 
-            
-
             uint64_t seed = seedPair.first + i;
-
-            if(seed == 82)
-                std::cout << "q";
-                
             uint64_t soil = tryToAssignFromMap(seed, seed_to_soil);
             uint64_t fert = tryToAssignFromMap(soil, soil_to_fertilizer);
             uint64_t water = tryToAssignFromMap(fert, fertilizer_to_water);
