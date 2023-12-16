@@ -75,7 +75,7 @@ uint64_t tryToAssignFromMap(uint64_t key, std::unordered_map<uint64_t, std::pair
         int diff = mapElement.second.first - mapElement.first;  // The relation between the starting points defines all the range
 
         // Check if the key doesn't belong to the map 
-        if(key < mapElement.first || key > mapElement.first + range)
+        if(key < mapElement.first || key >= mapElement.first + range)
             continue;
         // The key is in the map
         else
