@@ -167,14 +167,41 @@ int main(){
         }
     }
 
+    /*
+    Ideas to solve part 2. I have an upper bound from first part: 379811651
+    I would like to think it the other way around: from location to seed
+
+    const int upperBound = 379811651;
+
+    for(int i = 0; i < upperBound; i++){
+
+        // Find a way to do this
+        location_to_humidity[i];
+
+        // If it doesn't exist, assign the same number
+
+        // In the last conversion, the seed one, I cannot just assign the same value
+
+        // Iterating from 0 to upperBound lets me return whenever I find a vaulue
+
+    }
+
+    
+    */
+
     // Make all the conversions and find the minimum location
     uint64_t minLocation = INT_MAX;
 
     for (std::pair<uint64_t, uint64_t> seedPair : seedVector){
 
-        for (int i = 0; i < seedPair.second; i++){
+        std::cout << "hola :)" << '\n';
+
+        for (uint64_t i = 0; i < seedPair.second; i++){
 
             uint64_t seed = seedPair.first + i;
+
+            std::cout << i << '\n';
+
             uint64_t soil = tryToAssignFromMap(seed, seed_to_soil);
             uint64_t fert = tryToAssignFromMap(soil, soil_to_fertilizer);
             uint64_t water = tryToAssignFromMap(fert, fertilizer_to_water);
