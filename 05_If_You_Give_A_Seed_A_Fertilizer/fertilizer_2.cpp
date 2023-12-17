@@ -90,7 +90,7 @@ std::vector<std::pair<uint64_t, uint64_t>> fillInSeedVector(std::string strSeeds
     This means that map[50] = 52, map[51] = 53, map[52] = 54, ..., map[97] = 99
     The relation between the key and value is (52 - 50) = 2 --> diff
 */
-uint64_t tryToAssignFromMap(uint64_t key, std::unordered_map<uint64_t, std::pair<uint64_t, uint64_t>> map){
+uint64_t tryToAssignFromMap(uint64_t key, std::unordered_map<uint64_t, std::pair<uint64_t, uint64_t>> map, bool soil_to_seed_map){
 
     for(auto mapElement: map){  // Iterate all the elements of the map
 
@@ -106,7 +106,21 @@ uint64_t tryToAssignFromMap(uint64_t key, std::unordered_map<uint64_t, std::pair
     }
 
     // If key not found
-    return key;
+    if(!soil_to_seed_map)
+        return key;
+    else
+        return UINT64_MAX;
+}
+
+// Function to check if the seed exists
+bool existsSeed(uint64_t seed, std::vector<std::pair<uint64_t, uint64_t>> seedVector){
+
+    for(auto seedRange: seedVector){
+        if(seed >= seedRange.first && seed <= seedRange.first + seedRange.second)
+            return true;
+    }
+
+    return false;
 }
 
 int main(){
@@ -118,8 +132,8 @@ int main(){
     const int upperBound = 379811651; // Result from first part of the problem
 
     std::vector<std::string> splittedExample = split(example, "\n");
-    //std::vector<std::string> splittedInput = split(input, "\n");
-    std::vector<std::string> splittedInput = splittedExample;
+    std::vector<std::string> splittedInput = split(input, "\n");
+    //std::vector<std::string> splittedInput = splittedExample;
 
     // Define the seeds vector. It will contain pairs (starting point, range)
     std::vector<std::pair<uint64_t, uint64_t>> seedVector;
@@ -148,7 +162,6 @@ int main(){
         std::string line = splittedInput[i];
 
         if(line.substr(0, line.find(':')) == "seeds"){
-            // TODO: Now this line describes ranges of seeds
             line = line.substr(line.find(' ') + 1); // Get rid of the letters 
             seedVector = fillInSeedVector(line); 
         }  
@@ -167,62 +180,25 @@ int main(){
         }
     }
 
-    /*
-    Ideas to solve part 2. I have an upper bound from first part: 379811651
-    I would like to think it the other way around: from location to seed
-
-    const int upperBound = 379811651;
-
-    for(int i = 0; i < upperBound; i++){
-
-        // Find a way to do this
-        location_to_humidity[i];
-
-        // If it doesn't exist, assign the same number
-
-        // In the last conversion, the seed one, I cannot just assign the same value
-
-        // Iterating from 0 to upperBound lets me return whenever I find a vaulue
-
-    }
-
-    Functions to be defined:
-
-    reverseFindInMap(key, map)
-    findSeed(soil, seed_to_soil_map)
-    */
+    // Make all the conversions and find the minimum location
+    uint64_t minLocation = UINT64_MAX;
 
    for(int i = 0; i < upperBound; i++){
 
+        uint64_t humidity = tryToAssignFromMap(i, location_to_humidity, false);
+        uint64_t temperature = tryToAssignFromMap(humidity, humidity_to_temperature, false);
+        uint64_t light = tryToAssignFromMap(temperature, temperature_to_light, false);
+        uint64_t water = tryToAssignFromMap(light, light_to_water, false);
+        uint64_t fertilizer = tryToAssignFromMap(water, water_to_fertilizer, false);
+        uint64_t soil = tryToAssignFromMap(fertilizer, fertilizer_to_soil, false);
+        uint64_t seed = tryToAssignFromMap(soil, soil_to_seed, true);
 
+        // Check if seed exists
+        if (existsSeed(seed, seedVector)){
+            minLocation = i;
+            break;
+        }       
    }
-
-    // Make all the conversions and find the minimum location
-    uint64_t minLocation = INT_MAX;
-
-    /*for (std::pair<uint64_t, uint64_t> seedPair : seedVector){
-
-        std::cout << "hola :)" << '\n';
-
-        for (uint64_t i = 0; i < seedPair.second; i++){
-
-            uint64_t seed = seedPair.first + i;
-
-            std::cout << i << '\n';
-
-            uint64_t soil = tryToAssignFromMap(seed, seed_to_soil);
-            uint64_t fert = tryToAssignFromMap(soil, soil_to_fertilizer);
-            uint64_t water = tryToAssignFromMap(fert, fertilizer_to_water);
-            uint64_t light = tryToAssignFromMap(water, water_to_light);
-            uint64_t temp = tryToAssignFromMap(light, light_to_temperature);
-            uint64_t humid = tryToAssignFromMap(temp, temperature_to_humidity);
-            uint64_t location = tryToAssignFromMap(humid, humidity_to_location);
-
-            if (location < minLocation)
-                minLocation = location;
-        }
-    }
-    */
 
     std::cout << "The result is " << minLocation << '\n';
 
