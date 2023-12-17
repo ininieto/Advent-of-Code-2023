@@ -123,6 +123,7 @@ bool existsSeed(uint64_t seed, std::vector<std::pair<uint64_t, uint64_t>> seedVe
     return false;
 }
 
+
 int main(){
 
     // Read the example and input files
@@ -183,23 +184,25 @@ int main(){
     // Make all the conversions and find the minimum location
     uint64_t minLocation = UINT64_MAX;
 
-   for(int i = 0; i < upperBound; i++){
+    // Not the most elegant solution, I know
+   for(uint64_t i = 0; i < upperBound; i++){
 
-        uint64_t humidity = tryToAssignFromMap(i, location_to_humidity, false);
-        uint64_t temperature = tryToAssignFromMap(humidity, humidity_to_temperature, false);
-        uint64_t light = tryToAssignFromMap(temperature, temperature_to_light, false);
-        uint64_t water = tryToAssignFromMap(light, light_to_water, false);
-        uint64_t fertilizer = tryToAssignFromMap(water, water_to_fertilizer, false);
-        uint64_t soil = tryToAssignFromMap(fertilizer, fertilizer_to_soil, false);
-        uint64_t seed = tryToAssignFromMap(soil, soil_to_seed, true);
+       uint64_t humidity = tryToAssignFromMap(i, location_to_humidity, false);
+       uint64_t temperature = tryToAssignFromMap(humidity, humidity_to_temperature, false);
+       uint64_t light = tryToAssignFromMap(temperature, temperature_to_light, false);
+       uint64_t water = tryToAssignFromMap(light, light_to_water, false);
+       uint64_t fertilizer = tryToAssignFromMap(water, water_to_fertilizer, false);
+       uint64_t soil = tryToAssignFromMap(fertilizer, fertilizer_to_soil, false);
+       uint64_t seed = tryToAssignFromMap(soil, soil_to_seed, true);
 
-        // Check if seed exists
-        if (existsSeed(seed, seedVector)){
-            minLocation = i;
-            break;
-        }       
+       // Check if seed exists
+       if (existsSeed(seed, seedVector)){
+           minLocation = i;
+           break;
+       }
    }
 
+    // The result is 27992443
     std::cout << "The result is " << minLocation << '\n';
 
     return 0;
