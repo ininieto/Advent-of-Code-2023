@@ -1,7 +1,7 @@
 /*
-    Advent of Code 2023 - 05.12.2023
+    Advent of Code 2023 - 06.12.2023
 
-    Link to the problem: https://adventofcode.com/2023/day/5
+    Link to the problem: https://adventofcode.com/2023/day/6
 
     Author of the solution: Íñigo Nieto Cuadrado
 
