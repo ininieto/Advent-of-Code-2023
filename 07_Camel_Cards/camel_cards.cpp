@@ -104,7 +104,7 @@ void assignType(Card &card){
 }
 
 // Function to compare the hands and decide the winner
-void camelCardsGame(Card card, std::vector<Card> &rankVector){
+void camelCardsGame(Card card, std::vector<Card> &rankVector, std::unordered_map<char, int> strengthMap){
 
     // First element
     if(rankVector.size() == 0){  
@@ -123,18 +123,17 @@ void camelCardsGame(Card card, std::vector<Card> &rankVector){
             rankVector.insert(rankVector.begin() + i, card);
             return;
         }
+        else if(card.type == vecCard.type){ // Must compare char by char
+            for(int j = 0; j < 5; j++){
+                if(strengthMap.at(card.hand[j]) < strengthMap.at(vecCard.hand[j])){
+                    rankVector.insert(rankVector.begin() + i, card);
+                    return;
+                }
+            }
+        }
     }
-
-    rankVector.push_back(card)
-;
-    // First compare the type
-
-    // If same type, compare the labels in order (first with first, second with second...)
-
-    // Then there is also the bid thing. I guess I should deal with std::pair<std::string hand, int bid> card
-
-    // Then there is the rank thing: I must order all of them. Their position will be the rank
-
+    // If it's the smallest, just add it at the end
+    rankVector.push_back(card);
 }
 
 
@@ -164,19 +163,18 @@ int main(){
         // Assign every card with its type
         assignType(card); 
 
-        // I'm not sure about how should I compare the cards. The first naive idea is to have a large 
-        // vector with all the cards on it, but I guess there will be a better way
-
-        // Maybe defining a new vector like std::vector<Card> orderedCards and, every time a Card
-        // is computed, it is stored in the array
-
-        camelCardsGame(card, rankVector);
+        // Insert the card in the rank vector
+        camelCardsGame(card, rankVector, strengthMap);
     } 
+
+    // Get the result
+    uint64_t result = 0;
+    for(int i = 0; i < rankVector.size(); i++)
+        result += (rankVector[i].bid * (i + 1));
+
+    // My answer, 249010820, is too low :(
     
-
-    std::cout << "a";
-
-
+    std::cout << "The result is " << result << '\n';
 
     return 0;
 }
