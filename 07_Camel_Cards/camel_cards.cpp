@@ -67,42 +67,36 @@ std::string readInputText(std::string inputText){
     2: One pair: (56758)
     1: High card: No repeated cards (12345)
 */
-void assignType(Card &card){
+int assignType(std::string hand){
 
     // Count how many times each character appears
     std::unordered_map<char, int> charCount;
-    for(char c: card.hand) charCount[c] ++;  
+    for(char c: hand) charCount[c] ++;  
 
     switch(charCount.size()){
 
-        case 1:         
-            card.type = 7;   // Five of a kind 
-            return;
+        case 1:          
+            return 7;   // Five of a kind
         case 2:      
             for(auto mapElement: charCount){
-                if(mapElement.second == 4){
-                    card.type = 6;   // Four of a kind
-                    return;
-                }
+                if(mapElement.second == 4)
+                    return 6;   // Four of a kind
             }
-            card.type = 5;   // Full house
-            return;
+            return 5;   // Full house
         case 3:      
             for(auto mapElement: charCount){
-                if(mapElement.second == 3){ 
-                    card.type = 4;   // Three of a kind
-                    return;
-                }
+                if(mapElement.second == 3)
+                    return 4;   // Three of a kind
             }
-            card.type = 3;   // Two pair
-            return;
+            return 3;   // Two pair
         case 4:         
-            card.type = 2;   // One pair
-            return;
+            return 2;   // One pair
         case 5:         
-            card.type = 1;   // High card
-            return;
+            return 1;   // High card
     }
+
+    // Error
+    return -1;
 }
 
 // Function to compare the hands and decide the winner
@@ -168,7 +162,7 @@ int main(){
         card.bid = stoi(cardAndBid.substr(cardAndBid.find(' ') + 1));
 
         // Assign every card with its type
-        assignType(card); 
+        card.type = assignType(card.hand);
 
         // Insert the card in the rank vector
         camelCardsGame(card, rankVector, strengthMap);
