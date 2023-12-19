@@ -127,9 +127,8 @@ void camelCardsGame(Card card, std::vector<Card> &rankVector, std::unordered_map
                     rankVector.insert(rankVector.begin() + i, card);
                     return;
                 }
-                else{   // Must check the next card in the vector
+                else   // Must check the next card in the vector
                     break;
-                }
             }
         }
     }
