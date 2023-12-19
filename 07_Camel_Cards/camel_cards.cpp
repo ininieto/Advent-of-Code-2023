@@ -8,9 +8,17 @@
 */
 
 #include <iostream>
+#include <cassert>
 #include <fstream>
 #include <vector>
 #include <unordered_map>
+
+struct Card{
+
+    std::string hand;
+    int type;
+    int bid;
+};
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -59,41 +67,66 @@ std::string readInputText(std::string inputText){
     2: One pair: (56758)
     1: High card: No repeated cards (12345)
 */
-int getType(std::string card){
+void assignType(Card &card){
 
     // Count how many times each character appears
     std::unordered_map<char, int> charCount;
-    for(char c: card) charCount[c] ++;  
+    for(char c: card.hand) charCount[c] ++;  
 
     switch(charCount.size()){
 
-        case 1:         // Five of a kind
-            return 7;   
+        case 1:         
+            card.type = 7;   // Five of a kind 
         case 2:      
             for(auto mapElement: charCount){
-                if(mapElement.second == 4)  
-                    return 6;   // Four of a kind
+                if(mapElement.second == 4){
+                    card.type = 6;   // Four of a kind
+                    return;
+                }
             }
-            return 5;   // Full house
+            card.type = 5;   // Full house
         case 3:      
             for(auto mapElement: charCount){
-                if(mapElement.second == 3)  
-                    return 4;   // Three of a kind
+                if(mapElement.second == 3){ 
+                    card.type = 4;   // Three of a kind
+                    return;
+                }
             }
-            return 3;   // Two pair
+            card.type = 3;   // Two pair
+            return;
         case 4:         
-            return 2;   // One pair
+            card.type = 2;   // One pair
+            return;
         case 5:         
-            return 1;   // High card
+            card.type = 1;   // High card
+            return;
     }
-
-    // Must never reach here. Error
-    return -1;
 }
 
 // Function to compare the hands and decide the winner
-void camelCardsGame(std::string hand1, std::string hand2){
+void camelCardsGame(Card card, std::vector<Card> &rankVector){
 
+    // First element
+    if(rankVector.size() == 0){  
+        rankVector.push_back(card);
+        return;
+    }
+
+    // Compare the card with all of the vector
+    for(int i = 0; i < rankVector.size(); i++){
+
+        Card vecCard = rankVector[i];
+
+        // I want them in descendent order, so its index is (rank - 1)
+
+        if(card.type < vecCard.type){
+            rankVector.insert(rankVector.begin() + i, card);
+            return;
+        }
+    }
+
+    rankVector.push_back(card)
+;
     // First compare the type
 
     // If same type, compare the labels in order (first with first, second with second...)
@@ -117,19 +150,31 @@ int main(){
     // Map to assign a strengh for each card 
     std::unordered_map<char, int> strengthMap = {{'A', 14}, {'K', 13}, {'Q', 12}, {'J', 11}, {'T', 10}, {'9', 9}, {'8', 8}, {'7', 7}, {'6', 6}, {'5', 5}, {'4', 4}, {'3', 3}, {'2', 2}};
 
+    // Vector that will order the cards to get the rank
+    std::vector<Card> rankVector;
 
     for (std::string cardAndBid: splittedInput){
 
-        // Separate the card and the bid
-        std::string card = cardAndBid.substr(0, 5);
-        int bid = stoi(cardAndBid.substr(cardAndBid.find(' ') + 1));
+        Card card;
 
-        getType(card);
+        // Store the hand and the bid
+        card.hand = cardAndBid.substr(0, 5);
+        card.bid = stoi(cardAndBid.substr(cardAndBid.find(' ') + 1));
 
+        // Assign every card with its type
+        assignType(card); 
 
+        // I'm not sure about how should I compare the cards. The first naive idea is to have a large 
+        // vector with all the cards on it, but I guess there will be a better way
+
+        // Maybe defining a new vector like std::vector<Card> orderedCards and, every time a Card
+        // is computed, it is stored in the array
+
+        camelCardsGame(card, rankVector);
     } 
     
 
+    std::cout << "a";
 
 
 
