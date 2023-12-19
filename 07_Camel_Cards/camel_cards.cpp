@@ -77,6 +77,7 @@ void assignType(Card &card){
 
         case 1:         
             card.type = 7;   // Five of a kind 
+            return;
         case 2:      
             for(auto mapElement: charCount){
                 if(mapElement.second == 4){
@@ -85,6 +86,7 @@ void assignType(Card &card){
                 }
             }
             card.type = 5;   // Full house
+            return;
         case 3:      
             for(auto mapElement: charCount){
                 if(mapElement.second == 3){ 
@@ -125,9 +127,14 @@ void camelCardsGame(Card card, std::vector<Card> &rankVector, std::unordered_map
         }
         else if(card.type == vecCard.type){ // Must compare char by char
             for(int j = 0; j < 5; j++){
-                if(strengthMap.at(card.hand[j]) < strengthMap.at(vecCard.hand[j])){
+                if(strengthMap.at(card.hand[j]) == strengthMap.at(vecCard.hand[j]))
+                    continue;
+                else if(strengthMap.at(card.hand[j]) < strengthMap.at(vecCard.hand[j])){
                     rankVector.insert(rankVector.begin() + i, card);
                     return;
+                }
+                else{   // Must check the next card in the vector
+                    break;
                 }
             }
         }
@@ -143,8 +150,8 @@ int main(){
     std::string input = readInputText("input.txt");
 
     std::vector<std::string> splittedExample = split(example, "\n");
-    //std::vector<std::string> splittedInput = split(input, "\n");
-    std::vector<std::string> splittedInput = splittedExample;
+    std::vector<std::string> splittedInput = split(input, "\n");
+    //std::vector<std::string> splittedInput = splittedExample;
 
     // Map to assign a strengh for each card 
     std::unordered_map<char, int> strengthMap = {{'A', 14}, {'K', 13}, {'Q', 12}, {'J', 11}, {'T', 10}, {'9', 9}, {'8', 8}, {'7', 7}, {'6', 6}, {'5', 5}, {'4', 4}, {'3', 3}, {'2', 2}};
@@ -169,10 +176,9 @@ int main(){
 
     // Get the result
     uint64_t result = 0;
-    for(int i = 0; i < rankVector.size(); i++)
+    for(int i = 0; i < rankVector.size(); i++){
         result += (rankVector[i].bid * (i + 1));
-
-    // My answer, 249010820, is too low :(
+    }
     
     std::cout << "The result is " << result << '\n';
 
