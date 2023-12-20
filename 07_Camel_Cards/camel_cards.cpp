@@ -113,22 +113,21 @@ void camelCardsGame(Card card, std::vector<Card> &rankVector, std::unordered_map
 
         Card vecCard = rankVector[i];
 
-        // I want them in descendent order, so its index is (rank - 1)
-
+        // I want them in ascendent order, so its index is (rank - 1)
         if(card.type < vecCard.type){
             rankVector.insert(rankVector.begin() + i, card);
             return;
         }
         else if(card.type == vecCard.type){ // Must compare char by char
             for(int j = 0; j < 5; j++){
-                if(strengthMap.at(card.hand[j]) == strengthMap.at(vecCard.hand[j]))
+                if (strengthMap.at(card.hand[j]) > strengthMap.at(vecCard.hand[j])) // Must check the next card in the vector
+                    break;
+                else if (strengthMap.at(card.hand[j]) == strengthMap.at(vecCard.hand[j]))   // Must check the next char in the hand
                     continue;
-                else if(strengthMap.at(card.hand[j]) < strengthMap.at(vecCard.hand[j])){
+                else{   // Insert in the vector
                     rankVector.insert(rankVector.begin() + i, card);
                     return;
                 }
-                else   // Must check the next card in the vector
-                    break;
             }
         }
     }
