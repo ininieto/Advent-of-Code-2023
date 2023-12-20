@@ -67,6 +67,16 @@ std::string readInputText(std::string inputText){
     3: Two pair: Two shared labels (AKAK5)
     2: One pair: (56758)
     1: High card: No repeated cards (12345)
+
+    Brief explanation about the Jokers: I've thought all the different cases separately
+    
+    - Five of a kind (JJJJJ) --> Stays as Five of a Kind
+    - Four of a kind (JJJJA, AAAAJ) --> Becomes Five of a Kind
+    - Full House (JJJAA, AAAJJ) --> Becomes Five of a Kind
+    - Three of a kind (JJJAB, AAAJB) --> Becomes Four of a Kind
+    - Two Pair (JJAAB) --> Four of a kind // (AABBJ) Full House
+    - One Pair (JJABC, AAJBC) --> Becomes Three of a Kind
+    - High card (1234J) --> Becomes One Pair
 */
 int assignType(std::string hand){
 
@@ -85,19 +95,19 @@ int assignType(std::string hand){
             return 7;   // Five of a kind
         case 2:      
             for(auto mapElement: charCount){
-                if((mapElement.second == 4 && numJokers == 0) || (mapElement.second == 4 && numJokers == 4))
+                if(mapElement.second == 4 && numJokers == 0)
                     return 6;   // Four of a kind
-                else if(mapElement.second == 4 && numJokers == 1)
+                else if(mapElement.second == 4 && numJokers > 0)
                     return 7;   // Becomes Five of a kind 
             }
-            if(numJokers == 2)
+            if(numJokers > 0)
                 return 7;   // Becomes Five of a kind
             return 5;   // Full house
         case 3:      
             for(auto mapElement: charCount){
-                if((mapElement.second == 3 && numJokers == 0) || (mapElement.second == 3 && numJokers == 3))
+                if(mapElement.second == 3 && numJokers == 0)
                     return 4;   // Three of a kind
-                else if (mapElement.second == 3 && numJokers == 1)
+                else if (mapElement.second == 3 && numJokers > 0)
                     return 6;   // Becomes Four of a kind
             }
             if(numJokers == 2)
@@ -135,22 +145,21 @@ void camelCardsGame(Card card, std::vector<Card> &rankVector, std::unordered_map
 
         Card vecCard = rankVector[i];
 
-        // I want them in descendent order, so its index is (rank - 1)
-
+        // I want them in ascendent order, so its index is (rank - 1)
         if(card.type < vecCard.type){
             rankVector.insert(rankVector.begin() + i, card);
             return;
         }
         else if(card.type == vecCard.type){ // Must compare char by char
             for(int j = 0; j < 5; j++){
-                if(strengthMap.at(card.hand[j]) == strengthMap.at(vecCard.hand[j]))
+                if (strengthMap.at(card.hand[j]) > strengthMap.at(vecCard.hand[j])) // Must check the next card in the vector
+                    break;
+                else if (strengthMap.at(card.hand[j]) == strengthMap.at(vecCard.hand[j]))   // Must check the next char in the hand
                     continue;
-                else if(strengthMap.at(card.hand[j]) < strengthMap.at(vecCard.hand[j])){
+                else{   // Insert in the vector
                     rankVector.insert(rankVector.begin() + i, card);
                     return;
                 }
-                else   // Must check the next card in the vector
-                    break;
             }
         }
     }
@@ -194,10 +203,7 @@ int main(){
     for(int i = 0; i < rankVector.size(); i++){
         result += (rankVector[i].bid * (i + 1));
     }
-    
-    // The result 248392603 is too low
-    // The result 248646277 is too low
-    // The result 248979845 is too high
+
     std::cout << "The result is " << result << '\n';
 
     return 0;
