@@ -56,6 +56,7 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
+
 /*
     Function to determine the type of a hand. The strenght order is as follows.
 
@@ -71,27 +72,48 @@ int assignType(std::string hand){
 
     // Count how many times each character appears
     std::unordered_map<char, int> charCount;
-    for(char c: hand) charCount[c] ++;  
-
+    int numJokers = 0;
+    for(char c: hand){
+        if(c == 'J')
+            numJokers ++;
+       charCount[c] ++;
+    }
+    
     switch(charCount.size()){
 
         case 1:          
             return 7;   // Five of a kind
         case 2:      
             for(auto mapElement: charCount){
-                if(mapElement.second == 4)
+                if((mapElement.second == 4 && numJokers == 0) || (mapElement.second == 4 && numJokers == 4))
                     return 6;   // Four of a kind
+                else if(mapElement.second == 4 && numJokers == 1)
+                    return 7;   // Becomes Five of a kind 
             }
+            if(numJokers == 2)
+                return 7;   // Becomes Five of a kind
             return 5;   // Full house
         case 3:      
             for(auto mapElement: charCount){
-                if(mapElement.second == 3)
+                if((mapElement.second == 3 && numJokers == 0) || (mapElement.second == 3 && numJokers == 3))
                     return 4;   // Three of a kind
+                else if (mapElement.second == 3 && numJokers == 1)
+                    return 6;   // Becomes Four of a kind
             }
-            return 3;   // Two pair
-        case 4:         
-            return 2;   // One pair
-        case 5:         
+            if(numJokers == 2)
+                return 6;   // Becomes Four of a kind
+            else if(numJokers == 1)
+                return 5;   // Becomes Full house
+            else
+                return 3;   // Two pair
+        case 4: 
+            if(numJokers > 0)
+                return 4;   // Becomes Three of a kind
+            else        
+                return 2;   // One pair
+        case 5:       
+            if(numJokers == 1) 
+                return 2;   // Becomes One Pair 
             return 1;   // High card
     }
 
@@ -99,7 +121,7 @@ int assignType(std::string hand){
     return -1;
 }
 
-// Function to compare the hands and decide the winner
+// Function to compare the hands and get the rank
 void camelCardsGame(Card card, std::vector<Card> &rankVector, std::unordered_map<char, int> strengthMap){
 
     // First element
@@ -173,6 +195,9 @@ int main(){
         result += (rankVector[i].bid * (i + 1));
     }
     
+    // The result 248392603 is too low
+    // The result 248646277 is too low
+    // The result 248979845 is too high
     std::cout << "The result is " << result << '\n';
 
     return 0;
