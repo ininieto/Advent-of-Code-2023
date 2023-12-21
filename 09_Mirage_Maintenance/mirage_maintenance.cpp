@@ -71,7 +71,8 @@ int sumVector(std::vector<int> vec){
     return sum;
 }
 
-// Recursive function that obtains the differences between all the elements of the vector
+// Recursive function that obtains the differences between all the elements of the vector 
+// Returns the number that must be added to the last element of the vector
 int getDifferences(std::vector<int> originalNumbers){
 
     // Will store all the resultant vector in this array
@@ -108,6 +109,7 @@ int main(){
         finalResult += nextNum;
     }
 
+    // Got a result of 1887980197 but I'm on a plane and I cannot prove it :)
     std::cout << "The result is " << finalResult << '\n';
 
     return 0;
