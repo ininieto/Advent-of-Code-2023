@@ -8,10 +8,17 @@
 */
 
 #include <iostream>
-#include <cassert>
 #include <fstream>
 #include <vector>
 #include <unordered_map>
+
+#define FIVE_OF_A_KIND 7
+#define FOUR_OF_A_KIND 6
+#define FULL_HOUSE 5
+#define THREE_OF_A_KIND 4
+#define TWO_PAIR 3
+#define ONE_PAIR 2
+#define HIGH_CARD 1
 
 struct Card{
 
@@ -68,7 +75,7 @@ std::string readInputText(std::string inputText){
     2: One pair: (56758)
     1: High card: No repeated cards (12345)
 
-    Brief explanation about the Jokers: I've thought all the different cases separately
+    Brief explanation about the Jokers mechanic: I've thought all the different cases separately
     
     - Five of a kind (JJJJJ) --> Stays as Five of a Kind
     - Four of a kind (JJJJA, AAAAJ) --> Becomes Five of a Kind
@@ -88,51 +95,60 @@ int assignType(std::string hand){
             numJokers ++;
        charCount[c] ++;
     }
-    
+
+    /*
+        Depending on the number of different characters we can guess the type 
+        For example, if there is just 1 different type of character, they are 
+        all equal --> Five of a kind. If there are two different chars, we 
+        can have either Four of a kind (AAAAJ) or Full House (AAAJJ). And so on
+    */
     switch(charCount.size()){
 
         case 1:          
-            return 7;   // Five of a kind
+            return FIVE_OF_A_KIND; 
         case 2:      
             for(auto mapElement: charCount){
                 if(mapElement.second == 4 && numJokers == 0)
-                    return 6;   // Four of a kind
+                    return FOUR_OF_A_KIND;  
                 else if(mapElement.second == 4 && numJokers > 0)
-                    return 7;   // Becomes Five of a kind 
+                    return FIVE_OF_A_KIND; 
             }
             if(numJokers > 0)
-                return 7;   // Becomes Five of a kind
-            return 5;   // Full house
+                return FIVE_OF_A_KIND;  
+            return FULL_HOUSE;   
         case 3:      
             for(auto mapElement: charCount){
                 if(mapElement.second == 3 && numJokers == 0)
-                    return 4;   // Three of a kind
+                    return THREE_OF_A_KIND;   
                 else if (mapElement.second == 3 && numJokers > 0)
-                    return 6;   // Becomes Four of a kind
+                    return FOUR_OF_A_KIND;   
             }
             if(numJokers == 2)
-                return 6;   // Becomes Four of a kind
+                return FOUR_OF_A_KIND;   
             else if(numJokers == 1)
-                return 5;   // Becomes Full house
+                return FULL_HOUSE;  
             else
-                return 3;   // Two pair
+                return TWO_PAIR;
         case 4: 
             if(numJokers > 0)
-                return 4;   // Becomes Three of a kind
+                return THREE_OF_A_KIND;   
             else        
-                return 2;   // One pair
+                return ONE_PAIR;  
         case 5:       
             if(numJokers == 1) 
-                return 2;   // Becomes One Pair 
-            return 1;   // High card
+                return ONE_PAIR;   
+            return HIGH_CARD;   
     }
 
-    // Error
+    // Error. Might never reach here
     return -1;
 }
 
 // Function to compare the hands and get the rank
-void camelCardsGame(Card card, std::vector<Card> &rankVector, std::unordered_map<char, int> strengthMap){
+void camelCardsGame(Card card, std::vector<Card> &rankVector){
+
+    // Map to assign a strengh for each card 
+    std::unordered_map<char, int> strengthMap = {{'A', 13}, {'K', 12}, {'Q', 11}, {'T', 10}, {'9', 9}, {'8', 8}, {'7', 7}, {'6', 6}, {'5', 5}, {'4', 4}, {'3', 3}, {'2', 2}, {'J', 1}};
 
     // First element
     if(rankVector.size() == 0){  
@@ -177,9 +193,6 @@ int main(){
     std::vector<std::string> splittedInput = split(input, "\n");
     //std::vector<std::string> splittedInput = splittedExample;
 
-    // Map to assign a strengh for each card 
-    std::unordered_map<char, int> strengthMap = {{'A', 13}, {'K', 12}, {'Q', 11}, {'T', 10}, {'9', 9}, {'8', 8}, {'7', 7}, {'6', 6}, {'5', 5}, {'4', 4}, {'3', 3}, {'2', 2}, {'J', 1}};
-
     // Vector that will order the cards to get the rank
     std::vector<Card> rankVector;
 
@@ -195,7 +208,7 @@ int main(){
         card.type = assignType(card.hand);
 
         // Insert the card in the rank vector
-        camelCardsGame(card, rankVector, strengthMap);
+        camelCardsGame(card, rankVector);
     } 
 
     // Get the result
