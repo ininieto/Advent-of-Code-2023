@@ -101,7 +101,7 @@ int main(){
 
         // If all the instructions have been read, restart reading 
         if(counter == instructions.size())
-            counter = counter % (instructions.size());
+            counter %= instructions.size();
 
         char nextMove = instructions[counter];
         currentPosition = (nextMove == 'L') ? network.at(currentPosition).left : network.at(currentPosition).right;
