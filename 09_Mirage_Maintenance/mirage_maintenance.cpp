@@ -48,6 +48,44 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
+// Function to fill in a int vector given a string
+std::vector<int> fillInVector(std::string str){
+
+    std::vector<std::string> strVector = split(str, " ");
+    std::vector<int> seedVector;
+
+    for(std::string strNum: strVector){
+        seedVector.push_back(stoull(strNum));
+    }
+
+    return seedVector;
+}
+
+// Simple function to sum all elements of a vector
+int sumVector(std::vector<int> vec){
+
+    int sum = 0;
+    for(int e : vec)
+        sum += e;
+    
+    return sum;
+}
+
+// Recursive function that obtains the differences between all the elements of the vector
+int getDifferences(std::vector<int> originalNumbers){
+
+    // Will store all the resultant vector in this array
+    std::vector<int> differences;
+    for(int i = 1; i < originalNumbers.size(); i++){
+        differences.push_back(originalNumbers[i] - originalNumbers[i - 1]);
+    }
+
+    if(sumVector(differences) == 0)
+        return differences[differences.size() - 1];
+    
+    return differences[differences.size() - 1] + getDifferences(differences);
+} 
+
 int main(){
 
     std::string example = "0 3 6 9 12 15\n1 3 6 10 15 21\n10 13 16 21 30 45";
@@ -58,11 +96,19 @@ int main(){
     std::vector<std::string> splittedInput = split(input, "\n");
     //std::vector<std::string> splittedInput = splittedExample;
 
-    // The way that the problem suggests is a bit complicated. I feel like, with
-    // a deeper thinking, I could find a simple pattern 
-    
+    int finalResult = 0;
 
+    // Read all the lines
+    for(std::string line: splittedInput){
 
+        std::vector<int> originalNumbers = fillInVector(line);
+
+        // Call the recursive function for the vector
+        int nextNum = originalNumbers[originalNumbers.size() - 1] + getDifferences(originalNumbers);
+        finalResult += nextNum;
+    }
+
+    std::cout << "The result is " << finalResult << '\n';
 
     return 0;
 }
