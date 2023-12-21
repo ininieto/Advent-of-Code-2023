@@ -63,12 +63,12 @@ int main(){
     // Split the inputs
     std::vector<std::string> splittedExample1 = split(example1, "\n");
     std::vector<std::string> splittedExample2 = split(example2, "\n");
-    //std::vector<std::string> splittedInput = split(input, "\n");
-    std::vector<std::string> splittedInput = splittedExample1;
+    std::vector<std::string> splittedInput = split(input, "\n");
+    //std::vector<std::string> splittedInput = splittedExample2;
     
 
     // Instruction to follow (left, right, left...)
-    std::string instructions = splittedExample1[0];
+    std::string instructions = splittedInput[0];
 
     // Store the network in a map
     std::unordered_map<std::string, Direction> network;
@@ -88,10 +88,28 @@ int main(){
         network[key] = dir;
     }
 
-    
+    // Define starting and end point
+    std::string startinPoint = "AAA";
+    std::string endPosition  = "ZZZ";
+    std::string currentPosition = startinPoint;
 
+    int counter = 0;
+    int numSteps = 0;
 
+    // Big loop
+    while(currentPosition != endPosition){
 
+        // If all the instructions have been read, restart reading 
+        if(counter == instructions.size())
+            counter = counter % (instructions.size());
+
+        char nextMove = instructions[counter];
+        currentPosition = (nextMove == 'L') ? network.at(currentPosition).left : network.at(currentPosition).right;
+        counter ++;
+        numSteps ++;
+    }
+
+    std::cout << "The result is " << numSteps << '\n';
 
     return 0;
 }
