@@ -8,10 +8,17 @@
 */
 
 #include <iostream>
-#include <cassert>
 #include <fstream>
 #include <vector>
 #include <unordered_map>
+
+#define FIVE_OF_A_KIND 7
+#define FOUR_OF_A_KIND 6
+#define FULL_HOUSE 5
+#define THREE_OF_A_KIND 4
+#define TWO_PAIR 3
+#define ONE_PAIR 2
+#define HIGH_CARD 1
 
 struct Card{
 
@@ -73,35 +80,45 @@ int assignType(std::string hand){
     std::unordered_map<char, int> charCount;
     for(char c: hand) charCount[c] ++;  
 
+    /*
+        Depending on the number of different characters we can guess the type 
+        For example, if there is just 1 different type of character, they are 
+        all equal --> Five of a kind. If there are two different chars, we 
+        can have either Four of a kind (AAAAJ) or Full House (AAAJJ). And so on
+    */
+
     switch(charCount.size()){
 
         case 1:          
-            return 7;   // Five of a kind
+            return FIVE_OF_A_KIND;  
         case 2:      
             for(auto mapElement: charCount){
                 if(mapElement.second == 4)
-                    return 6;   // Four of a kind
+                    return FOUR_OF_A_KIND; 
             }
-            return 5;   // Full house
+            return FULL_HOUSE;   
         case 3:      
             for(auto mapElement: charCount){
                 if(mapElement.second == 3)
-                    return 4;   // Three of a kind
+                    return THREE_OF_A_KIND;  
             }
-            return 3;   // Two pair
+            return TWO_PAIR;   
         case 4:         
-            return 2;   // One pair
+            return ONE_PAIR;   
         case 5:         
-            return 1;   // High card
+            return HIGH_CARD; 
     }
 
-    // Error
+    // Error. Might never reach here
     return -1;
 }
 
 // Function to compare the hands and decide the winner
-void camelCardsGame(Card card, std::vector<Card> &rankVector, std::unordered_map<char, int> strengthMap){
+void camelCardsGame(Card card, std::vector<Card> &rankVector){
 
+    // Map to assign a strengh for each card 
+    std::unordered_map<char, int> strengthMap = {{'A', 14}, {'K', 13}, {'Q', 12}, {'J', 11}, {'T', 10}, {'9', 9}, {'8', 8}, {'7', 7}, {'6', 6}, {'5', 5}, {'4', 4}, {'3', 3}, {'2', 2}};
+    
     // First element
     if(rankVector.size() == 0){  
         rankVector.push_back(card);
@@ -145,9 +162,6 @@ int main(){
     std::vector<std::string> splittedInput = split(input, "\n");
     //std::vector<std::string> splittedInput = splittedExample;
 
-    // Map to assign a strengh for each card 
-    std::unordered_map<char, int> strengthMap = {{'A', 14}, {'K', 13}, {'Q', 12}, {'J', 11}, {'T', 10}, {'9', 9}, {'8', 8}, {'7', 7}, {'6', 6}, {'5', 5}, {'4', 4}, {'3', 3}, {'2', 2}};
-
     // Vector that will order the cards to get the rank
     std::vector<Card> rankVector;
 
@@ -163,7 +177,7 @@ int main(){
         card.type = assignType(card.hand);
 
         // Insert the card in the rank vector
-        camelCardsGame(card, rankVector, strengthMap);
+        camelCardsGame(card, rankVector);
     } 
 
     // Get the result
