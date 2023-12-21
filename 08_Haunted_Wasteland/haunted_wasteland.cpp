@@ -10,6 +10,13 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unordered_map>
+
+struct Direction{
+
+    std::string left;
+    std::string right;
+};
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -49,15 +56,38 @@ std::string readInputText(std::string inputText){
 
 int main(){
 
-    std::string example1  = "RL\n\nAA = (BBB, CCC)\nBBB = (DDD, EEE)\nCCC = (ZZZ, GGG)\nDDD = (DDD, DDD)\nEEE = (EEE, EEE)\nGGG = (GGG, GGG)\nZZZ = (ZZZ, ZZZ)";
+    std::string example1  = "RL\n\nAAA = (BBB, CCC)\nBBB = (DDD, EEE)\nCCC = (ZZZ, GGG)\nDDD = (DDD, DDD)\nEEE = (EEE, EEE)\nGGG = (GGG, GGG)\nZZZ = (ZZZ, ZZZ)";
     std::string example2  = "LLR\n\nAAA = (BBB, BBB)\nBBB = (AAA, ZZZ)\nZZZ = (ZZZ, ZZZ)";
     std::string input = readInputText("input.txt");
 
     // Split the inputs
     std::vector<std::string> splittedExample1 = split(example1, "\n");
     std::vector<std::string> splittedExample2 = split(example2, "\n");
-    std::vector<std::string> splittedInput = split(input, "\n");
+    //std::vector<std::string> splittedInput = split(input, "\n");
+    std::vector<std::string> splittedInput = splittedExample1;
     
+
+    // Instruction to follow (left, right, left...)
+    std::string instructions = splittedExample1[0];
+
+    // Store the network in a map
+    std::unordered_map<std::string, Direction> network;
+    for(int i = 2; i < splittedInput.size(); i++){
+
+        std::string line = splittedInput[i];
+        Direction dir;
+
+        // Get the Key (three first characters)
+        std::string key = line.substr(0, 3);
+
+        // Get the two possible directions
+        dir.left = line.substr(line.find('(') + 1, 3);
+        dir.right = line.substr(line.find(',') + 2, 3);
+
+        // Store in map
+        network[key] = dir;
+    }
+
     
 
 
