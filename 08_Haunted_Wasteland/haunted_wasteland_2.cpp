@@ -136,7 +136,7 @@ int main(){
         for(int pathsCounter = 0; pathsCounter < currentPositions.size(); pathsCounter ++){
             currentPositions[pathsCounter] = (nextMove == 'L') ? network.at(currentPositions[pathsCounter]).left : network.at(currentPositions[pathsCounter]).right;
             
-            // To test the mcm thing
+            // To test the lcm thing
             if(currentPositions[pathsCounter][2] == 'Z')
                 endPositionFound[pathsCounter].push_back(std::make_pair(currentPositions[pathsCounter], numSteps + 1));
 
