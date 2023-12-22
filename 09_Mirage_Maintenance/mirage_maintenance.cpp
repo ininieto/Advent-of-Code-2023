@@ -1,7 +1,7 @@
 /*
-    Advent of Code 2023 - 08.12.2023
+    Advent of Code 2023 - 09.12.2023
 
-    Link to the problem: https://adventofcode.com/2023/day/8
+    Link to the problem: https://adventofcode.com/2023/day/9
 
     Author of the solution: Íñigo Nieto Cuadrado
 
@@ -77,9 +77,8 @@ int getDifferences(std::vector<int> originalNumbers){
 
     // Will store all the resultant vector in this array
     std::vector<int> differences;
-    for(int i = 1; i < originalNumbers.size(); i++){
+    for(int i = 1; i < originalNumbers.size(); i++)
         differences.push_back(originalNumbers[i] - originalNumbers[i - 1]);
-    }
 
     if(sumVector(differences) == 0)
         return differences[differences.size() - 1];
@@ -110,6 +109,7 @@ int main(){
     }
 
     // Got a result of 1887980197 but I'm on a plane and I cannot prove it :)
+    // It was right :)
     std::cout << "The result is " << finalResult << '\n';
 
     return 0;
