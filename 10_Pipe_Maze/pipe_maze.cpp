@@ -63,7 +63,33 @@ int main(){
           I find it a bit too over-engineering but could be a way to refresh subclasses    
     */
 
+    std::string example = "..F7.\n.FJ|.\nSJ.L7\n|F--J\nLJ...";  
+    //std::string input = readInputText("input.txt");
+    std::string input = example;
 
+    // TODO: Guess the values automatically
+    int nrows = 5, ncols = 5;
+    std::vector<std::vector<char>> grid(nrows, std::vector<char>(ncols)); // 2D vector with all the grid
+    std::pair<int, int> startingPosition;
+
+
+    // Save the input in a grid
+    int strCounter = 0;
+
+    for (int i = 0; i < nrows; i++){
+        for (int j = 0; j < ncols; j++){
+
+            if (input[strCounter] == '\n')
+                strCounter ++;
+            if(input[strCounter] == 'S')
+                startingPosition = std::make_pair(i, j);
+
+            grid[i][j] = input[strCounter];
+            strCounter ++;
+        }
+    }
+
+    std::cout << "a";
 
     return 0;
 }
