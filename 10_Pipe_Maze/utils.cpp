@@ -182,3 +182,42 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
 
     return false;
 }
+
+// Function to insert Pipes in the nextJumps vector. They will be already inserted in descendent order by distance
+void addNextJump(std::vector<Pipe> &nextJumps, Pipe nextJump){
+
+    if(nextJumps.size() == 0){
+        nextJumps.push_back(nextJump);
+        return;
+    }
+
+    for(int i = 0; i < nextJumps.size(); i++){
+        if(nextJump.getDistance() > nextJumps[i].getDistance())
+            continue;
+        else{
+            nextJumps.insert(nextJumps.begin() + i, nextJump);
+            break;
+        }
+    }
+    return;
+} 
+
+// Debug function to print the grid
+void printDistancesGrid(std::vector<std::vector<Pipe>> grid){
+
+    std::cout << "\n";
+
+    for(auto row: grid){
+        for(auto e: row){
+            if(e.getTile() == '.')
+                std::cout << '.';
+            else if(e.getDistance() == INT_MAX)
+                std::cout << e.getTile();
+            else
+                std::cout << e.getDistance();
+        }
+        std::cout << '\n';
+    }
+
+    std::cout << "\n";
+}
