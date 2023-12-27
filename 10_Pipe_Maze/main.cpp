@@ -3,15 +3,17 @@
 
 #include "Pipe.h"
 #include "pipe_maze.h"
+#include "utils.h"
 
 int main(){
 
-    std::string example = "..F7.\n.FJ|.\nSJ.L7\n|F--J\nLJ...";  
-    //std::string input = readInputText("input.txt");
-    std::string input = example;
+    std::string example = "..F7.\n.FJ|.\nSJ.L7\n|F--J\nLJ...\n";  
+    std::string input = readInputText("input.txt");
+    //std::string input = example;
 
-    // TODO: Guess the values automatically
-    int nrows = 5, ncols = 5;
+    // Define the grid 
+    int nrows = 0, ncols = 0;
+    getGridDimensions(input, nrows, ncols);
     std::vector<std::vector<Pipe>> grid(nrows, std::vector<Pipe>(ncols, Pipe(' ', std::make_pair(-1, -1), 0))); // 2D vector with all the grid
     
     // Save the input in a grid
@@ -28,6 +30,7 @@ int main(){
 
     // Big algorithm
     pipeMaze(startingPipe, grid, nextJumps, biggestDistance);
+    printDistancesGrid(grid);
 
     std::cout << "The biggest distance is " << biggestDistance << '\n';
 

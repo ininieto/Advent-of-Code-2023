@@ -43,7 +43,7 @@ void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, Pipe &sta
 
 
 // The big boy. I want this to be a recursive function that obtains the distance for every position
-void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid, std::vector<Pipe> nextJumps, int &biggestDistance){
+void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> &grid, std::vector<Pipe> nextJumps, int &biggestDistance){
 
     nextJumps.erase(nextJumps.begin()); // Delete the current pipe from the vector
 
@@ -60,7 +60,7 @@ void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid, std::vector
             if(currentPipe.getDistance() + 1 < nextPipe->getDistance()){
                 nextPipe->setDistance(currentPipe.getDistance() + 1);    // Assign the distance of the next pipe
                 biggestDistance = (nextPipe->getDistance() > biggestDistance) ? nextPipe->getDistance() : biggestDistance;
-                //std::cout << "Pipe " << nextPipe->getTile() << " in (" << nextPipe->getPosition().first << ", " << nextPipe->getPosition().second <<") has now distance " << nextPipe->getDistance() << '\n';
+                std::cout << "Pipe " << nextPipe->getTile() << " in (" << nextPipe->getPosition().first << ", " << nextPipe->getPosition().second <<") has now distance " << nextPipe->getDistance() << '\n';
                 addNextJump(nextJumps, *nextPipe);
             }
         }            
@@ -71,7 +71,7 @@ void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid, std::vector
 
     // Call the function again for the next pipes
     for(Pipe nextPipe: nextJumps){
-        return pipeMaze(nextPipe, grid, nextJumps, biggestDistance);
+        pipeMaze(nextPipe, grid, nextJumps, biggestDistance);
     }
 }
 

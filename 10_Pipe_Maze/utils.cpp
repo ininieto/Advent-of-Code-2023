@@ -42,6 +42,17 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
+// Function to get automatically the number of rows and columns
+void getGridDimensions(std::string input, int &nrows, int &ncols){
+
+    for(int i = 0; i < input.length(); i++){
+        if(input[i] == '\n' && ncols == 0)
+            ncols = i;
+        if(input[i] == '\n' && ncols > 0)
+            nrows ++;
+    }
+}
+
 // This function will ONLY return the adjacent positions. Won't perform any further calculation
 std::vector<std::pair<int, int>> getSurroundings(Pipe currentPipe, int nrows, int ncols){
 
@@ -112,9 +123,9 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
     if (nextPipe.getTile() == '.') // We cannot jump to . positions
         return false;
 
-    // TODO: For the example we know it must be 'F' but for the problem it could be 'J' or '7'
+    // For the example it must be 'F' and for the problem, 'J'
     if(currentPipe.getTile() == 'S')   // Starting node
-        currentPipe.setTile('F');
+        currentPipe.setTile('J');
     
     // Pipe matching
     if (currentPipe.getTile() == '|'){ // Vertical
@@ -187,7 +198,7 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
 
 // Function to insert Pipes in the nextJumps vector. They will be already inserted in descendent order by distance
 void addNextJump(std::vector<Pipe> &nextJumps, Pipe nextJump){
-    
+
     // First element
     if(nextJumps.size() == 0){
         nextJumps.push_back(nextJump);
