@@ -50,37 +50,35 @@ void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid){
     // Call an extern function to get surrounding positions
     std::vector<std::pair<int, int>> surroundingPositions = getSurroundings(currentPipe, nrows, ncols);
 
-    // For each surrounding, calculate the distance (check if it's already calculated)
-    
+    // Vector that will contain the Pipes we want to jump to
+    std::vector<Pipe> nextJumps;
+
+    // For each surrounding, calculate the distance (check if it's already calculated)    
     for(auto pos : surroundingPositions){
-        Pipe nextPipe = grid[pos.first][pos.second];
-        
-        if(possibleJump(currentPipe, nextPipe))
-            std::cout << "siuu";
+        Pipe* nextPipe = &grid[pos.first][pos.second];  // Pointer to the position of the grid
+
+        if(possibleJump(currentPipe, *nextPipe)){
+            if(currentPipe.getDistance() + 1 < nextPipe->getDistance()){
+                nextPipe->setDistance(currentPipe.getDistance() + 1);    // Assign the distance of the next pipe
+                std::cout << "Pipe " << nextPipe->getTile() << " in (" << nextPipe->getPosition().first << ", " << nextPipe->getPosition().second <<") has now distance " << nextPipe->getDistance() << '\n';
+                nextJumps.push_back(*nextPipe);
+            }
+        }            
+    }
+
+    // TODO: Start with the Pipes with the lowest distance
+
+    // Call the function again for the next pipes
+    for(Pipe nextPipe: nextJumps){
+        return pipeMaze(nextPipe, grid);
     }
 
     // If there are no possible jumps, end the process
-
-
-
-    std::cout << "a";
+    return;
 }
 
 
 int main(){
-
-    /*
-        - Read the input
-        - Store every character in a grid
-        - When doing so, find where the S is and save its position in startPosition
-        - Then comes the algorithm
-        - Scan all the adjacent characters (luckily no diagonal movement)
-        - Define a function isPossibleConnection() to see if we can jump to a specific position
-        - Not sure if, first of all, I should find the loop and discard the rest
-        - Still unsure about how to determine the distance. Maybe I could create a class Pipe with its 
-          inherited subclasses (all the possible positions of the pipe) and with a member variable "distance"
-          I find it a bit too over-engineering but could be a way to refresh subclasses    
-    */
 
     std::string example = "..F7.\n.FJ|.\nSJ.L7\n|F--J\nLJ...";  
     //std::string input = readInputText("input.txt");
@@ -95,8 +93,10 @@ int main(){
     Pipe startingPipe('S', initialPosition, 0);
     fillGrid(grid, input, startingPipe);
 
-    // I guess the algorithm comes here
+    // Big algorithm
     pipeMaze(startingPipe, grid);
+
+    std::cout << "a";
 
 
     return 0;
