@@ -28,6 +28,7 @@ public:
     void setPosition(std::pair<int, int> position);
     int getDistance();
     std::pair<int, int> getPosition();
+    char getTile();
 };
 
 #endif

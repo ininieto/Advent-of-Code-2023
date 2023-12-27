@@ -42,7 +42,6 @@ void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, Pipe &sta
 }
 
 
-
 // The big boy. I want this to be a recursive function that obtains the distance for every position
 void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid){
 
@@ -52,6 +51,13 @@ void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid){
     std::vector<std::pair<int, int>> surroundingPositions = getSurroundings(currentPipe, nrows, ncols);
 
     // For each surrounding, calculate the distance (check if it's already calculated)
+    
+    for(auto pos : surroundingPositions){
+        Pipe nextPipe = grid[pos.first][pos.second];
+        
+        if(possibleJump(currentPipe, nextPipe))
+            std::cout << "siuu";
+    }
 
     // If there are no possible jumps, end the process
 

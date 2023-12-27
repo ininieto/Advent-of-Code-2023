@@ -30,3 +30,7 @@ int Pipe::getDistance(){
 std::pair<int, int> Pipe::getPosition(){
     return this->position;
 }
+
+char Pipe::getTile(){
+    return this->tile;
+}

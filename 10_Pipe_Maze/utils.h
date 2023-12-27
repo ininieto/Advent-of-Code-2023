@@ -11,5 +11,6 @@
 std::vector<std::string> split(std::string text, std::string delim);
 std::string readInputText(std::string inputText);
 std::vector<std::pair<int, int>> getSurroundings(Pipe currentPipe, int nrows, int ncols);
+bool possibleJump(Pipe currentPipe, Pipe nextPipe);
 
 #endif

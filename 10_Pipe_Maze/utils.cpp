@@ -105,3 +105,80 @@ std::vector<std::pair<int, int>> getSurroundings(Pipe currentPipe, int nrows, in
     }
     return surroundings;
 }
+
+// Function that checks if we can jump to a surrounding pipe
+bool possibleJump(Pipe currentPipe, Pipe nextPipe){
+
+    if (nextPipe.getTile() == '.') // We cannot jump to . positions
+        return false;
+
+    // TODO: For the example we know it must be 'F' but for the problem it could be 'J' or '7'
+    if(currentPipe.getTile() == 'S')   // Starting node
+        currentPipe.setTile('F');
+    
+    // Pipe matching
+    if (currentPipe.getTile() == '|'){ // Vertical
+
+        if((nextPipe.getTile() == 'L' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == 'J' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == 'F' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == '7' && nextPipe.getPosition().first < currentPipe.getPosition().first))
+
+           return true;
+    }
+    else if (currentPipe.getTile() == '-'){ // Horizontal
+
+        if((nextPipe.getTile() == 'L' && nextPipe.getPosition().second < currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == 'F' && nextPipe.getPosition().second < currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == 'J' && nextPipe.getPosition().second > currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == '7' && nextPipe.getPosition().second > currentPipe.getPosition().second))
+
+           return true;
+    }
+    else if (currentPipe.getTile() == 'L'){ // 90º bend north-east
+
+        if((nextPipe.getTile() == '|' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == '-' && nextPipe.getPosition().second > currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == 'F' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == '7' && nextPipe.getPosition().second > currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == '7' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == 'J' && nextPipe.getPosition().second > currentPipe.getPosition().second))
+
+           return true;
+    }
+    else if (currentPipe.getTile() == 'J'){ // 90º bend north-west
+
+        if((nextPipe.getTile() == '|' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == '-' && nextPipe.getPosition().second < currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == 'F' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == 'F' && nextPipe.getPosition().second < currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == '7' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == 'L' && nextPipe.getPosition().second < currentPipe.getPosition().second))
+
+           return true;
+    }
+    else if (currentPipe.getTile() == '7'){ // 90º bend north-east
+
+        if((nextPipe.getTile() == '|' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == '-' && nextPipe.getPosition().second < currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == 'F' && nextPipe.getPosition().second < currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == 'J' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == 'L' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == 'L' && nextPipe.getPosition().second < currentPipe.getPosition().second))
+
+           return true;
+    }
+    else if (currentPipe.getTile() == 'F'){ // 90º bend north-east
+
+        if((nextPipe.getTile() == '|' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == '-' && nextPipe.getPosition().second > currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == '7' && nextPipe.getPosition().second > currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == 'J' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == 'J' && nextPipe.getPosition().second > currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == 'L' && nextPipe.getPosition().first > currentPipe.getPosition().first))
+
+           return true;
+    }
+
+    return false;
+}
