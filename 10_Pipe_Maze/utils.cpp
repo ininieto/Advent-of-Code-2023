@@ -122,7 +122,8 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
         if((nextPipe.getTile() == 'L' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
            (nextPipe.getTile() == 'J' && nextPipe.getPosition().first > currentPipe.getPosition().first) ||
            (nextPipe.getTile() == 'F' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
-           (nextPipe.getTile() == '7' && nextPipe.getPosition().first < currentPipe.getPosition().first))
+           (nextPipe.getTile() == '7' && nextPipe.getPosition().first < currentPipe.getPosition().first) ||
+           (nextPipe.getTile() == '|' && nextPipe.getPosition().second == currentPipe.getPosition().second))
 
            return true;
     }
@@ -131,7 +132,8 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
         if((nextPipe.getTile() == 'L' && nextPipe.getPosition().second < currentPipe.getPosition().second) ||
            (nextPipe.getTile() == 'F' && nextPipe.getPosition().second < currentPipe.getPosition().second) ||
            (nextPipe.getTile() == 'J' && nextPipe.getPosition().second > currentPipe.getPosition().second) ||
-           (nextPipe.getTile() == '7' && nextPipe.getPosition().second > currentPipe.getPosition().second))
+           (nextPipe.getTile() == '7' && nextPipe.getPosition().second > currentPipe.getPosition().second) ||
+           (nextPipe.getTile() == '-' && nextPipe.getPosition().first == currentPipe.getPosition().first))
 
            return true;
     }
@@ -185,7 +187,8 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
 
 // Function to insert Pipes in the nextJumps vector. They will be already inserted in descendent order by distance
 void addNextJump(std::vector<Pipe> &nextJumps, Pipe nextJump){
-
+    
+    // First element
     if(nextJumps.size() == 0){
         nextJumps.push_back(nextJump);
         return;
@@ -199,7 +202,9 @@ void addNextJump(std::vector<Pipe> &nextJumps, Pipe nextJump){
             break;
         }
     }
-    return;
+
+    // If it has the biggest distance, simply add it in the end
+    nextJumps.push_back(nextJump);
 } 
 
 // Debug function to print the grid

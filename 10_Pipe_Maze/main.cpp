@@ -23,11 +23,13 @@ int main(){
     std::vector<Pipe> nextJumps;
     nextJumps.push_back(startingPipe);
 
+    // Variable that will contain the biggest distance
+    int biggestDistance = 0;
+
     // Big algorithm
-    pipeMaze(startingPipe, grid, nextJumps);
+    pipeMaze(startingPipe, grid, nextJumps, biggestDistance);
 
-    std::cout << "a";
-
+    std::cout << "The biggest distance is " << biggestDistance << '\n';
 
     return 0;
 }

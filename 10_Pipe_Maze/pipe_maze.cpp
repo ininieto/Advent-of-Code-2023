@@ -43,10 +43,7 @@ void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, Pipe &sta
 
 
 // The big boy. I want this to be a recursive function that obtains the distance for every position
-void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid, std::vector<Pipe> nextJumps){
-
-    // Debug
-    printDistancesGrid(grid);
+void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid, std::vector<Pipe> nextJumps, int &biggestDistance){
 
     nextJumps.erase(nextJumps.begin()); // Delete the current pipe from the vector
 
@@ -62,21 +59,20 @@ void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid, std::vector
         if(possibleJump(currentPipe, *nextPipe)){
             if(currentPipe.getDistance() + 1 < nextPipe->getDistance()){
                 nextPipe->setDistance(currentPipe.getDistance() + 1);    // Assign the distance of the next pipe
-                std::cout << "Pipe " << nextPipe->getTile() << " in (" << nextPipe->getPosition().first << ", " << nextPipe->getPosition().second <<") has now distance " << nextPipe->getDistance() << '\n';
+                biggestDistance = (nextPipe->getDistance() > biggestDistance) ? nextPipe->getDistance() : biggestDistance;
+                //std::cout << "Pipe " << nextPipe->getTile() << " in (" << nextPipe->getPosition().first << ", " << nextPipe->getPosition().second <<") has now distance " << nextPipe->getDistance() << '\n';
                 addNextJump(nextJumps, *nextPipe);
             }
         }            
     }
 
-    // TODO: Start with the Pipes with the lowest distance. I guess I will define a function addNextJump() to automatically insert the jumps in order
+    // Debug
+    //printDistancesGrid(grid);
 
     // Call the function again for the next pipes
     for(Pipe nextPipe: nextJumps){
-        return pipeMaze(nextPipe, grid, nextJumps);
+        return pipeMaze(nextPipe, grid, nextJumps, biggestDistance);
     }
-
-    // If there are no possible jumps, end the process
-    return;
 }
 
 
