@@ -21,16 +21,8 @@ int main(){
     Pipe startingPipe('S', initialPosition, 0);
     fillGrid(grid, input, startingPipe);
 
-    // Vector that will contain the Pipes we want to jump to
-    std::vector<Pipe> nextJumps;
-    nextJumps.push_back(startingPipe);
-
-    // Variable that will contain the biggest distance
-    int biggestDistance = 0;
-
-    // Big algorithm
-    pipeMaze(startingPipe, grid, nextJumps, biggestDistance);
-    printDistancesGrid(grid);
+    // Call the algorithm
+    int biggestDistance = pipeMaze(startingPipe, grid);
 
     std::cout << "The biggest distance is " << biggestDistance << '\n';
 

@@ -9,6 +9,6 @@
 #include "Pipe.h"
 
 void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, Pipe &startingPipe);
-void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> &grid, std::vector<Pipe> nextJumps, int &biggestDistance);
+int pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> &grid);
 
 #endif

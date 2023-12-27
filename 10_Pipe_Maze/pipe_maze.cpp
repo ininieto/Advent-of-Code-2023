@@ -42,37 +42,43 @@ void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, Pipe &sta
 }
 
 
-// The big boy. I want this to be a recursive function that obtains the distance for every position
-void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> &grid, std::vector<Pipe> nextJumps, int &biggestDistance){
+// The big boy. First was implemented as a recursive function, but it was consuming too much memory. A queue had to be implemented
+int pipeMaze(Pipe startingPipe, std::vector<std::vector<Pipe>> &grid) {
 
-    nextJumps.erase(nextJumps.begin()); // Delete the current pipe from the vector
+    int nrows = grid.size();
+    int ncols = grid[0].size();
 
-    int nrows = grid.size(), ncols = grid[0].size();    // I could maybe pass them as parameters
+    // Variable with the biggest distance
+    int biggestDistance = 0;
 
-    // Call an extern function to get surrounding positions
-    std::vector<std::pair<int, int>> surroundingPositions = getSurroundings(currentPipe, nrows, ncols);
+    // Vector with the possible next pipes to scan
+    std::vector<Pipe> pipeVector;
 
-    // For each surrounding, calculate the distance (check if it's already calculated)    
-    for(auto pos : surroundingPositions){
-        Pipe* nextPipe = &grid[pos.first][pos.second];  // Pointer to the position of the grid
+    // Initialize the distance of the starting pipe
+    pipeVector.push_back(startingPipe);
 
-        if(possibleJump(currentPipe, *nextPipe)){
-            if(currentPipe.getDistance() + 1 < nextPipe->getDistance()){
-                nextPipe->setDistance(currentPipe.getDistance() + 1);    // Assign the distance of the next pipe
-                biggestDistance = (nextPipe->getDistance() > biggestDistance) ? nextPipe->getDistance() : biggestDistance;
-                std::cout << "Pipe " << nextPipe->getTile() << " in (" << nextPipe->getPosition().first << ", " << nextPipe->getPosition().second <<") has now distance " << nextPipe->getDistance() << '\n';
-                addNextJump(nextJumps, *nextPipe);
+    while (!pipeVector.empty()) {
+
+        Pipe currentPipe = pipeVector[0];
+        pipeVector.erase(pipeVector.begin());
+
+        // Call an extern function to get surrounding positions
+        std::vector<std::pair<int, int>> surroundingPositions = getSurroundings(currentPipe, nrows, ncols);
+
+        // For each surrounding, calculate the distance and add to pipeVector
+        for (auto pos : surroundingPositions) {
+            Pipe *nextPipe = &grid[pos.first][pos.second];
+
+            if (possibleJump(currentPipe, *nextPipe)) {
+                if (currentPipe.getDistance() + 1 < nextPipe->getDistance()) {
+                    nextPipe->setDistance(currentPipe.getDistance() + 1);
+                    biggestDistance = (nextPipe->getDistance() > biggestDistance) ? nextPipe->getDistance() : biggestDistance;
+                    std::cout << "Pipe " << nextPipe->getTile() << " in (" << nextPipe->getPosition().first << ", " << nextPipe->getPosition().second << ") has now distance " << nextPipe->getDistance() << '\n';
+                    addNextJump(pipeVector, *nextPipe);
+                }
             }
-        }            
+        }
     }
-
-    // Debug
-    //printDistancesGrid(grid);
-
-    // Call the function again for the next pipes
-    for(Pipe nextPipe: nextJumps){
-        pipeMaze(nextPipe, grid, nextJumps, biggestDistance);
-    }
+    return biggestDistance;
 }
-
 
