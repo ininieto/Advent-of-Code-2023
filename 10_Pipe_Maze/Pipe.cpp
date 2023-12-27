@@ -26,3 +26,7 @@ void Pipe::setPosition(std::pair<int, int> position){
 int Pipe::getDistance(){
     return this->distance;
 }
+
+std::pair<int, int> Pipe::getPosition(){
+    return this->position;
+}

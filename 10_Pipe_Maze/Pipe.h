@@ -27,6 +27,7 @@ public:
     void setDistance(int distance);
     void setPosition(std::pair<int, int> position);
     int getDistance();
+    std::pair<int, int> getPosition();
 };
 
 #endif
