@@ -11,13 +11,7 @@
 #include <fstream>
 #include <vector>
 
-// Every pipe will have its position and its distance
-struct Pipe{
-
-    std::pair<int, int> position;   // not sure if I need this. Probably not    
-    char tile;  // Will contain the character (F, 7, |, ...)
-    int distance;
-};
+#include "Pipe.h"
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -57,7 +51,7 @@ std::string readInputText(std::string inputText){
 }
 
 // Function to fill in the grid
-void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, std::pair<int, int> &startingPosition){ // 2D vector with all the grid
+void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, Pipe startingPipe){ // 2D vector with all the grid
 
     int nrows = grid.size(), ncols = grid[0].size();
 
@@ -68,24 +62,105 @@ void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, std::pair
 
             if (input[strCounter] == '\n')
                 strCounter ++;
-            if(input[strCounter] == 'S')
-                startingPosition = std::make_pair(i, j);
+            if(input[strCounter] == 'S'){
+                startingPipe.setPosition(std::make_pair(i, j));
+                grid[i][j] = startingPipe;
+                strCounter ++;
+                continue;
+            }
 
-            grid[i][j].tile = input[strCounter];
-            grid[i][j].distance = INT_MAX;
-            grid[i][j].position = std::make_pair(i, j); // not sure if I need this. Probably not
+            grid[i][j].setTile(input[strCounter]);
+            grid[i][j].setDistance(INT_MAX);
+            grid[i][j].setPosition(std::make_pair(i, j)); // not sure if I need this. Probably not
             strCounter ++;
         }
     }
 }
 
+/*
+// This function will ONLY return the adjacent elements. Won't perform any further calculation
+std::vector<Pipe> getSurroundings(Pipe currentPipe, int nrows, int ncols){
+
+    std::pair<int, int> position = currentPipe.position;
+    std::vector<Pipe> surroundings;
+
+    std::pair<int, int> up = std::make_pair(position.first - 1, position.second);
+    std::pair<int, int> down = std::make_pair(position.first + 1, position.second);
+    std::pair<int, int> left = std::make_pair(position.first, position.second - 1);
+    std::pair<int, int> right = std::make_pair(position.first, position.second + 1);
+
+    if(position == std::make_pair(0, 0)){   // Top left corner
+
+        Pipe rightPipe;
+        
+        surroundings.push_back(right);
+        surroundings.push_back(down); 
+    }
+    else if(position == std::make_pair(0, ncols - 1)){  // Top right corner
+
+        surroundings.push_back(left);
+        surroundings.push_back(down); 
+    }
+    else if(position == std::make_pair(nrows - 1, 0)){  // Bottom left corner
+
+        surroundings.push_back(right);
+        surroundings.push_back(up); 
+    }
+    else if(position == std::make_pair(nrows - 1, ncols - 1)){  // Bottom right corner
+
+        surroundings.push_back(left); 
+        surroundings.push_back(up); 
+    }
+    else if(position.first == 0){   // First row
+
+        surroundings.push_back(left); 
+        surroundings.push_back(right); 
+        surroundings.push_back(down); 
+    }
+    else if(position.first == nrows - 1){   // Last row
+
+        surroundings.push_back(left); 
+        surroundings.push_back(right); 
+        surroundings.push_back(up); 
+    }
+    else if(position.second == 0){  // First column
+
+        surroundings.push_back(right); 
+        surroundings.push_back(up); 
+        surroundings.push_back(down); 
+    }
+    else if(position.second == ncols - 1){   // Last column
+
+        surroundings.push_back(left); 
+        surroundings.push_back(up); 
+        surroundings.push_back(down); 
+    }
+    else{   // No weird cases
+        surroundings.push_back(right); 
+        surroundings.push_back(left); 
+        surroundings.push_back(up); 
+        surroundings.push_back(down); 
+    }
+    return surroundings;
+}
+*/
+
+
 // The big boy. I want this to be a recursive function that obtains the distance for every position
-void pipeMaze(std::pair<int, int> startingPosition, std::vector<std::vector<Pipe>> grid){
+void pipeMaze(Pipe currentPipe, std::vector<std::vector<Pipe>> grid){
 
+    int nrows = grid.size(), ncols = grid[0].size();    // I could maybe pass them as parameters
 
-    // Call an extern function to get boundaries
-    // For each boundary, calculate the distance (check if it's already calculated)
+    // Call an extern function to get surroundings
+    //std::vector<Pipe> surroundings = getSurroundings(currentPipe, nrows, ncols);
+
+    // For each surrounding, calculate the distance (check if it's already calculated)
+
     // If there are no possible jumps, end the process
+
+
+
+    std::cout << "a";
 }
 
 
@@ -110,18 +185,16 @@ int main(){
 
     // TODO: Guess the values automatically
     int nrows = 5, ncols = 5;
-    std::vector<std::vector<Pipe>> grid(nrows, std::vector<Pipe>(ncols)); // 2D vector with all the grid
+    std::vector<std::vector<Pipe>> grid(nrows, std::vector<Pipe>(ncols, Pipe(' ', std::make_pair(-1, -1), 0))); // 2D vector with all the grid
     
     // Save the input in a grid
-    std::pair<int, int> startingPosition;   // Will contain the position of S, the point from which we start counting the distance
-    fillGrid(grid, input, startingPosition);
+    std::pair<int, int> initialPosition = std::make_pair(-1, -1);
+    Pipe startingPipe('S', initialPosition, 0);
+    fillGrid(grid, input, startingPipe);
 
     // I guess the algorithm comes here
-    pipeMaze(startingPosition, grid);
+    pipeMaze(startingPipe, grid);
 
-
-
-    std::cout << "a";
 
     return 0;
 }
