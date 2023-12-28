@@ -14,8 +14,6 @@ private:
 
 public:
 
-    // Default constructor
-    Pipe();
     // Constructor
     Pipe(char tile, std::pair<int, int> position, int distance);
 
