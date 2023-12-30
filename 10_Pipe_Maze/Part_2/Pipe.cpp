@@ -3,8 +3,9 @@
 #include "Pipe.h"
 
 // Constructor
-Pipe::Pipe(char tile, std::pair<int, int> position, int distance){
+Pipe::Pipe(Pipe* previousPipe, char tile, std::pair<int, int> position, int distance){
 
+    this->previousPipe = previousPipe;
     this->tile = tile;
     this->position = position;
     this->distance = distance;
@@ -33,4 +34,12 @@ std::pair<int, int> Pipe::getPosition(){
 
 char Pipe::getTile(){
     return this->tile;
+}
+
+void Pipe::setPreviousPipe(Pipe* previousPipe){
+    this->previousPipe = previousPipe;
+}
+
+Pipe* Pipe::getPreviousPipe(){
+    return this->previousPipe;
 }

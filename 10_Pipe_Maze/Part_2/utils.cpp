@@ -123,9 +123,9 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
     if (nextPipe.getTile() == '.') // We cannot jump to . positions
         return false;
 
-    // For the example it must be 'F' and for the problem, 'J'
+    // For the example it must be 'F', for example2 '7', for example3 'F' and for the problem, 'J'
     if(currentPipe.getTile() == 'S')   // Starting node
-        currentPipe.setTile('J');
+        currentPipe.setTile('F');
     
     // Pipe matching
     if (currentPipe.getTile() == '|'){ // Vertical
@@ -197,7 +197,7 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
 }
 
 // Function to insert Pipes in the nextJumps vector. They will be already inserted in descendent order by distance
-void addNextJump(std::vector<Pipe> &nextJumps, Pipe nextJump){
+void addNextJump(std::vector<Pipe*> &nextJumps, Pipe* nextJump){
 
     // First element
     if(nextJumps.size() == 0){
@@ -206,11 +206,11 @@ void addNextJump(std::vector<Pipe> &nextJumps, Pipe nextJump){
     }
 
     for(int i = 0; i < nextJumps.size(); i++){
-        if(nextJump.getDistance() > nextJumps[i].getDistance())
+        if(nextJump->getDistance() > nextJumps[i]->getDistance())
             continue;
         else{
             nextJumps.insert(nextJumps.begin() + i, nextJump);
-            break;
+            return;
         }
     }
 
@@ -225,15 +225,27 @@ void printDistancesGrid(std::vector<std::vector<Pipe>> grid){
 
     for(auto row: grid){
         for(auto e: row){
+
+            // 29.12.2023  
+            // I need to find the biggest loop. This function will be altered to draw the loop
+
+            if(e.getTile() == '*')
+                std::cout << '*';
+            else
+                std::cout << '.';
+        }
+            /*
             if(e.getTile() == '.')
                 std::cout << '.';
             else if(e.getDistance() == INT_MAX)
-                std::cout << e.getTile();
+                std::cout << e.getTile(); 
             else
-                std::cout << e.getDistance();
+                std::cout << e.getDistance(); // 
         }
+        */
         std::cout << '\n';
     }
+    
 
     std::cout << "\n";
 }
