@@ -14,6 +14,7 @@ void getGridDimensions(std::string input, int &nrows, int &ncols);
 std::vector<std::pair<int, int>> getSurroundings(Pipe currentPipe, int nrows, int ncols);
 bool possibleJump(Pipe currentPipe, Pipe nextPipe);
 void addNextJump(std::vector<Pipe*> &nextJumps, Pipe* nextJump);
-void printDistancesGrid(std::vector<std::vector<Pipe>> grid);
+void printGrid(std::vector<std::vector<Pipe>> grid);
+void drawLoopInGrid(std::vector<std::vector<Pipe>> &grid);
 
 #endif

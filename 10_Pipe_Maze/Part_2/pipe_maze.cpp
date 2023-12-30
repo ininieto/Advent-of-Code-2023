@@ -80,7 +80,30 @@ int pipeMaze(Pipe* startingPipe, std::vector<std::vector<Pipe>> &grid) {
         }    
     }
     
-
     return biggestDistance;
 }
 
+// Function to cout how many tiles are inside the loop
+int countInnerTiles(std::vector<std::vector<Pipe>> &grid){
+
+    // This will be the approach. The grid contains just * where the loop is and . where there is no loop
+    // There will be a variable evenNumberOfStars (I dont like that name)
+    // I want to iterate the whole grid and find the inner tiles. If there hasn't been any * we're obviously out of the loop
+    // If there has been one, we are inside. But when a second * is found, then we are out of the loop again. Then, a tile
+    // counts as inner if there has been an odd number of *
+
+    bool oddNumberOfStars = false;
+    int numInnerTiles = 0;
+
+    for(auto row: grid){
+        for(auto element: row){
+            if(element.getTile() == '*')
+                !oddNumberOfStars;  // I want it to change. False -> True, True -> False
+
+            if(oddNumberOfStars)
+                numInnerTiles ++;
+        }
+    }
+
+    return numInnerTiles;
+}

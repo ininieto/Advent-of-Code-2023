@@ -10,5 +10,6 @@
 
 void fillGrid(std::vector<std::vector<Pipe>> &grid, std::string input, Pipe &startingPipe);
 int pipeMaze(Pipe* currentPipe, std::vector<std::vector<Pipe>> &grid);
+int countInnerTiles(std::vector<std::vector<Pipe>> &grid);
 
 #endif

@@ -125,7 +125,7 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
 
     // For the example it must be 'F', for example2 '7', for example3 'F' and for the problem, 'J'
     if(currentPipe.getTile() == 'S')   // Starting node
-        currentPipe.setTile('J');
+        currentPipe.setTile('F');
     
     // Pipe matching
     if (currentPipe.getTile() == '|'){ // Vertical
@@ -219,33 +219,29 @@ void addNextJump(std::vector<Pipe*> &nextJumps, Pipe* nextJump){
 } 
 
 // Debug function to print the grid
-void printDistancesGrid(std::vector<std::vector<Pipe>> grid){
+void printGrid(std::vector<std::vector<Pipe>> grid){
 
     std::cout << "\n";
 
     for(auto row: grid){
-        for(auto e: row){
-
-            // 29.12.2023  
-            // I need to find the biggest loop. This function will be altered to draw the loop
-
-            if(e.getDistance() < INT_MAX)
-                std::cout << '*';
-            else
-                std::cout << '.';
-        }
-            /*
-            if(e.getTile() == '.')
-                std::cout << '.';
-            else if(e.getDistance() == INT_MAX)
-                std::cout << e.getTile(); 
-            else
-                std::cout << e.getDistance(); // 
-        }
-        */
+        for(auto e: row)    
+            std::cout << e.getTile();
         std::cout << '\n';
     }
-    
 
     std::cout << "\n";
+}
+
+// Function to draw the loop on the grid with *. The rest will be .
+void drawLoopInGrid(std::vector<std::vector<Pipe>> &grid){
+
+    for(auto &row: grid){
+        for(auto &e: row){
+
+            if(e.getDistance() < INT_MAX)
+                e.setTile('*');
+            else
+                e.setTile('.');
+        }
+    }
 }
