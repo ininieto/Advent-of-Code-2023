@@ -72,36 +72,12 @@ int pipeMaze(Pipe* startingPipe, std::vector<std::vector<Pipe>> &grid) {
             if (possibleJump(*currentPipe, *nextPipe)) {
                 if (currentPipe->getDistance() + 1 < nextPipe->getDistance()) {
                     nextPipe->setDistance(currentPipe->getDistance() + 1);
-                    nextPipe->setPreviousPipe(currentPipe);    // Keep track of the previous Pipe to extract the loop
                     biggestDistance = (nextPipe->getDistance() > biggestDistance) ? nextPipe->getDistance() : biggestDistance;
                     //std::cout << "Pipe " << nextPipe->getTile() << " in (" << nextPipe->getPosition().first << ", " << nextPipe->getPosition().second << ") has now distance " << nextPipe->getDistance() << '\n';
                     addNextJump(pipeVector, nextPipe);
                 }
             }
-        }
-
-        // Find the pipes that form the loop
-        if(currentPipe->getDistance() == 8){  // Biggest distance
-
-            Pipe* currPipe = currentPipe;   // Equivalent vector, but I don't want to break anything
-            Pipe* prevPipe = currPipe->getPreviousPipe();
-            int i = 0;
-
-            while(prevPipe != nullptr){
-
-                std::pair<int, int> position = prevPipe->getPosition();
-                grid[position.first][position.second].setTile('*');
-
-                //prevPipe->setTile('*');
-                prevPipe = currPipe-> getPreviousPipe();
-
-                currPipe = prevPipe;
-                prevPipe = currPipe->getPreviousPipe();
-
-                i++;
-            }
-        }
-    
+        }    
     }
     
 

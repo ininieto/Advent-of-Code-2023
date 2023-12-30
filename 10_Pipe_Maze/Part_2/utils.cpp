@@ -125,7 +125,7 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
 
     // For the example it must be 'F', for example2 '7', for example3 'F' and for the problem, 'J'
     if(currentPipe.getTile() == 'S')   // Starting node
-        currentPipe.setTile('F');
+        currentPipe.setTile('J');
     
     // Pipe matching
     if (currentPipe.getTile() == '|'){ // Vertical
@@ -229,7 +229,7 @@ void printDistancesGrid(std::vector<std::vector<Pipe>> grid){
             // 29.12.2023  
             // I need to find the biggest loop. This function will be altered to draw the loop
 
-            if(e.getTile() == '*')
+            if(e.getDistance() < INT_MAX)
                 std::cout << '*';
             else
                 std::cout << '.';
