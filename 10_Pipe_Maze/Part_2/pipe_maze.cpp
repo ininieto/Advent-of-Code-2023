@@ -54,7 +54,7 @@ int pipeMaze(Pipe* startingPipe, std::vector<std::vector<Pipe>> &grid) {
     // Vector with the possible next pipes to scan
     std::vector<Pipe*> pipeVector;
 
-    // Initialize the distance of the starting pipe
+    // Initialize the vector of pipes
     pipeVector.push_back(startingPipe);
 
     while (!pipeVector.empty()) {
@@ -84,26 +84,65 @@ int pipeMaze(Pipe* startingPipe, std::vector<std::vector<Pipe>> &grid) {
 }
 
 // Function to cout how many tiles are inside the loop
-int countInnerTiles(std::vector<std::vector<Pipe>> &grid){
+int countOuterTiles(std::vector<std::vector<Pipe>> &grid, std::pair<int, int> startingPosition){
 
     // This will be the approach. The grid contains just * where the loop is and . where there is no loop
-    // There will be a variable evenNumberOfStars (I dont like that name)
-    // I want to iterate the whole grid and find the inner tiles. If there hasn't been any * we're obviously out of the loop
-    // If there has been one, we are inside. But when a second * is found, then we are out of the loop again. Then, a tile
-    // counts as inner if there has been an odd number of *
+    // I will start in position (0,0) and start a flood algorithm. This way I can reach all the outside
+    // tiles. I can substract the number of outside tiles to the total number of tiles to get the inner
 
-    bool oddNumberOfStars = false;
-    int numInnerTiles = 0;
+    int nrows = grid.size();
+    int ncols = grid[0].size();
 
-    for(auto row: grid){
-        for(auto element: row){
-            if(element.getTile() == '*')
-                !oddNumberOfStars;  // I want it to change. False -> True, True -> False
+    // Variable to store the number of outer tiles
+    int numOuterTiles = 0;
+    int numLoopTiles = 0;
 
-            if(oddNumberOfStars)
-                numInnerTiles ++;
+    // Pointer to the first position of the grid
+    Pipe* startingPipe = &grid[startingPosition.first][startingPosition.second];
+
+    // Vector with the possible next pipes to scan
+    std::vector<Pipe*> pipeVector;
+
+    // Initialize the vector of pipes
+    pipeVector.push_back(startingPipe);
+
+    while (!pipeVector.empty()) {
+
+        Pipe* currentPipe = pipeVector[0];
+        pipeVector.erase(pipeVector.begin());
+
+        // Call an extern function to get surrounding positions
+        std::vector<std::pair<int, int>> surroundingPositions = getSurroundings(*currentPipe, nrows, ncols);
+
+        // For each surrounding Pipe, check if they are *. If not, set them as Outsider (O)
+        for(auto pos: surroundingPositions){
+            Pipe *nextPipe = &grid[pos.first][pos.second];
+
+            if(nextPipe->getTile() == '.'){
+                nextPipe->setTile('O');
+                numOuterTiles ++;
+                pipeVector.push_back(nextPipe);
+            }
+            else if(nextPipe->getTile() == '*')
+                numLoopTiles ++;
         }
     }
 
-    return numInnerTiles;
+    return numOuterTiles;    
+}
+
+// Function to count how many tiles form the loop
+int countLoopTiles(std::vector<std::vector<Pipe>> &grid){
+
+
+    int nrows = grid.size(), ncols = grid[0].size();
+    int numLoopTiles = 0;
+
+    for(auto row: grid){
+        for(auto e: row){
+            if(e.getTile() == '*')
+                numLoopTiles ++;
+        }
+    }
+    return numLoopTiles;
 }

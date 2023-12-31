@@ -125,7 +125,7 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
 
     // For the example it must be 'F', for example2 '7', for example3 'F' and for the problem, 'J'
     if(currentPipe.getTile() == 'S')   // Starting node
-        currentPipe.setTile('F');
+        currentPipe.setTile('J');
     
     // Pipe matching
     if (currentPipe.getTile() == '|'){ // Vertical
