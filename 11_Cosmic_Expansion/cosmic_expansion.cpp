@@ -48,9 +48,71 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
+// Function to get automatically the number of rows and columns
+void getGridDimensions(std::string input, int &nrows, int &ncols){
+
+    for(int i = 0; i < input.length(); i++){
+        if(input[i] == '\n' && ncols == 0)
+            ncols = i;
+        if(input[i] == '\n' && ncols > 0)
+            nrows ++;
+    }
+}
+
+// Function to fill in the grid
+void fillGrid(std::vector<std::vector<char>> &grid, std::string input){
+
+    int nrows = grid.size(), ncols = grid[0].size();
+
+    int strCounter = 0;
+
+    for (int i = 0; i < nrows; i++){
+        for (int j = 0; j < ncols; j++){
+
+            if (input[strCounter] == '\n')
+                strCounter ++;
+
+            grid[i][j] = input[strCounter];
+            strCounter ++;
+        }
+    }
+}
+
+// Function that expands the space
+void expandSpace(std::vector<std::vector<char>> &grid){
+
+    int numGalaxies = 0;
+
+    for(int i = 0; i < grid.size(); i++){
+        std::vector<char> row = grid[i];
+        for(auto element: row){
+            if(element == '#')
+                numGalaxies ++;
+        }
+        if(numGalaxies == 0){
+            // Add empty row
+        }
+            
+    }
+
+}
+
 int main(){
 
-    std::cout << "Hallo";
+    // Define the input
+    std::string example = "...#......\n.......#..\n#.........\n..........\n......#...\n.#........\n.........#\n..........\n.......#..\n#...#.....";
+    std::string input = readInputText("input.txt");
+
+    // Get the number of rows and columns
+    int nrows = -1, ncols = -1;
+    getGridDimensions(example, nrows, ncols);
+
+    // Define the grid and fill it
+    std::vector<std::vector<char>> grid(nrows, std::vector<char>(ncols)); // 2D vector with all the grid
+    fillGrid(grid, example);
+
+    // Perform the space expansion
+
 
 
 
