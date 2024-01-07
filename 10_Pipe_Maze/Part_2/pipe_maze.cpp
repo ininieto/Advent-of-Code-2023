@@ -83,24 +83,19 @@ int pipeMaze(Pipe* startingPipe, std::vector<std::vector<Pipe>> &grid) {
     return biggestDistance;
 }
 
-// Function to cout how many tiles are inside the loop
+// Function to cout how many tiles are outside the loop
 int countOuterTiles(std::vector<std::vector<Pipe>> &grid, std::pair<int, int> startingPosition){
-
-    // This will be the approach. The grid contains just * where the loop is and . where there is no loop
-    // I will start in position (0,0) and start a flood algorithm. This way I can reach all the outside
-    // tiles. I can substract the number of outside tiles to the total number of tiles to get the inner
 
     int nrows = grid.size();
     int ncols = grid[0].size();
 
     // Variable to store the number of outer tiles
     int numOuterTiles = 0;
-    int numLoopTiles = 0;
 
     // Pointer to the first position of the grid
     Pipe* startingPipe = &grid[startingPosition.first][startingPosition.second];
 
-    // Vector with the possible next pipes to scan
+    // Vector with the next pipes to scan
     std::vector<Pipe*> pipeVector;
 
     // Initialize the vector of pipes
@@ -114,7 +109,7 @@ int countOuterTiles(std::vector<std::vector<Pipe>> &grid, std::pair<int, int> st
         // Call an extern function to get surrounding positions
         std::vector<std::pair<int, int>> surroundingPositions = getSurroundings(*currentPipe, nrows, ncols);
 
-        // For each surrounding Pipe, check if they are *. If not, set them as Outsider (O)
+        // For each surrounding Pipe, check if they are '.' Check them as Out (O)
         for(auto pos: surroundingPositions){
             Pipe *nextPipe = &grid[pos.first][pos.second];
 
@@ -123,8 +118,6 @@ int countOuterTiles(std::vector<std::vector<Pipe>> &grid, std::pair<int, int> st
                 numOuterTiles ++;
                 pipeVector.push_back(nextPipe);
             }
-            else if(nextPipe->getTile() == '*')
-                numLoopTiles ++;
         }
     }
 

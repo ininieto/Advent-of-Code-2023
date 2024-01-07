@@ -125,7 +125,7 @@ bool possibleJump(Pipe currentPipe, Pipe nextPipe){
 
     // For the example it must be 'F', for example2 '7', for example3 'F' and for the problem, 'J'
     if(currentPipe.getTile() == 'S')   // Starting node
-        currentPipe.setTile('J');
+        currentPipe.setTile('F');
     
     // Pipe matching
     if (currentPipe.getTile() == '|'){ // Vertical
@@ -238,10 +238,14 @@ void drawLoopInGrid(std::vector<std::vector<Pipe>> &grid){
     for(auto &row: grid){
         for(auto &e: row){
 
-            if(e.getDistance() < INT_MAX)
+            if(e.getDistance() == INT_MAX)
+                e.setTile('.');
+
+            /*if(e.getDistance() < INT_MAX)
                 e.setTile('*');
             else
                 e.setTile('.');
+            */
         }
     }
 }
