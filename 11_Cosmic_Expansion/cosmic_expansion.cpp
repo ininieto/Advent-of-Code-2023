@@ -57,6 +57,7 @@ void getGridDimensions(std::string input, int &nrows, int &ncols){
         if(input[i] == '\n' && ncols > 0)
             nrows ++;
     }
+    nrows ++;   // We must apply this correction
 }
 
 // Function to fill in the grid
@@ -83,6 +84,8 @@ void expandSpace(std::vector<std::vector<char>> &grid){
 
     int numGalaxies = 0;
 
+    // TODO: Find a way to add a column
+
     for(int i = 0; i < grid.size(); i++){
         std::vector<char> row = grid[i];
         for(auto element: row){
@@ -104,7 +107,7 @@ int main(){
     std::string input = readInputText("input.txt");
 
     // Get the number of rows and columns
-    int nrows = -1, ncols = -1;
+    int nrows = 0, ncols = 0;
     getGridDimensions(example, nrows, ncols);
 
     // Define the grid and fill it
@@ -112,7 +115,7 @@ int main(){
     fillGrid(grid, example);
 
     // Perform the space expansion
-
+    expandSpace(grid);
 
 
 
