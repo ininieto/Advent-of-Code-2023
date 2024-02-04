@@ -48,6 +48,16 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
+// Function to print the whole grid. Debug purposes
+void printGrid(std::vector<std::vector<char>> grid){
+    for(auto row: grid){
+        for(auto element: row){
+            std::cout << element;
+        }
+        std::cout << '\n';
+    }
+}
+
 // Function to get automatically the number of rows and columns
 void getGridDimensions(std::string input, int &nrows, int &ncols){
 
@@ -82,8 +92,7 @@ void fillGrid(std::vector<std::vector<char>> &grid, std::string input){
 // Function that expands the space
 void expandSpace(std::vector<std::vector<char>> &grid){
 
-    // TODO: Find a way to add a column
-
+    // Expand rows
     for(int i = 0; i < grid.size(); i++){
 
         bool isRowEmpty = true;
@@ -95,12 +104,38 @@ void expandSpace(std::vector<std::vector<char>> &grid){
                 break;
             }
         }
+
+        // If row is empty, insert another empty row
         if(isRowEmpty){
             std::vector emptyRow = {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'};
             grid.insert(grid.begin() + i, emptyRow);
             i++; // Increase the iteration index
+        }        
+    }
+
+    // Expand columns
+    for(int i = 0; i < grid[0].size(); i++){
+
+        std::vector<char> column;
+        bool isColumnEmpty = true;
+
+        // Fill the column
+        for(int j = 0; j < grid.size(); j++)
+            column.push_back(grid[j][i]);
+
+        // If column is empty, expand it
+        for(char c: column){
+            if(c != '.')
+                isColumnEmpty = false;
         }
-            
+
+        // If column is empty, insert another empty column
+        if(isColumnEmpty){
+            for(int j = 0; j < grid.size(); j++){   // Insert a . in every row in the i position
+                grid[j].insert(grid[j].begin() + i, '.');
+            }
+            i++; // Increase the iteration index
+        }
     }
 
 }
@@ -122,7 +157,8 @@ int main(){
     // Perform the space expansion
     expandSpace(grid);
 
-    std::cout << "debug";
+    // Debug
+    printGrid(grid);
 
 
 
