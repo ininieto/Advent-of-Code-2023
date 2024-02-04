@@ -67,7 +67,7 @@ void getGridDimensions(std::string input, int &nrows, int &ncols){
         if(input[i] == '\n' && ncols > 0)
             nrows ++;
     }
-    nrows ++;   // We must apply this correction
+    //nrows ++;   // We must apply this correction
 }
 
 // Function to fill in the grid
@@ -137,13 +137,29 @@ void expandSpace(std::vector<std::vector<char>> &grid){
             i++; // Increase the iteration index
         }
     }
-
 }
+
+
+// Function to find all the galaxies in the grid and save the coordinates
+std::vector<std::pair<int, int>> getGalaxiesCoords(std::vector<std::vector<char>> grid){
+
+    std::vector<std::pair<int, int>> galaxiesCoords;
+
+    for(int i = 0; i < grid.size(); i++){
+        for(int j = 0; j < grid[i].size(); j++){
+            if(grid[i][j] == '#')
+                galaxiesCoords.push_back(std::make_pair(i, j));
+        }
+    }
+
+    return galaxiesCoords;
+}
+
 
 int main(){
 
     // Define the input
-    std::string example = "...#......\n.......#..\n#.........\n..........\n......#...\n.#........\n.........#\n..........\n.......#..\n#...#.....";
+    std::string example = "...#......\n.......#..\n#.........\n..........\n......#...\n.#........\n.........#\n..........\n.......#..\n#...#.....\n";
     std::string input = readInputText("input.txt");
 
     // Get the number of rows and columns
@@ -156,6 +172,17 @@ int main(){
 
     // Perform the space expansion
     expandSpace(grid);
+
+    // As we can only jump up, down, left and right, we are dealing with MANHATTAN DISTANCES
+    // The general formula to compute this distance is |x2 - x1| + |y2 - y1|
+
+    // The approach will be: store the coordinates of all galaxies in a vector, then compute all 
+    // the cross distances (must watch out and not compute the same distance twice e.g. 1 -> 2 and 2 -> 1)
+    // Sum all those distances
+
+    std::vector<std::pair<int, int>> galaxiesCoords = getGalaxiesCoords(grid);
+
+
 
     // Debug
     printGrid(grid);
