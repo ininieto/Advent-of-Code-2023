@@ -106,9 +106,8 @@ void expandSpace(std::vector<std::vector<char>> &grid){
         }
 
         // If row is empty, insert another empty row
-        if(isRowEmpty){
-            std::vector emptyRow = {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'};
-            grid.insert(grid.begin() + i, emptyRow);
+        if(isRowEmpty){ 
+            grid.insert(grid.begin() + i, row); // If we are here is precisely because our row was empty :)
             i++; // Increase the iteration index
         }        
     }
@@ -131,7 +130,7 @@ void expandSpace(std::vector<std::vector<char>> &grid){
 
         // If column is empty, insert another empty column
         if(isColumnEmpty){
-            for(int j = 0; j < grid.size(); j++){   // Insert a . in every row in the i position
+            for(int j = 0; j < grid.size(); j++){   // Insert a '.' in every row in the i position
                 grid[j].insert(grid[j].begin() + i, '.');
             }
             i++; // Increase the iteration index
@@ -156,6 +155,12 @@ std::vector<std::pair<int, int>> getGalaxiesCoords(std::vector<std::vector<char>
 }
 
 
+// Function to compute the Manhattan distance
+int manhattanDist(std::pair<int, int> coords1, std::pair<int, int> coords2){
+
+    return abs(coords2.first - coords1.first) + abs(coords2.second - coords1.second);
+}
+
 int main(){
 
     // Define the input
@@ -164,11 +169,11 @@ int main(){
 
     // Get the number of rows and columns
     int nrows = 0, ncols = 0;
-    getGridDimensions(example, nrows, ncols);
+    getGridDimensions(input, nrows, ncols);
 
     // Define the grid and fill it
     std::vector<std::vector<char>> grid(nrows, std::vector<char>(ncols)); // 2D vector with all the grid
-    fillGrid(grid, example);
+    fillGrid(grid, input);
 
     // Perform the space expansion
     expandSpace(grid);
@@ -176,18 +181,20 @@ int main(){
     // As we can only jump up, down, left and right, we are dealing with MANHATTAN DISTANCES
     // The general formula to compute this distance is |x2 - x1| + |y2 - y1|
 
-    // The approach will be: store the coordinates of all galaxies in a vector, then compute all 
-    // the cross distances (must watch out and not compute the same distance twice e.g. 1 -> 2 and 2 -> 1)
-    // Sum all those distances
-
+    // Vector that contains the coordinates of all the galaxies
     std::vector<std::pair<int, int>> galaxiesCoords = getGalaxiesCoords(grid);
+    int result = 0;
 
-
+    // Calculate all the distances
+    for(int i = 0; i < galaxiesCoords.size(); i++){
+        for(int j = i + 1; j < galaxiesCoords.size(); j++)
+            result += manhattanDist(galaxiesCoords[i], galaxiesCoords[j]);
+    }
 
     // Debug
-    printGrid(grid);
+    //printGrid(grid);
 
-
+    std::cout << result << '\n';
 
     return 0;
 }
