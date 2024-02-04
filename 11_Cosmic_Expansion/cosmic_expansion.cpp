@@ -82,18 +82,23 @@ void fillGrid(std::vector<std::vector<char>> &grid, std::string input){
 // Function that expands the space
 void expandSpace(std::vector<std::vector<char>> &grid){
 
-    int numGalaxies = 0;
-
     // TODO: Find a way to add a column
 
     for(int i = 0; i < grid.size(); i++){
+
+        bool isRowEmpty = true;
+
         std::vector<char> row = grid[i];
         for(auto element: row){
-            if(element == '#')
-                numGalaxies ++;
+            if(element == '#'){
+                isRowEmpty = false;
+                break;
+            }
         }
-        if(numGalaxies == 0){
-            // Add empty row
+        if(isRowEmpty){
+            std::vector emptyRow = {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'};
+            grid.insert(grid.begin() + i, emptyRow);
+            i++; // Increase the iteration index
         }
             
     }
@@ -116,6 +121,8 @@ int main(){
 
     // Perform the space expansion
     expandSpace(grid);
+
+    std::cout << "debug";
 
 
 
