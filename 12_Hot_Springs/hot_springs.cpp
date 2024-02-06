@@ -48,15 +48,47 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
+// Function to fill in a int vector given a string
+std::vector<int> fillInVector(std::string str){
+
+    std::vector<std::string> strVector = split(str, ",");
+    std::vector<int> numVector;
+
+    for(std::string strNum: strVector){
+        numVector.push_back(stoull(strNum));
+    }
+
+    return numVector;
+}
+
+
 int main(){
 
     // Store the example and the input in variables
     std::string example = "???.### 1,1,3\n.??..??...?##. 1,1,3\n?#?#?#?#?#?#?#? 1,3,1,6\n????.#...#... 4,1,1\n????.######..#####. 1,6,5\n?###???????? 3,2,1\n";
     std::string input = readInputText("input.txt");
-    //input = example;
+    
+    // Just to work with example
+    input = example;
 
     // Split the initial input by lines
     std::vector<std::string> splittedInput = split(input, "\n");
+
+    // Read every line
+    for(std::string line: splittedInput){
+
+        // Separate the springs and the numbers
+        std::string spring = line.substr(0, line.find(' '));
+        std::string strNumbers = line.substr(line.find(' ') + 1);
+
+        // Store the numbers in a vector
+        std::vector<int> numbers = fillInVector(strNumbers);
+        
+        // Identify the ?? regions
+
+
+
+    }
 
 
 
