@@ -159,7 +159,7 @@ std::vector<std::pair<int, int>> getGalaxiesCoords(std::vector<std::vector<char>
 // Function to apply the increase of expansion
 void correctExpansion(std::vector<std::pair<int, int>> &galaxiesCoords, std::vector<int> &rowsExpansionIndexes, std::vector<int> &colsExpansionIndexes){
 
-    int expansionCorrection = 1;
+    int expansionCorrection = 1000000 - 1;
 
     for(auto &coord: galaxiesCoords){
 
@@ -198,11 +198,11 @@ int main(){
 
     // Get the number of rows and columns
     int nrows = 0, ncols = 0;
-    getGridDimensions(example, nrows, ncols);
+    getGridDimensions(input, nrows, ncols);
 
     // Define the grid and fill it
     std::vector<std::vector<char>> grid(nrows, std::vector<char>(ncols)); // 2D vector with all the grid
-    fillGrid(grid, example);
+    fillGrid(grid, input);
 
     // Perform the space expansion
     std::vector<int> rowsExpansionIndexes;  // Array that contains the indexes of the rows that must be expanded
@@ -216,8 +216,7 @@ int main(){
     std::vector<std::pair<int, int>> galaxiesCoords = getGalaxiesCoords(grid);
     int result = 0;
 
-    // Apply corrections on the coordinates --> Longer expansion
-    
+    // Apply corrections on the coordinates --> Longer expansio
     correctExpansion(galaxiesCoords, rowsExpansionIndexes, colsExpansionIndexes);
 
     // Calculate all the distances
@@ -228,6 +227,8 @@ int main(){
 
     // Debug
     //printGrid(grid);
+
+    // I got an answer of 1986903970 but it is too low :( all the tests were OK
 
     std::cout << result << '\n';
 
