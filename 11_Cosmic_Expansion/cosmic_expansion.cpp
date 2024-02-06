@@ -178,11 +178,11 @@ int main(){
     // Perform the space expansion
     expandSpace(grid);
 
-    // As we can only jump up, down, left and right, we are dealing with MANHATTAN DISTANCES
-    // The general formula to compute this distance is |x2 - x1| + |y2 - y1|
-
     // Vector that contains the coordinates of all the galaxies
     std::vector<std::pair<int, int>> galaxiesCoords = getGalaxiesCoords(grid);
+    
+    // As we can only jump up, down, left and right, we are dealing with MANHATTAN DISTANCES
+    // The general formula to compute this distance is |x2 - x1| + |y2 - y1|
     int result = 0;
 
     // Calculate all the distances
