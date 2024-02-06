@@ -61,6 +61,27 @@ std::vector<int> fillInVector(std::string str){
     return numVector;
 }
 
+// Function to find the regions that have no dots --> could be damaged
+std::vector<std::string> findRegionsWithoutDot(std::string spring){
+
+    std::vector<std::string> regionsWithoutDot;
+    std::string temp;
+
+    for(char c: spring){
+        if(c != '.')
+            temp.push_back(c);
+        else{
+            if(temp.size() == 0)    
+                continue;
+            regionsWithoutDot.push_back(temp);
+            temp.clear();
+        }
+    }
+    if(temp.size() > 0) regionsWithoutDot.push_back(temp);
+
+    return regionsWithoutDot;
+}
+
 
 int main(){
 
@@ -84,7 +105,8 @@ int main(){
         // Store the numbers in a vector
         std::vector<int> numbers = fillInVector(strNumbers);
         
-        // Identify the ?? regions
+        // Identify the regions that have no '.'
+        std::vector<std::string> regionsWithoutDot = findRegionsWithoutDot(spring);
 
 
 
