@@ -48,16 +48,6 @@ std::string readInputText(std::string inputText){
     return inputData;
 }
 
-// Function to print the whole grid. Debug purposes
-void printGrid(std::vector<std::vector<char>> grid){
-    for(auto row: grid){
-        for(auto element: row){
-            std::cout << element;
-        }
-        std::cout << '\n';
-    }
-}
-
 // Function to get automatically the number of rows and columns
 void getGridDimensions(std::string input, int &nrows, int &ncols){
 
@@ -89,15 +79,16 @@ void fillGrid(std::vector<std::vector<char>> &grid, std::string input){
     }
 }
 
-// Function that expands the space
-void expandSpace(std::vector<std::vector<char>> &grid, std::vector<int> &rowsExpansionIndexes, std::vector<int> &colsExpansionIndexes, int expansionRate){
+// Function to find the empty rows and columns
+void findEmptyRowsCols(std::vector<std::vector<char>> &grid, std::vector<int> &emptyRows, std::vector<int> &emptyCols){
 
-    // Expand rows
+    // Find empty rows
     for(int i = 0; i < grid.size(); i++){
 
+        std::vector<char> row = grid[i];
         bool isRowEmpty = true;
 
-        std::vector<char> row = grid[i];
+        // Check if the row is empty
         for(auto element: row){
             if(element == '#'){
                 isRowEmpty = false;
@@ -105,15 +96,12 @@ void expandSpace(std::vector<std::vector<char>> &grid, std::vector<int> &rowsExp
             }
         }
 
-        // If row is empty, insert another empty row
-        if(isRowEmpty){ 
-            //grid.insert(grid.begin() + i, row); // If we are here is precisely because our row was empty :)
-            rowsExpansionIndexes.push_back(i);
-            i += expansionRate; // Increase the iteration index
-        }        
+        // If row is empty, save the index of the row
+        if(isRowEmpty)  
+            emptyRows.push_back(i);   
     }
 
-    // Expand columns
+    // Find empty columns
     for(int i = 0; i < grid[0].size(); i++){
 
         std::vector<char> column;
@@ -123,28 +111,25 @@ void expandSpace(std::vector<std::vector<char>> &grid, std::vector<int> &rowsExp
         for(int j = 0; j < grid.size(); j++)
             column.push_back(grid[j][i]);
 
-        // If column is empty, expand it
+        // Check if column is empty
         for(char c: column){
-            if(c != '.')
+            if(c != '.'){
                 isColumnEmpty = false;
+                break;
+            }
         }
 
-        // If column is empty, insert another empty column
-        if(isColumnEmpty){
-            /*for(int j = 0; j < grid.size(); j++){   // Insert a '.' in every row in the i position
-                grid[j].insert(grid[j].begin() + i, '.');
-            }*/
-            colsExpansionIndexes.push_back(i);
-            i += expansionRate; // Increase the iteration index
-        }
+        // If column is empty, save the index of the column
+        if(isColumnEmpty)
+            emptyCols.push_back(i);
     }
 }
 
 
 // Function to find all the galaxies in the grid and save the coordinates
-std::vector<std::pair<uint64_t, uint64_t>> getGalaxiesCoords(std::vector<std::vector<char>> grid){
+std::vector<std::pair<int, int>> getGalaxiesCoords(std::vector<std::vector<char>> grid){
 
-    std::vector<std::pair<uint64_t, uint64_t>> galaxiesCoords;
+    std::vector<std::pair<int, int>> galaxiesCoords;
 
     for(int i = 0; i < grid.size(); i++){
         for(int j = 0; j < grid[i].size(); j++){
@@ -156,35 +141,38 @@ std::vector<std::pair<uint64_t, uint64_t>> getGalaxiesCoords(std::vector<std::ve
     return galaxiesCoords;
 }
 
-// Function to apply the increase of expansion
-void correctExpansion(std::vector<std::pair<uint64_t, uint64_t>> &galaxiesCoords, std::vector<int> rowsExpansionIndexes, std::vector<int> colsExpansionIndexes, int expansionRate){
+// Function to apply the space expansion
+void expandSpace(std::vector<std::pair<int, int>> &galaxiesCoords, std::vector<int> emptyRows, std::vector<int> emptyCols, int expansionRate){
 
-    for(std::pair<uint64_t, uint64_t> &coord: galaxiesCoords){
+    for(auto &coord: galaxiesCoords){
 
-        int numCorrections = 0;
+        int numExpansions = 0;
 
         // Correction on rows
-        for(int rowIndex: rowsExpansionIndexes)
-            if(coord.first > rowIndex)  
-                numCorrections ++;
-            else    break;
-        
-        coord.first += numCorrections * expansionRate;
+        for(int rowIndex: emptyRows){
+            if(coord.first > rowIndex)  // If the coordinate is bigger, then it will suffer an expansion
+                numExpansions ++;
+            else    
+                break;
+        }
+        coord.first += numExpansions * expansionRate;
 
-        numCorrections = 0; // Reset the number of corrections
+        numExpansions = 0; // Reset the number of corrections
 
         // Correction on columns
-        for(int colIndex: colsExpansionIndexes)
-            if(coord.second > colIndex) numCorrections ++;
-            else break;
-
-        coord.second +=  numCorrections * expansionRate;
+        for(int colIndex: emptyCols){
+            if(coord.second > colIndex) // If the coordinate is bigger, then it will suffer an expansion
+                numExpansions ++;
+            else 
+                break;
+        }
+        coord.second +=  numExpansions * expansionRate;
     }
 }
 
 
 // Function to compute the Manhattan distance
-int manhattanDist(std::pair<uint64_t, uint64_t> coords1, std::pair<uint64_t, uint64_t> coords2){
+int manhattanDist(std::pair<int, int> coords1, std::pair<int, int> coords2){
 
     return abs(coords2.first - coords1.first) + abs(coords2.second - coords1.second);
 }
@@ -203,21 +191,22 @@ int main(){
     std::vector<std::vector<char>> grid(nrows, std::vector<char>(ncols)); // 2D vector with all the grid
     fillGrid(grid, input);
 
-    // Perform the space expansion
-    int expansionRate = 1;
-    std::vector<int> rowsExpansionIndexes;  // Array that contains the indexes of the rows that must be expanded
-    std::vector<int> colsExpansionIndexes;  // Array that contains the indexes of the cols that must be expanded
-    expandSpace(grid, rowsExpansionIndexes, colsExpansionIndexes, expansionRate);
+    // Find all empty rows and columns
+    std::vector<int> emptyRows;  // Array that contains the indexes of the empty rows
+    std::vector<int> emptyCols;  // Array that contains the indexes of the empty cols
+    findEmptyRowsCols(grid, emptyRows, emptyCols);
+
+    // Store the coordinates of all galaxies (no expansion yet)
+    std::vector<std::pair<int, int>> galaxiesCoords = getGalaxiesCoords(grid);
+
+    // Apply the Space Expansion
+    int expansionRate = 1000000 - 1;    // We need to substract 1 to the expansionRate because we already have a row/col
+    expandSpace(galaxiesCoords, emptyRows, emptyCols, expansionRate);
 
     // As we can only jump up, down, left and right, we are dealing with MANHATTAN DISTANCES
     // The general formula to compute this distance is |x2 - x1| + |y2 - y1|
 
-    // Vector that contains the coordinates of all the galaxies
-    std::vector<std::pair<uint64_t, uint64_t>> galaxiesCoords = getGalaxiesCoords(grid);
-    uint64_t result = 0;
-
-    // Apply corrections on the coordinates --> Longer expansion
-    correctExpansion(galaxiesCoords, rowsExpansionIndexes, colsExpansionIndexes, expansionRate);
+    uint64_t result = 0;    // The result will be huge, an int is not enough
 
     // Calculate all the distances
     for(int i = 0; i < galaxiesCoords.size(); i++){
@@ -225,12 +214,8 @@ int main(){
             result += manhattanDist(galaxiesCoords[i], galaxiesCoords[j]);
     }
 
-
-    // I got an answer of 1986903970 but it is too low :( all the tests were OK
-    // Set variables to uint64_t and got 611872260002 but still too low :(
-    // When trying to replicate the first part I am getting 9483730 instead of 9556896
-
-    std::cout << static_cast<uint64_t>(result) << '\n';
+    // Print the result
+    std::cout << result << '\n';
 
     return 0;
 }
