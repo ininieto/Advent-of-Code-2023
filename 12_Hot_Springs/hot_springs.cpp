@@ -178,13 +178,10 @@ int main(){
     std::string input = readInputText("input.txt");
     
     // Just to work with example
-    input = example;
+    //input = example;
 
     // Split the initial input by lines
     std::vector<std::string> splittedInput = split(input, "\n");
-
-    // Map with all the tried combinations --> Not really sure that it is needed
-    std::unordered_map<std::string, int> alreadyTriedCombinations;
 
     // Variable that will hold the final result
     int result;
@@ -216,21 +213,15 @@ int main(){
         // Try all the different combinations and check if they're possible or not
         for(auto combination: allPossibleCombinations){
 
-            // Check if it has been already tried --> Might be deleted
-            if(alreadyTriedCombinations.find(combination) != alreadyTriedCombinations.end())
-                continue;
-
             // If not, check if it is valid
             bool validCombination = checkValidCombination(combination, hashtagsVector);
 
             // If valid combination, add 1 to the final result
             result += validCombination;
-
-            // Save combination in hashmap
-            alreadyTriedCombinations[combination] = validCombination;
         }
     }
 
+    // I got an answer of 4686 but it is too low
     std::cout << result;
 
     return 0;
