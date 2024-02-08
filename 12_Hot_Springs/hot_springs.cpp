@@ -62,26 +62,6 @@ std::vector<int> fillInVector(std::string str){
     return numVector;
 }
 
-// Function to find the regions that have no dots --> could be damaged
-std::vector<std::string> findRegionsWithoutDot(std::string spring){
-
-    std::vector<std::string> regionsWithoutDot;
-    std::string temp;
-
-    for(char c: spring){
-        if(c != '.')
-            temp.push_back(c);
-        else{
-            if(temp.size() == 0)    
-                continue;
-            regionsWithoutDot.push_back(temp);
-            temp.clear();
-        }
-    }
-    if(temp.size() > 0) regionsWithoutDot.push_back(temp);
-
-    return regionsWithoutDot;
-}
 
 // Function to find the number of # in the spring
 void countHashtagsAndInterrogants(std::string spring, int &numHashtags, int &numInterrogants){
@@ -94,18 +74,6 @@ void countHashtagsAndInterrogants(std::string spring, int &numHashtags, int &num
     }
 }
 
-// Function to compute factorial
-int factorial(int num){
-
-    int result = 1;
-
-    for(int i = 1; i <= num; i++){
-        result *= i;
-    }
-
-    return result;
-}
-
 // Function to sum all elements of a vector
 int sum(std::vector<int> vec){
 
@@ -114,6 +82,60 @@ int sum(std::vector<int> vec){
         sum += element;
     
     return sum;
+}
+
+// Function to find all ? in the spring
+std::vector<int> findInterrogants(std::string spring){
+
+    std::vector<int> indexes;
+    for(int i = 0; i < spring.size(); i++){
+        if(spring[i] == '?')
+            indexes.push_back(i);
+    }
+    return indexes;
+}
+
+// Function to generate combinations recursively
+void generateCombinations(int n, int k, int idx, std::string current, std::vector<std::string>& combinations) {
+
+    // Base case: If we have placed all k elements
+    if (k == 0) {
+        // Fill remaining spots with .
+        current.append(n - idx, '.');
+        // Store current combination
+        combinations.push_back(current);
+        return;
+    }
+
+    // If there are not enough spots remaining
+    if (idx >= n)
+        return;
+
+    // Place a # and recurse for next position
+    generateCombinations(n, k - 1, idx + 1, current + '#', combinations);
+    // Skip this position and recurse
+    generateCombinations(n, k, idx + 1, current + '.', combinations);
+}
+
+
+// Function to find all the possible combinations given a spring and the total number of #
+std::vector<std::string> getAllPossibleCombinations(std::string spring, int numInterrogants, int numAvailableHashtags, std::vector<int> interrogantIndexes){
+
+    // Find all combinations and store them in a vector
+    std::vector<std::string> combinations;
+    generateCombinations(numInterrogants, numAvailableHashtags, 0, "", combinations);
+
+    // Replace the ? in spring for the combinations of # and store them in a vector
+    std::vector<std::string> allPossibleCombinations;
+
+    for (auto combination : combinations){
+        for (int i = 0; i < numInterrogants; i++){
+            spring[interrogantIndexes[i]] = combination[i];
+        }
+        allPossibleCombinations.push_back(spring);
+    }
+
+    return allPossibleCombinations;
 }
 
 // Function that checks if the tried combination is valid
@@ -161,8 +183,11 @@ int main(){
     // Split the initial input by lines
     std::vector<std::string> splittedInput = split(input, "\n");
 
-    // Map with all the tried combinations
+    // Map with all the tried combinations --> Not really sure that it is needed
     std::unordered_map<std::string, int> alreadyTriedCombinations;
+
+    // Variable that will hold the final result
+    int result;
 
     // Read every line
     for(std::string line: splittedInput){
@@ -171,45 +196,40 @@ int main(){
         std::string spring = line.substr(0, line.find(' '));
         std::string strNumbers = line.substr(line.find(' ') + 1);
 
-        // Store the numbers in a vector
+        // Store the numbers in a vector and obtain the sum
         std::vector<int> hashtagsVector = fillInVector(strNumbers);
-        
-        // Identify the regions that have no '.'
-        std::vector<std::string> regionsWithoutDot = findRegionsWithoutDot(spring);
+        int totalNumHashtags = sum(hashtagsVector);
+
+        // Find all the spots with ?
+        std::vector<int> interrogantIndexes = findInterrogants(spring);
 
         // Count hashtags and interrogants in the spring
         int numHashtagsInSpring = 0, numInterrogants = 0;
         countHashtagsAndInterrogants(spring, numHashtagsInSpring, numInterrogants);
 
         // Calculate the number of available hashtags (total number - already placed ones)
-        int numHashtags = sum(hashtagsVector) - numHashtagsInSpring;
+        int numAvailableHashtags = totalNumHashtags - numHashtagsInSpring;
 
-        // Find the total number of combinations: C(n, k) = n! / k! (n - k)!
-        int numCombinations = factorial(numInterrogants) / factorial(numHashtags) / factorial(numInterrogants - numHashtags);
+        // Obtain all the possible combinations 
+        std::vector<std::string> allPossibleCombinations = getAllPossibleCombinations(spring, numInterrogants, numAvailableHashtags, interrogantIndexes);
 
         // Try all the different combinations and check if they're possible or not
-        for(int i = 0; i < numCombinations; i++){
+        for(auto combination: allPossibleCombinations){
 
-            // Try a combnation
-            std::string combination = "#.#.###";    // TODO: Fill this string with every single combination
-
-            // Check if it has been already tried
+            // Check if it has been already tried --> Might be deleted
             if(alreadyTriedCombinations.find(combination) != alreadyTriedCombinations.end())
                 continue;
 
             // If not, check if it is valid
             bool validCombination = checkValidCombination(combination, hashtagsVector);
 
+            // If valid combination, add 1 to the final result
+            result += validCombination;
+
             // Save combination in hashmap
             alreadyTriedCombinations[combination] = validCombination;
         }
     }
-
-    // Sum all the possible combinations
-    int result = 0;
-
-    for(auto element: alreadyTriedCombinations)
-        result += element.second;
 
     std::cout << result;
 
