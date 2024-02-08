@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unordered_map>
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -82,6 +83,39 @@ std::vector<std::string> findRegionsWithoutDot(std::string spring){
     return regionsWithoutDot;
 }
 
+// Function to find the number of # in the spring
+void countHashtagsAndInterrogants(std::string spring, int &numHashtags, int &numInterrogants){
+
+    for(char c: spring){
+        if(c == '#')
+            numHashtags ++;
+        else if(c == '?')
+            numInterrogants ++;
+    }
+}
+
+// Function to compute factorial
+int factorial(int num){
+
+    int result = 1;
+
+    for(int i = 1; i <= num; i++){
+        result *= i;
+    }
+
+    return result;
+}
+
+// Function to sum all elements of a vector
+int sum(std::vector<int> vec){
+
+    int sum = 0;
+    for(int element: vec)
+        sum += element;
+    
+    return sum;
+}
+
 
 int main(){
 
@@ -103,41 +137,31 @@ int main(){
         std::string strNumbers = line.substr(line.find(' ') + 1);
 
         // Store the numbers in a vector
-        std::vector<int> numbers = fillInVector(strNumbers);
+        std::vector<int> hashtagsVector = fillInVector(strNumbers);
         
         // Identify the regions that have no '.'
         std::vector<std::string> regionsWithoutDot = findRegionsWithoutDot(spring);
 
-        // Now I should look at the # and guess things with that
-
         /*
-        
-        First example: ???.###    1,1,3
-            It is easier to start saying that there are already three # --> now I know that ??? correspond to 1, 1 --> 1 possibility
-        
-        Second example: .??..??...?##.   1,1,3
-            As in the end I have two # and a ? it is obvious that there must be a # --> one possibility.
-            Then I have two regions like ?? ?? and 1, 1 --> that leads to 4 possibilities (#. #.), (#. .#), (.# #.), (.# .#)
-        
-        Third example: ?#?#?#?#?#?#?#?   1,3,1,6
+       I might have a hashmap alreadyTriedPatterns that prevents over-engineering, and also keeps track of the valid ones
+       Then, for every new pattern that is tried, a function checkPossiblePattern() would make sure if it's ok or not
 
-        */
+       How many possible patterns are there? --> Combinatory is our friend
+       In the first example, we want to distribute 2# in 3? --> C(3, 2) = 3! / 2! (3 - 2)! = 3
+       */
 
-       // I mean, brute force is always there :) I can always try all combinations for ? and see if it works
+        // Map with all the tried combinations
+        std::unordered_map<std::string, int> alreadyTriedCombinations;
 
-       // Actually, I feel that a safer approach would be first implementing brute-force, and if it doesn't run, try to think deeper 
+        // Count hashtags and interrogants in the spring
+        int numHashtagsInSpring = 0, numInterrogants = 0;
+        countHashtagsAndInterrogants(spring, numHashtagsInSpring, numInterrogants);
 
-       // I might have a hashmap alreadyTriedPatterns that prevents over-engineering, and also keeps track of the valid ones
-       // Then, for every new pattern that is tried, a function checkPossiblePattern() would make sure if it's ok or not
+        // Calculate the number of available hashtags (total number - already placed ones)
+        int numHashtags = sum(hashtagsVector) - numHashtagsInSpring;
 
-       // How many possible patterns are there? --> Combinatory is our friend
-       // In the first example, we want to distribute two # in 3 ? --> C(3, 2) = 3! / 2! (3 - 2)! = 3 
-       // The formula involves factorials. Not sure if I should find an already defined function or do it myself (probably recursion)
-
-       
-
-
-
+        // Find the total number of combinations 
+        int numCombinations = factorial(numInterrogants) / factorial(numHashtags) / factorial(numInterrogants - numHashtags);
 
     }
 
