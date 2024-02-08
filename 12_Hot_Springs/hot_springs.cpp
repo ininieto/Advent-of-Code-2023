@@ -108,6 +108,35 @@ int main(){
         // Identify the regions that have no '.'
         std::vector<std::string> regionsWithoutDot = findRegionsWithoutDot(spring);
 
+        // Now I should look at the # and guess things with that
+
+        /*
+        
+        First example: ???.###    1,1,3
+            It is easier to start saying that there are already three # --> now I know that ??? correspond to 1, 1 --> 1 possibility
+        
+        Second example: .??..??...?##.   1,1,3
+            As in the end I have two # and a ? it is obvious that there must be a # --> one possibility.
+            Then I have two regions like ?? ?? and 1, 1 --> that leads to 4 possibilities (#. #.), (#. .#), (.# #.), (.# .#)
+        
+        Third example: ?#?#?#?#?#?#?#?   1,3,1,6
+
+        */
+
+       // I mean, brute force is always there :) I can always try all combinations for ? and see if it works
+
+       // Actually, I feel that a safer approach would be first implementing brute-force, and if it doesn't run, try to think deeper 
+
+       // I might have a hashmap alreadyTriedPatterns that prevents over-engineering, and also keeps track of the valid ones
+       // Then, for every new pattern that is tried, a function checkPossiblePattern() would make sure if it's ok or not
+
+       // How many possible patterns are there? --> Combinatory is our friend
+       // In the first example, we want to distribute two # in 3 ? --> C(3, 2) = 3! / 2! (3 - 2)! = 3 
+       // The formula involves factorials. Not sure if I should find an already defined function or do it myself (probably recursion)
+
+       
+
+
 
 
     }
