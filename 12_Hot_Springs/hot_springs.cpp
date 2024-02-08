@@ -116,6 +116,38 @@ int sum(std::vector<int> vec){
     return sum;
 }
 
+// Function that checks if the tried combination is valid
+bool checkValidCombination(std::string combination, std::vector<int> hashtagsVector){
+
+    // Get the hashtag vector for our combination
+    std::vector<int> combinationHashtags;
+
+    int acc = 0;
+
+    for(char c: combination){
+        if(c == '#')
+            acc ++;
+        else if(c == '.' && acc > 0){
+            combinationHashtags.push_back(acc);
+            acc = 0;
+        }
+    }
+    if(acc > 0)
+        combinationHashtags.push_back(acc);
+
+    // Compare both vectors
+    if(combinationHashtags.size() != hashtagsVector.size())
+        return false;
+    else{
+        for(int i = 0; i < combinationHashtags.size(); i++){
+            if(combinationHashtags[i] != hashtagsVector[i])
+                return false;
+        }
+    }
+
+    return true;
+}
+
 
 int main(){
 
@@ -128,6 +160,9 @@ int main(){
 
     // Split the initial input by lines
     std::vector<std::string> splittedInput = split(input, "\n");
+
+    // Map with all the tried combinations
+    std::unordered_map<std::string, int> alreadyTriedCombinations;
 
     // Read every line
     for(std::string line: splittedInput){
@@ -142,17 +177,6 @@ int main(){
         // Identify the regions that have no '.'
         std::vector<std::string> regionsWithoutDot = findRegionsWithoutDot(spring);
 
-        /*
-       I might have a hashmap alreadyTriedPatterns that prevents over-engineering, and also keeps track of the valid ones
-       Then, for every new pattern that is tried, a function checkPossiblePattern() would make sure if it's ok or not
-
-       How many possible patterns are there? --> Combinatory is our friend
-       In the first example, we want to distribute 2# in 3? --> C(3, 2) = 3! / 2! (3 - 2)! = 3
-       */
-
-        // Map with all the tried combinations
-        std::unordered_map<std::string, int> alreadyTriedCombinations;
-
         // Count hashtags and interrogants in the spring
         int numHashtagsInSpring = 0, numInterrogants = 0;
         countHashtagsAndInterrogants(spring, numHashtagsInSpring, numInterrogants);
@@ -160,16 +184,34 @@ int main(){
         // Calculate the number of available hashtags (total number - already placed ones)
         int numHashtags = sum(hashtagsVector) - numHashtagsInSpring;
 
-        // Find the total number of combinations 
+        // Find the total number of combinations: C(n, k) = n! / k! (n - k)!
         int numCombinations = factorial(numInterrogants) / factorial(numHashtags) / factorial(numInterrogants - numHashtags);
 
+        // Try all the different combinations and check if they're possible or not
+        for(int i = 0; i < numCombinations; i++){
+
+            // Try a combnation
+            std::string combination = "#.#.###";    // TODO: Fill this string with every single combination
+
+            // Check if it has been already tried
+            if(alreadyTriedCombinations.find(combination) != alreadyTriedCombinations.end())
+                continue;
+
+            // If not, check if it is valid
+            bool validCombination = checkValidCombination(combination, hashtagsVector);
+
+            // Save combination in hashmap
+            alreadyTriedCombinations[combination] = validCombination;
+        }
     }
 
+    // Sum all the possible combinations
+    int result = 0;
 
+    for(auto element: alreadyTriedCombinations)
+        result += element.second;
 
-
-
-
+    std::cout << result;
 
     return 0;
 }
