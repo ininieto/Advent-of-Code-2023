@@ -173,6 +173,8 @@ bool checkValidCombination(std::string combination, std::vector<int> hashtagsVec
 
 int main(){
 
+    // Am I on new branch?
+
     // Store the example and the input in variables
     std::string example = "???.### 1,1,3\n.??..??...?##. 1,1,3\n?#?#?#?#?#?#?#? 1,3,1,6\n????.#...#... 4,1,1\n????.######..#####. 1,6,5\n?###???????? 3,2,1\n";
     std::string input = readInputText("input.txt");
