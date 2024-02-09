@@ -221,7 +221,6 @@ int main(){
         }
     }
 
-    // I got an answer of 4686 but it is too low
     std::cout << result;
 
     return 0;
