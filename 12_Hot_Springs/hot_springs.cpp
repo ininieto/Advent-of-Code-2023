@@ -63,130 +63,93 @@ std::vector<int> fillInVector(std::string str){
 }
 
 
-// Function to find the number of # in the spring
-void countHashtagsAndInterrogants(std::string spring, int &numHashtags, int &numInterrogants){
+// Recursive function that checks if a combination is valid or not
+void countValidCombinations(std::string combination, std::vector<int> nums, int &result){
 
-    for(char c: spring){
-        if(c == '#')
-            numHashtags ++;
-        else if(c == '?')
-            numInterrogants ++;
-    }
-}
-
-// Function to sum all elements of a vector
-int sum(std::vector<int> vec){
-
-    int sum = 0;
-    for(int element: vec)
-        sum += element;
-    
-    return sum;
-}
-
-// Function to find all ? in the spring
-std::vector<int> findInterrogants(std::string spring){
-
-    std::vector<int> indexes;
-    for(int i = 0; i < spring.size(); i++){
-        if(spring[i] == '?')
-            indexes.push_back(i);
-    }
-    return indexes;
-}
-
-// Function to generate combinations recursively
-void generateCombinations(int n, int k, int idx, std::string current, std::vector<std::string>& combinations) {
-
-    // Base case: If we have placed all k elements
-    if (k == 0) {
-        // Fill remaining spots with .
-        current.append(n - idx, '.');
-        // Store current combination
-        combinations.push_back(current);
-        return;
-    }
-
-    // If there are not enough spots remaining
-    if (idx >= n)
-        return;
-
-    // Place a # and recurse for next position
-    generateCombinations(n, k - 1, idx + 1, current + '#', combinations);
-    // Skip this position and recurse
-    generateCombinations(n, k, idx + 1, current + '.', combinations);
-}
-
-
-// Function to find all the possible combinations given a spring and the total number of #
-std::vector<std::string> getAllPossibleCombinations(std::string spring, int numInterrogants, int numAvailableHashtags, std::vector<int> interrogantIndexes){
-
-    // Find all combinations and store them in a vector
-    std::vector<std::string> combinations;
-    generateCombinations(numInterrogants, numAvailableHashtags, 0, "", combinations);
-
-    // Replace the ? in spring for the combinations of # and store them in a vector
-    std::vector<std::string> allPossibleCombinations;
-
-    for (auto combination : combinations){
-        for (int i = 0; i < numInterrogants; i++){
-            spring[interrogantIndexes[i]] = combination[i];
-        }
-        allPossibleCombinations.push_back(spring);
-    }
-
-    return allPossibleCombinations;
-}
-
-// Function that checks if the tried combination is valid
-bool checkValidCombination(std::string combination, std::vector<int> hashtagsVector){
-
-    // Get the hashtag vector for our combination
-    std::vector<int> combinationHashtags;
-
-    int acc = 0;
-
-    for(char c: combination){
-        if(c == '#')
-            acc ++;
-        else if(c == '.' && acc > 0){
-            combinationHashtags.push_back(acc);
-            acc = 0;
-        }
-    }
-    if(acc > 0)
-        combinationHashtags.push_back(acc);
-
-    // Compare both vectors
-    if(combinationHashtags.size() != hashtagsVector.size())
-        return false;
-    else{
-        for(int i = 0; i < combinationHashtags.size(); i++){
-            if(combinationHashtags[i] != hashtagsVector[i])
-                return false;
+    // Base cases
+    if(combination.length() == 0){   // If we have read the whole combination, check if there are no more numbers to satisfy
+        if(nums.size() == 0){
+            result ++;
+            return;
         }
     }
 
-    return true;
+    if(nums.size() == 0){
+        if(combination.find('#') == std::string::npos){  // If there are no more numbers, check that there are no more # left
+            result ++;
+            return;
+        }
+    }
+
+    // If next character is a dot
+    if(combination[0] == '.')
+       return countValidCombinations(combination.erase(0, 1), nums, result); // Call the function removing the first character
+
+    // If next character is # or ? --> Start of block
+    if(combination[0] == '#' || combination[0] == '?'){
+
+        std::string block = combination.substr(0, nums[0]); // The next n positions
+
+        if (nums[0] <= combination.length() &&                                // Make sure there are enough characters left to check
+            block.find('.') == std::string::npos &&                           // Check that there are no dots in the next positions
+            (nums[0] == combination.length() || combination[nums[0]] != '#')){ // We can't have 2 consecutive blocks --> The next one must be a dot (or ? converted to dot)
+
+            // Jump to the end of the block and pop the first number of the vector
+
+            std::string next = "";
+
+            if(combination.length() > nums[0])
+                next = combination.substr(nums[0] + 1);
+            
+            nums.erase(nums.begin());
+            return countValidCombinations(next, nums, result);
+
+        }
+    }
+}
+
+// Function to count all the possible combinations
+
+int countPossibilities(const std::string& cfg, const std::vector<int>& nums, int index = 0) {
+    // Base case: if the index reaches the end of cfg, return 1
+    if (index >= cfg.length()) {
+        return 1;
+    }
+
+    int possibilities = 0;
+
+    // If the current character is '?', we have two possibilities: '#' or '.'
+    if (cfg[index] == '?') {
+        // Calculate possibilities if '?' is replaced by '#'
+        possibilities += countPossibilities(cfg, nums, index + 1);
+
+        // Replace '?' by '.' and count possibilities
+        std::string cfg_copy = cfg;
+        cfg_copy[index] = '.';
+        possibilities += countPossibilities(cfg_copy, nums, index + 1);
+    } else {
+        // If current character is not '?', move to the next index
+        possibilities += countPossibilities(cfg, nums, index + 1);
+    }
+
+    return possibilities;
 }
 
 
 int main(){
-
-    // Am I on new branch?
 
     // Store the example and the input in variables
     std::string example = "???.### 1,1,3\n.??..??...?##. 1,1,3\n?#?#?#?#?#?#?#? 1,3,1,6\n????.#...#... 4,1,1\n????.######..#####. 1,6,5\n?###???????? 3,2,1\n";
     std::string input = readInputText("input.txt");
     
     // Just to work with example
-    //input = example;
+    input = example;
 
     // Split the initial input by lines
     std::vector<std::string> splittedInput = split(input, "\n");
 
     // Variable that will hold the final result
-    int result;
+    int result = 0;
 
     // Read every line
     for(std::string line: splittedInput){
@@ -197,30 +160,10 @@ int main(){
 
         // Store the numbers in a vector and obtain the sum
         std::vector<int> hashtagsVector = fillInVector(strNumbers);
-        int totalNumHashtags = sum(hashtagsVector);
 
-        // Find all the spots with ?
-        std::vector<int> interrogantIndexes = findInterrogants(spring);
-
-        // Count hashtags and interrogants in the spring
-        int numHashtagsInSpring = 0, numInterrogants = 0;
-        countHashtagsAndInterrogants(spring, numHashtagsInSpring, numInterrogants);
-
-        // Calculate the number of available hashtags (total number - already placed ones)
-        int numAvailableHashtags = totalNumHashtags - numHashtagsInSpring;
-
-        // Obtain all the possible combinations 
-        std::vector<std::string> allPossibleCombinations = getAllPossibleCombinations(spring, numInterrogants, numAvailableHashtags, interrogantIndexes);
-
-        // Try all the different combinations and check if they're possible or not
-        for(auto combination: allPossibleCombinations){
-
-            // If not, check if it is valid
-            bool validCombination = checkValidCombination(combination, hashtagsVector);
-
-            // If valid combination, add 1 to the final result
-            result += validCombination;
-        }
+        // Count how many valid combinations exist
+        result += countPossibilities(spring, hashtagsVector);
+        std::cout << "a";
     }
 
     std::cout << result;
