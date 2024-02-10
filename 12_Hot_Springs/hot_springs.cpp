@@ -63,76 +63,43 @@ std::vector<int> fillInVector(std::string str){
 }
 
 
-// Recursive function that checks if a combination is valid or not
-void countValidCombinations(std::string combination, std::vector<int> nums, int &result){
+
+// Recursive function to count how many different ways exist to arrange the #
+int count(std::string config, std::vector<int> nums) {
 
     // Base cases
-    if(combination.length() == 0){   // If we have read the whole combination, check if there are no more numbers to satisfy
-        if(nums.size() == 0){
-            result ++;
-            return;
-        }
-    }
 
-    if(nums.size() == 0){
-        if(combination.find('#') == std::string::npos){  // If there are no more numbers, check that there are no more # left
-            result ++;
-            return;
-        }
-    }
+    if(config.empty()) // If we've read the whole string, the configuration is positive if there are no more blocks to assign --> empty vector
+        return nums.empty() ? 1 : 0;
 
-    // If next character is a dot
-    if(combination[0] == '.')
-       return countValidCombinations(combination.erase(0, 1), nums, result); // Call the function removing the first character
+    if(nums.empty())   // Otherwise, if the vector is empty, we'll return true if there are no more # in the configuration
+        return (config.find('#') == std::string::npos) ? 1 : 0;
 
-    // If next character is # or ? --> Start of block
-    if(combination[0] == '#' || combination[0] == '?'){
+    int result = 0;
 
-        std::string block = combination.substr(0, nums[0]); // The next n positions
+    // If we find a dot or ? (treated as dot) --> Repeat the algorithm starting with the next character
+    if(config[0] == '.' || config[0] == '?') 
+        result += count(config.substr(1), nums);
 
-        if (nums[0] <= combination.length() &&                                // Make sure there are enough characters left to check
-            block.find('.') == std::string::npos &&                           // Check that there are no dots in the next positions
-            (nums[0] == combination.length() || combination[nums[0]] != '#')){ // We can't have 2 consecutive blocks --> The next one must be a dot (or ? converted to dot)
+    // If we find a # or a ? (treated as a #)
+    if(config[0] == '#' || config[0] == '?') {
 
-            // Jump to the end of the block and pop the first number of the vector
+        if(nums[0] <= config.length()  // Make sure there are enough characters left to check
+        && config.substr(0, nums[0]).find('.') == std::string::npos   // Check that there are no dots in the next positions 
+        && (nums[0] == config.length() || config[nums[0]] != '#')){   // We can't have 2 consecutive blocks --> The next one must be a dot (or ? converted to dot)
 
+            // We want to start the algorithm after this block. This is a prevention measure to avoid exceptions
             std::string next = "";
 
-            if(combination.length() > nums[0])
-                next = combination.substr(nums[0] + 1);
-            
-            nums.erase(nums.begin());
-            return countValidCombinations(next, nums, result);
+            if (config.length() > nums[0])
+                next = config.substr(nums[0] + 1);
 
+            // Restart the algorithm after the current block. We also want to get rid of the first element of the nums vector, as it is alredy checked
+            result += count(next, std::vector<int>(nums.begin() + 1, nums.end()));
         }
     }
-}
 
-// Function to count all the possible combinations
-
-int countPossibilities(const std::string& cfg, const std::vector<int>& nums, int index = 0) {
-    // Base case: if the index reaches the end of cfg, return 1
-    if (index >= cfg.length()) {
-        return 1;
-    }
-
-    int possibilities = 0;
-
-    // If the current character is '?', we have two possibilities: '#' or '.'
-    if (cfg[index] == '?') {
-        // Calculate possibilities if '?' is replaced by '#'
-        possibilities += countPossibilities(cfg, nums, index + 1);
-
-        // Replace '?' by '.' and count possibilities
-        std::string cfg_copy = cfg;
-        cfg_copy[index] = '.';
-        possibilities += countPossibilities(cfg_copy, nums, index + 1);
-    } else {
-        // If current character is not '?', move to the next index
-        possibilities += countPossibilities(cfg, nums, index + 1);
-    }
-
-    return possibilities;
+    return result;
 }
 
 
@@ -143,7 +110,7 @@ int main(){
     std::string input = readInputText("input.txt");
     
     // Just to work with example
-    input = example;
+    //input = example;
 
     // Split the initial input by lines
     std::vector<std::string> splittedInput = split(input, "\n");
@@ -156,14 +123,13 @@ int main(){
 
         // Separate the springs and the numbers
         std::string spring = line.substr(0, line.find(' '));
-        std::string strNumbers = line.substr(line.find(' ') + 1);
+        std::string strNums = line.substr(line.find(' ') + 1);
 
         // Store the numbers in a vector and obtain the sum
-        std::vector<int> hashtagsVector = fillInVector(strNumbers);
+        std::vector<int> nums = fillInVector(strNums);
 
         // Count how many valid combinations exist
-        result += countPossibilities(spring, hashtagsVector);
-        std::cout << "a";
+        result += count(spring, nums);
     }
 
     std::cout << result;
