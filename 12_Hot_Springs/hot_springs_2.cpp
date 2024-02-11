@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -62,24 +62,25 @@ std::vector<int> fillInVector(std::string str){
     return numVector;
 }
 
-
-
 // Recursive function to count how many different ways exist to arrange the #
-int count(std::string config, std::vector<int> nums) {
+uint64_t countPossibleArrangements(std::string config, std::vector<int> nums, std::map<std::pair<std::string, std::vector<int>>, uint64_t> &alreadyTriedConfigs) {
 
     // Base cases
-
     if(config.empty()) // If we've read the whole string, the configuration is positive if there are no more blocks to assign --> empty vector
         return nums.empty() ? 1 : 0;
 
     if(nums.empty())   // Otherwise, if the vector is empty, we'll return true if there are no more # in the configuration
         return (config.find('#') == std::string::npos) ? 1 : 0;
 
-    int result = 0;
+    // Check if we have already computed this state: memoization
+    if(alreadyTriedConfigs.find(std::make_pair(config, nums)) != alreadyTriedConfigs.end())
+        return alreadyTriedConfigs.at(std::make_pair(config, nums));
+
+    uint64_t result = 0;
 
     // If we find a dot or ? (treated as dot) --> Repeat the algorithm starting with the next character
     if(config[0] == '.' || config[0] == '?') 
-        result += count(config.substr(1), nums);
+        result += countPossibleArrangements(config.substr(1), nums, alreadyTriedConfigs);
 
     // If we find a # or a ? (treated as a #)
     if(config[0] == '#' || config[0] == '?') {
@@ -88,16 +89,19 @@ int count(std::string config, std::vector<int> nums) {
         && config.substr(0, nums[0]).find('.') == std::string::npos   // Check that there are no dots in the next positions 
         && (nums[0] == config.length() || config[nums[0]] != '#')){   // We can't have 2 consecutive blocks --> The next one must be a dot (or ? converted to dot)
 
-            // We want to start the algorithm after this block. This is a prevention measure to avoid exceptions
+            // We want to start the algorithm after this block. If we're out of bounds, we want an empty string
             std::string next = "";
 
             if (config.length() > nums[0])
                 next = config.substr(nums[0] + 1);
 
             // Restart the algorithm after the current block. We also want to get rid of the first element of the nums vector, as it is alredy checked
-            result += count(next, std::vector<int>(nums.begin() + 1, nums.end()));
+            result += countPossibleArrangements(next, std::vector<int>(nums.begin() + 1, nums.end()), alreadyTriedConfigs);
         }
     }
+
+    // Store the result in our cache
+    alreadyTriedConfigs[std::make_pair(config, nums)] = result;
 
     return result;
 }
@@ -110,10 +114,13 @@ int main(){
     std::string input = readInputText("input.txt");
     
     // Just to work with example
-    input = example;
+    //input = example;
 
     // Split the initial input by lines
     std::vector<std::string> splittedInput = split(input, "\n");
+
+    // Hashmap acting as a cache to memoize
+    std::map<std::pair<std::string, std::vector<int>>, uint64_t> alreadyTriedConfigs;
 
     // Variable that will hold the final result
     uint64_t result = 0;
@@ -136,13 +143,11 @@ int main(){
             strNums.append(originalStrNums);
         }
 
-
-
         // Store the numbers in a vector and obtain the sum
         std::vector<int> nums = fillInVector(strNums);
 
         // Count how many valid combinations exist
-        result += count(spring, nums);
+        result += countPossibleArrangements(spring, nums, alreadyTriedConfigs);
     }
 
     std::cout << result;
