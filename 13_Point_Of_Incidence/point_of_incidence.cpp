@@ -79,6 +79,33 @@ void fillGrid(std::vector<std::vector<char>> &grid, std::string input){
     }
 }
 
+int findHorizontalReflexes(std::vector<std::vector<char>> grid, int currentIndex){
+
+    // Base case: we ran out of rows
+    /*
+    if(currentRow.empty())
+        return possibleReflexion ? rowIndex : 0;   // If variable possible reflexion is still true, then we have a reflection
+     */
+
+    // Take the current row and the next one
+    std::vector<char> currentRow = grid[currentIndex];
+    std::vector<char> nextRow = grid[currentIndex + 1];
+
+    // Check if they are equal
+    if(currentRow.size() == nextRow.size()){
+        bool equalRows = true;
+        for(int i = 0; i < currentRow.size(); i++){
+            if(currentRow[i] != nextRow[i]){
+                equalRows = false;
+                break;
+            }
+        }
+    }
+
+    // If they are equal, start the recursion with the adjacent rows. If not, call the algorithm with currentIndex + 1
+    
+}
+
 int main(){
 
     /*
@@ -108,6 +135,14 @@ int main(){
         // Define the grid and fill it
         std::vector<std::vector<char>> grid(nrows, std::vector<char>(ncols)); // 2D vector with all the grid
         fillGrid(grid, block);
+
+        // Find the mirrors :)
+        
+        /*
+            I don't know whether I should define a function that finds both vertical and horizontal reflexes, or just 
+            horizontal ones (easier to manipulate) and then repeat the algorithm with the transponed 2d vector. Must think
+            of that.
+        */
 
 
 
