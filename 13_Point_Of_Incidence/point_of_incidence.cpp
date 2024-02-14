@@ -79,31 +79,45 @@ void fillGrid(std::vector<std::vector<char>> &grid, std::string input){
     }
 }
 
-int findHorizontalReflexes(std::vector<std::vector<char>> grid, int currentIndex){
+// Recursive function to check a possible reflection
+bool checkPossibleReflection(std::vector<std::vector<char>> grid, int currentIndex, int nextIndex, bool possibleReflection){
 
     // Base case: we ran out of rows
-    /*
-    if(currentRow.empty())
-        return possibleReflexion ? rowIndex : 0;   // If variable possible reflexion is still true, then we have a reflection
-     */
+    if (currentIndex < 0 || currentIndex >= grid.size() || nextIndex < 0 || nextIndex >= grid.size())
+        return possibleReflection;
 
-    // Take the current row and the next one
+    // Take the current and next row 
     std::vector<char> currentRow = grid[currentIndex];
-    std::vector<char> nextRow = grid[currentIndex + 1];
+    std::vector<char> nextRow = grid[nextIndex];
 
-    // Check if they are equal
-    if(currentRow.size() == nextRow.size()){
-        bool equalRows = true;
-        for(int i = 0; i < currentRow.size(); i++){
-            if(currentRow[i] != nextRow[i]){
-                equalRows = false;
-                break;
-            }
+    // Check if the two rows are equal
+    bool equalRows = true;
+    for (int i = 0; i < currentRow.size(); i++){
+        if (currentRow[i] != nextRow[i]){
+            equalRows = false;
+            break;
         }
     }
 
-    // If they are equal, start the recursion with the adjacent rows. If not, call the algorithm with currentIndex + 1
+    // If they are equal, start the recursion with the adjacent rows. If not, simply return false
+    if (equalRows)
+        return checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true);
+    else
+        return false;
+}
+
+// Function that reads a block and checks if two lines are equal. If they are, calls a recursive function to check if we have a reflection
+int getUpperRows(std::vector<std::vector<char>> grid){
+
+    for(int i = 0; i < grid.size() - 1; i++){
+
+        // We mustn't iterate the whole grid, as it would be senseless to compare the last row to nothing
+        if(checkPossibleReflection(grid, i, i + 1, true))
+            return i + 1;
+    }
     
+    // If we reach here means we don't have horizontal reflexes
+    return 0;
 }
 
 int main(){
@@ -116,11 +130,11 @@ int main(){
     */
 
    // Store the example and the input in variables
-    std::string example = "#.##..##.\n..#.##.#.\n##......#\n##......#\n..#.##.#.\n..##..##.\n#.#.##.#.\n\n#...##..#\n#....#..#\n..##..###\n#####.##.\n#####.##.\n..##..###\n#....#..#\n";
+    std::string example = "#.##..##.\n..#.##.#.\n##......#\n##......#\n..#.##.#.\n..##..##.\n#.#.##.#.\n\n#...##..#\n#....#..#\n..##..###\n#####.##.\n#####.##.\n..##..###\n#....#..#\n\n";
     std::string input = readInputText("input.txt");
 
     // Just to work with example. Might comment out
-    //input = example;
+    input = example;
 
     // Separate every block and store it in a vector. Still string, not grid
     std::vector<std::string> blocksVector = split(input, "\n\n");
@@ -142,7 +156,13 @@ int main(){
             I don't know whether I should define a function that finds both vertical and horizontal reflexes, or just 
             horizontal ones (easier to manipulate) and then repeat the algorithm with the transponed 2d vector. Must think
             of that.
+
+            I'll start by implementing the rows one. I'll decide later
         */
+
+       int numUpperRows = getUpperRows(grid);
+
+       std::cout << numUpperRows << '\n';
 
 
 
