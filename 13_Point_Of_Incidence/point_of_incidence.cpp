@@ -164,6 +164,7 @@ int main(){
         // Define a vector for the rows and another for the columns. Will be easier to perform the algorithm
         std::vector<std::vector<char>> rows(nrows, std::vector<char>(ncols)); // 2D vector for the rows
         std::vector<std::vector<char>> cols(ncols, std::vector<char>(nrows)); // 2D vector for the cols
+        
         fillRows(rows, block);
         fillCols(cols, block);
 
@@ -173,7 +174,6 @@ int main(){
     }
 
     // Log the result
-    // I got a result of 26002 but I'm on a plane and I cannot prove if it's right haha
     std::cout << result << '\n';
     return 0;
 }
