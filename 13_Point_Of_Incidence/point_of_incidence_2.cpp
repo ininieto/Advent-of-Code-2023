@@ -60,11 +60,20 @@ void getGridDimensions(std::string input, int &nrows, int &ncols){
     nrows ++;   // We must apply this correction
 }
 
+// Debug function to print a 2d vector
+void printGrid(std::vector<std::vector<char>> grid){
+    for(auto row: grid){
+        for(auto element: row){
+            std::cout << element;
+        }
+        std::cout << '\n';
+    }
+}
+
 // Function to fill in the rows
-void fillRows(std::vector<std::vector<char>> &grid, std::string input){
+void fillRows(std::vector<std::vector<char>> &rows, std::string input){
 
-    int nrows = grid.size(), ncols = grid[0].size();
-
+    int nrows = rows.size(), ncols = rows[0].size();
     int strCounter = 0;
 
     for (int i = 0; i < nrows; i++){
@@ -73,29 +82,20 @@ void fillRows(std::vector<std::vector<char>> &grid, std::string input){
             if (input[strCounter] == '\n')
                 strCounter ++;
 
-            grid[i][j] = input[strCounter];
+            rows[i][j] = input[strCounter];
             strCounter ++;
         }
     }
 }
 
-// Function to fill in the columns
-void fillCols(std::vector<std::vector<char>> &grid, std::string input){
+// Function to transpose a rows vector into a columns one
+void fillCols(std::vector<std::vector<char>> &cols, std::vector<std::vector<char>> rows){
 
-    int nrows = grid[0].size(), ncols = grid.size(); // Transpose it for the columns
-
-    int strCounter = 0;
-
-    for (int i = 0; i < nrows; i++){
-        for (int j = 0; j < ncols; j++){
-
-            if (input[strCounter] == '\n')
-                strCounter ++;
-
-            grid[j][i] = input[strCounter];
-            strCounter ++;
-        }
-    }
+    for(int i = 0; i < rows.size(); i++){
+        for(int j = 0; j < rows[0].size(); j++)
+            cols[j][i] = rows[i][j];
+        
+    } 
 }
 
 // Recursive function to check a possible reflection
@@ -170,7 +170,7 @@ int main(){
         result += (100 * getReflectedRowsCols(rows));
 
         // Fill the rows vector and find reflections. We separate them in case we found a smudge in the rows
-        fillCols(cols, block);  // TODO: Fill column vector based on the rows one
+        fillCols(cols, rows);  // TODO: Fill column vector based on the rows one
         result += getReflectedRowsCols(cols);
     }
 
