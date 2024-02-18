@@ -165,11 +165,12 @@ int main(){
         std::vector<std::vector<char>> rows(nrows, std::vector<char>(ncols)); // 2D vector for the rows
         std::vector<std::vector<char>> cols(ncols, std::vector<char>(nrows)); // 2D vector for the cols
         
+        // Fill the rows vector and find reflections
         fillRows(rows, block);
-        fillCols(cols, block);
-
-        // Find the reflected rows and cols
         result += (100 * getReflectedRowsCols(rows));
+
+        // Fill the rows vector and find reflections. We separate them in case we found a smudge in the rows
+        fillCols(cols, block);  // TODO: Fill column vector based on the rows one
         result += getReflectedRowsCols(cols);
     }
 
