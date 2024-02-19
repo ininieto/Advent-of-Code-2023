@@ -96,6 +96,7 @@ void fillRows(std::vector<std::vector<char>> &rows, std::string input){
 }
 
 // Function to transpose a rows vector into a columns one
+/*
 void fillCols(std::vector<std::vector<char>> &cols, std::vector<std::vector<char>> rows){
 
     for(int i = 0; i < rows.size(); i++){
@@ -103,6 +104,26 @@ void fillCols(std::vector<std::vector<char>> &cols, std::vector<std::vector<char
             cols[j][i] = rows[i][j];
         
     } 
+}
+*/
+
+// Function to fill in the columns
+void fillCols(std::vector<std::vector<char>> &grid, std::string input){
+
+    int nrows = grid[0].size(), ncols = grid.size(); // Transpose it for the columns
+
+    int strCounter = 0;
+
+    for (int i = 0; i < nrows; i++){
+        for (int j = 0; j < ncols; j++){
+
+            if (input[strCounter] == '\n')
+                strCounter ++;
+
+            grid[j][i] = input[strCounter];
+            strCounter ++;
+        }
+    }
 }
 
 // Recursive function to check a possible reflection
@@ -165,7 +186,7 @@ int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool alreadyCorrec
         if(checkPossibleReflection(grid, i, i + 1, true, alreadyCorrectedSmudge)){
             if(alreadyCorrectedSmudge)
                 return i + 1;
-            else
+            
                 // Correct the false smudge candidates
         }
     }
@@ -195,9 +216,6 @@ int main(){
 
         auto block = blocksVector[i];
 
-        if(i == 7)
-            std::cout << "debug";
-
         // Guess the size of the grid
         int nrows = 0, ncols = 0;
         getGridDimensions(block, nrows, ncols);
@@ -213,7 +231,9 @@ int main(){
 
         // If it didn't find a reflection on the rows, try with the cols
         if(prevResult == 0){
-            fillCols(cols, rows);
+            fillCols(cols, block);
+            if(i == 7)
+                printGrid(cols);
             prevResult += getReflectedRowsCols(cols, false);
         }  
 
