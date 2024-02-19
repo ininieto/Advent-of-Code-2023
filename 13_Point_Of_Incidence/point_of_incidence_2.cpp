@@ -11,6 +11,13 @@
 #include <fstream>
 #include <vector>
 
+// Struct to keep track of the possible smudge
+struct smudge{
+    int rowIndex;
+    int idx;
+    bool alreadyCorrected;
+};
+
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
 
@@ -99,40 +106,68 @@ void fillCols(std::vector<std::vector<char>> &cols, std::vector<std::vector<char
 }
 
 // Recursive function to check a possible reflection
-bool checkPossibleReflection(std::vector<std::vector<char>> grid, int currentIndex, int nextIndex, bool possibleReflection){
+bool checkPossibleReflection(std::vector<std::vector<char>> &grid, int currentIndex, int nextIndex, bool possibleReflection, bool &alreadyCorrectedSmudge){
 
     // Base case: we ran out of rows/columns
     if (currentIndex < 0 || currentIndex >= grid.size() || nextIndex < 0 || nextIndex >= grid.size())
         return possibleReflection;
 
     // Take the current and next row 
-    std::vector<char> currentRow = grid[currentIndex];
-    std::vector<char> nextRow = grid[nextIndex];
+    std::vector<char> &currentRow = grid[currentIndex];
+    std::vector<char> &nextRow = grid[nextIndex];
+    std::vector<int> differentIndexes;
 
     // Check if the two rows are equal
-    bool equalRows = true;
     for (int i = 0; i < currentRow.size(); i++){
-        if (currentRow[i] != nextRow[i]){
-            equalRows = false;
-            break;
+        if (currentRow[i] != nextRow[i])
+            differentIndexes.push_back(i);
+    }
+
+    bool equalRows = differentIndexes.empty();
+
+    // Correct smudge
+    if(differentIndexes.size() == 1 && !alreadyCorrectedSmudge){
+
+        // Try to correct the current row
+        int idx = differentIndexes[0];
+        currentRow[idx] = (currentRow[idx] == '#') ? '.' : '#';    // Change the character in the current row
+        if(checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true, alreadyCorrectedSmudge = true)){
+            alreadyCorrectedSmudge = true;
+            equalRows = true;
+        }
+        
+        // If it didn't work, try to change the next row
+        if (!alreadyCorrectedSmudge){
+            currentRow[idx] = (currentRow[idx] == '#') ? '.' : '#'; // Set the value of currentRow back
+
+            if (checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true, alreadyCorrectedSmudge = true)){
+                alreadyCorrectedSmudge = true;
+                equalRows = true;
+            }
+            else
+                nextRow[idx] = (nextRow[idx] == '#') ? '.' : '#'; // Set the value of nextRow back
         }
     }
 
     // If they are equal, start the recursion with the adjacent rows. If not, simply return false
     if (equalRows)
-        return checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true);
+        return checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true, alreadyCorrectedSmudge);
     else
         return false;
 }
 
 // Function that reads a block and checks if two lines are equal. If they are, calls a recursive function to check if we have a reflection
-int getReflectedRowsCols(std::vector<std::vector<char>> grid){
+int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool alreadyCorrectedSmudge){
 
     for(int i = 0; i < grid.size() - 1; i++){
 
         // We mustn't iterate the whole grid, as it would be senseless to compare the last row to nothing
-        if(checkPossibleReflection(grid, i, i + 1, true))
-            return i + 1;
+        if(checkPossibleReflection(grid, i, i + 1, true, alreadyCorrectedSmudge)){
+            if(alreadyCorrectedSmudge)
+                return i + 1;
+            else
+                // Correct the false smudge candidates
+        }
     }
     
     // If we reach here means we don't have reflexes
@@ -155,7 +190,13 @@ int main(){
     uint64_t result = 0;
 
     // Big loop
-    for(auto block: blocksVector){
+    for(int i = 0; i < blocksVector.size(); i++){
+    //for(auto block: blocksVector){
+
+        auto block = blocksVector[i];
+
+        if(i == 7)
+            std::cout << "debug";
 
         // Guess the size of the grid
         int nrows = 0, ncols = 0;
@@ -165,16 +206,25 @@ int main(){
         std::vector<std::vector<char>> rows(nrows, std::vector<char>(ncols)); // 2D vector for the rows
         std::vector<std::vector<char>> cols(ncols, std::vector<char>(nrows)); // 2D vector for the cols
         
-        // Fill the rows vector and find reflections
+        // Fill the rows vector and try to find a result (even trying to correct the smudge)
         fillRows(rows, block);
-        result += (100 * getReflectedRowsCols(rows));
+        int prevResult = 0;
+        prevResult += (100 * getReflectedRowsCols(rows, false));
 
-        // Fill the rows vector and find reflections. We separate them in case we found a smudge in the rows
-        fillCols(cols, rows);  // TODO: Fill column vector based on the rows one
-        result += getReflectedRowsCols(cols);
+        // If it didn't find a reflection on the rows, try with the cols
+        if(prevResult == 0){
+            fillCols(cols, rows);
+            prevResult += getReflectedRowsCols(cols, false);
+        }  
+
+        if(prevResult == 0)
+            std::cout << "a";
+
+        result += prevResult;      
     }
 
     // Log the result
+    // I got an answer of 36212 but it is too low
     std::cout << result << '\n';
     return 0;
 }
