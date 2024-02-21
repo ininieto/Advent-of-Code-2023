@@ -141,8 +141,10 @@ bool checkPossibleReflection(std::vector<std::vector<char>> &grid, int currentIn
         tempGrid[currentIndex][idx] = (tempGrid[currentIndex][idx] == '#') ? '.' : '#'; // If it was a #, set it to . and vice versa
         bool tempAlreadyCorrectedSmudge = true;
 
-        finalResult = getReflectedRowsCols(tempGrid, tempAlreadyCorrectedSmudge);
+        int possibleFinalResult = getReflectedRowsCols(tempGrid, tempAlreadyCorrectedSmudge);
+        finalResult = (possibleFinalResult > 0) ? possibleFinalResult : -1;
 
+        // If the result is valid, exit the function. If not, restore the value of finalResult
         if(finalResult > 0)
             return true;
 
@@ -169,6 +171,8 @@ int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorre
             return i + 1;
         else if(possibleReflection && !alreadyCorrectedSmudge && finalResult > -1)
             return finalResult;
+        //else if(!possibleReflection && alreadyCorrectedSmudge)
+        //    return 0;
     }
     
     // If we reach here means we don't have reflexes
@@ -194,13 +198,13 @@ int main(){
     //for(auto block: blocksVector){
     for(int i = 0; i < blocksVector.size(); i++){
 
-        //if(i == 7)
-            //std::cout << "debug";
+        if(i == 37)
+            std::cout << "debug";
 
         auto block = blocksVector[i];
 
         // Debug
-        std::cout << "Nueva linea" << i <<'\n';
+        std::cout << "Nueva linea " << i <<'\n';
 
         // Guess the size of the grid
         int nrows = 0, ncols = 0;
