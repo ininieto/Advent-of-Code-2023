@@ -100,8 +100,18 @@ void fillCols(std::vector<std::vector<char>> &grid, std::string input){
     }
 }
 
+// Function to print the whole grid. Debug purposes
+void printGrid(std::vector<std::vector<char>> grid){
+    for(auto row: grid){
+        for(auto element: row){
+            std::cout << element;
+        }
+        std::cout << '\n';
+    }
+}
+
 // Recursive function to check a possible reflection
-bool checkPossibleReflection(std::vector<std::vector<char>> grid, int currentIndex, int nextIndex, bool possibleReflection, bool &alreadyCorrectedSmudge, int &finalResult){
+bool checkPossibleReflection(std::vector<std::vector<char>> &grid, int currentIndex, int nextIndex, bool possibleReflection, bool &alreadyCorrectedSmudge, int &finalResult){
 
     // Base case: we ran out of rows/columns
     if (currentIndex < 0 || currentIndex >= grid.size() || nextIndex < 0 || nextIndex >= grid.size())
@@ -121,7 +131,7 @@ bool checkPossibleReflection(std::vector<std::vector<char>> grid, int currentInd
     bool equalRows = differentIndexes.empty();
 
     // Here comes the magic
-    if(differentIndexes.size() == 1){
+    if(differentIndexes.size() == 1 && !alreadyCorrectedSmudge){
 
         int idx = differentIndexes[0];
 
@@ -133,10 +143,8 @@ bool checkPossibleReflection(std::vector<std::vector<char>> grid, int currentInd
 
         finalResult = getReflectedRowsCols(tempGrid, tempAlreadyCorrectedSmudge);
 
-        if(finalResult > 0){
-            std::cout << "Tenemos el smudge" << '\n';
+        if(finalResult > 0)
             return true;
-        }
 
     }
 
@@ -183,10 +191,16 @@ int main(){
     uint64_t result = 0;
 
     // Big loop
-    for(auto block: blocksVector){
+    //for(auto block: blocksVector){
+    for(int i = 0; i < blocksVector.size(); i++){
+
+        //if(i == 7)
+            //std::cout << "debug";
+
+        auto block = blocksVector[i];
 
         // Debug
-        std::cout << "Nueva linea" << '\n';
+        std::cout << "Nueva linea" << i <<'\n';
 
         // Guess the size of the grid
         int nrows = 0, ncols = 0;
@@ -201,10 +215,25 @@ int main(){
 
         bool alreadyCorrectedSmudge = false;
 
+        // Debug
+        int rowsResult = 0, colsResult = 0;
+
         // Find the reflected rows and cols
-        result += (100 * getReflectedRowsCols(rows, alreadyCorrectedSmudge));
+        rowsResult += (100 * getReflectedRowsCols(rows, alreadyCorrectedSmudge));
         alreadyCorrectedSmudge = false;
-        result += getReflectedRowsCols(cols, alreadyCorrectedSmudge);
+        colsResult += getReflectedRowsCols(cols, alreadyCorrectedSmudge);
+
+        // Debug
+        std::cout << rowsResult << "  " << colsResult << '\n';
+
+        // Debug
+        if(rowsResult + colsResult == 0)
+            printGrid(rows);
+        if(rowsResult > 0 && colsResult > 0)
+            printGrid(rows);
+
+        result += rowsResult;
+        result += colsResult;
     }
 
     // Log the result
