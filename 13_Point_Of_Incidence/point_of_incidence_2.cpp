@@ -11,6 +11,8 @@
 #include <fstream>
 #include <vector>
 
+int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorrectedSmudge);
+
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
 
@@ -99,7 +101,7 @@ void fillCols(std::vector<std::vector<char>> &grid, std::string input){
 }
 
 // Recursive function to check a possible reflection
-bool checkPossibleReflection(std::vector<std::vector<char>> grid, int currentIndex, int nextIndex, bool possibleReflection){
+bool checkPossibleReflection(std::vector<std::vector<char>> grid, int currentIndex, int nextIndex, bool possibleReflection, bool &alreadyCorrectedSmudge, int &finalResult){
 
     // Base case: we ran out of rows/columns
     if (currentIndex < 0 || currentIndex >= grid.size() || nextIndex < 0 || nextIndex >= grid.size())
@@ -110,29 +112,55 @@ bool checkPossibleReflection(std::vector<std::vector<char>> grid, int currentInd
     std::vector<char> nextRow = grid[nextIndex];
 
     // Check if the two rows are equal
-    bool equalRows = true;
+    std::vector<int> differentIndexes;  // I define a vector that contains the indexes of the different elements. Like that I can count them
     for (int i = 0; i < currentRow.size(); i++){
-        if (currentRow[i] != nextRow[i]){
-            equalRows = false;
-            break;
+        if (currentRow[i] != nextRow[i])
+            differentIndexes.push_back(i); 
+    }
+
+    bool equalRows = differentIndexes.empty();
+
+    // Here comes the magic
+    if(differentIndexes.size() == 1){
+
+        int idx = differentIndexes[0];
+
+        // Create a temporary grid and change the different spot
+        std::vector<std::vector<char>> tempGrid = grid;
+
+        tempGrid[currentIndex][idx] = (tempGrid[currentIndex][idx] == '#') ? '.' : '#'; // If it was a #, set it to . and vice versa
+        bool tempAlreadyCorrectedSmudge = true;
+
+        finalResult = getReflectedRowsCols(tempGrid, tempAlreadyCorrectedSmudge);
+
+        if(finalResult > 0){
+            std::cout << "Tenemos el smudge" << '\n';
+            return true;
         }
+
     }
 
     // If they are equal, start the recursion with the adjacent rows. If not, simply return false
     if (equalRows)
-        return checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true);
+        return checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true, alreadyCorrectedSmudge, finalResult);
     else
         return false;
 }
 
 // Function that reads a block and checks if two lines are equal. If they are, calls a recursive function to check if we have a reflection
-int getReflectedRowsCols(std::vector<std::vector<char>> grid){
+int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorrectedSmudge){
 
+    int finalResult = -1;
+
+    // We mustn't iterate the whole grid, as it would be senseless to compare the last row to nothing
     for(int i = 0; i < grid.size() - 1; i++){
 
-        // We mustn't iterate the whole grid, as it would be senseless to compare the last row to nothing
-        if(checkPossibleReflection(grid, i, i + 1, true))
+        bool possibleReflection = checkPossibleReflection(grid, i, i + 1, true, alreadyCorrectedSmudge, finalResult);
+        
+        if(possibleReflection && alreadyCorrectedSmudge)
             return i + 1;
+        else if(possibleReflection && !alreadyCorrectedSmudge && finalResult > -1)
+            return finalResult;
     }
     
     // If we reach here means we don't have reflexes
@@ -157,6 +185,9 @@ int main(){
     // Big loop
     for(auto block: blocksVector){
 
+        // Debug
+        std::cout << "Nueva linea" << '\n';
+
         // Guess the size of the grid
         int nrows = 0, ncols = 0;
         getGridDimensions(block, nrows, ncols);
@@ -168,9 +199,12 @@ int main(){
         fillRows(rows, block);
         fillCols(cols, block);
 
+        bool alreadyCorrectedSmudge = false;
+
         // Find the reflected rows and cols
-        result += (100 * getReflectedRowsCols(rows));
-        result += getReflectedRowsCols(cols);
+        result += (100 * getReflectedRowsCols(rows, alreadyCorrectedSmudge));
+        alreadyCorrectedSmudge = false;
+        result += getReflectedRowsCols(cols, alreadyCorrectedSmudge);
     }
 
     // Log the result
