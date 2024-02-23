@@ -170,9 +170,7 @@ int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorre
         if(possibleReflection && alreadyCorrectedSmudge)
             return i + 1;
         else if(possibleReflection && !alreadyCorrectedSmudge && finalResult > -1)
-            return finalResult;
-        //else if(!possibleReflection && alreadyCorrectedSmudge)
-        //    return 0;
+            return std::max(i + 1, finalResult);    // We return always the smudged solution
     }
     
     // If we reach here means we don't have reflexes
@@ -209,7 +207,7 @@ int main(){
     //for(auto block: blocksVector){
     for(int i = 0; i < blocksVector.size(); i++){
 
-        if(i == 37)
+        if(i == 7)
             std::cout << "debug";
 
         auto block = blocksVector[i];
@@ -240,6 +238,11 @@ int main(){
 
         // Debug
         std::cout << rowsResult << "  " << colsResult << '\n';
+
+        // Debug
+        printGrid(rows);
+        std::cout << '\n';
+        printGrid(cols);
 
         // Debug
         if(rowsResult + colsResult == 0)
