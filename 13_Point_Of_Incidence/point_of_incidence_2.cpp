@@ -181,6 +181,17 @@ int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorre
 
 int main(){
 
+    /*
+        LIST OF PROBLEMS
+
+        - In the first block I can encounter the smudge, but the first mirroring occurs before the smudged
+          one, so it is returning 3 instead of 16. This probleem might be replicated
+
+        - In some blocks I am getting possible reflection in both horizontal and vertical. I could simply avoid
+          checking the columns when I found the smudge in rows, but I want to be sure that my algorithm works 100%
+
+    */
+
    // Store the example and the input in variables
     std::string example = "#.##..##.\n..#.##.#.\n##......#\n##......#\n..#.##.#.\n..##..##.\n#.#.##.#.\n\n#...##..#\n#....#..#\n..##..###\n#####.##.\n#####.##.\n..##..###\n#....#..#\n\n";
     std::string input = readInputText("input.txt");
