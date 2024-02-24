@@ -11,7 +11,7 @@
 #include <fstream>
 #include <vector>
 
-int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorrectedSmudge);
+int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorrectedSmudge, int &reflectionLine);
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -111,7 +111,7 @@ void printGrid(std::vector<std::vector<char>> grid){
 }
 
 // Recursive function to check a possible reflection
-bool checkPossibleReflection(std::vector<std::vector<char>> &grid, int currentIndex, int nextIndex, bool possibleReflection, bool &alreadyCorrectedSmudge, int &finalResult){
+bool checkPossibleReflection(std::vector<std::vector<char>> &grid, int currentIndex, int nextIndex, bool possibleReflection, bool &alreadyCorrectedSmudge, int &finalResult, int &reflectionLine){
 
     // Base case: we ran out of rows/columns
     if (currentIndex < 0 || currentIndex >= grid.size() || nextIndex < 0 || nextIndex >= grid.size())
@@ -130,6 +130,13 @@ bool checkPossibleReflection(std::vector<std::vector<char>> &grid, int currentIn
 
     bool equalRows = differentIndexes.empty();
 
+    // Keep track of the reflection line
+    if(equalRows || differentIndexes.size() == 1){  // If there can be a reflection
+        if(reflectionLine == INT_MAX)
+            reflectionLine = currentIndex;
+    }
+
+
     // Here comes the magic
     if(differentIndexes.size() == 1 && !alreadyCorrectedSmudge){
 
@@ -141,7 +148,7 @@ bool checkPossibleReflection(std::vector<std::vector<char>> &grid, int currentIn
         tempGrid[currentIndex][idx] = (tempGrid[currentIndex][idx] == '#') ? '.' : '#'; // If it was a #, set it to . and vice versa
         bool tempAlreadyCorrectedSmudge = true;
 
-        int possibleFinalResult = getReflectedRowsCols(tempGrid, tempAlreadyCorrectedSmudge);
+        int possibleFinalResult = getReflectedRowsCols(tempGrid, tempAlreadyCorrectedSmudge, reflectionLine);
         finalResult = (possibleFinalResult > 0) ? possibleFinalResult : -1;
 
         // If the result is valid, exit the function. If not, restore the value of finalResult
@@ -152,25 +159,32 @@ bool checkPossibleReflection(std::vector<std::vector<char>> &grid, int currentIn
 
     // If they are equal, start the recursion with the adjacent rows. If not, simply return false
     if (equalRows)
-        return checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true, alreadyCorrectedSmudge, finalResult);
+        return checkPossibleReflection(grid, currentIndex - 1, nextIndex + 1, true, alreadyCorrectedSmudge, finalResult, reflectionLine);
     else
         return false;
 }
 
 // Function that reads a block and checks if two lines are equal. If they are, calls a recursive function to check if we have a reflection
-int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorrectedSmudge){
+int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorrectedSmudge, int &reflectionLine){
 
     int finalResult = -1;
 
     // We mustn't iterate the whole grid, as it would be senseless to compare the last row to nothing
     for(int i = 0; i < grid.size() - 1; i++){
 
-        bool possibleReflection = checkPossibleReflection(grid, i, i + 1, true, alreadyCorrectedSmudge, finalResult);
+        bool possibleReflection = checkPossibleReflection(grid, i, i + 1, true, alreadyCorrectedSmudge, finalResult, reflectionLine);
         
         if(possibleReflection && alreadyCorrectedSmudge)
             return i + 1;
         else if(possibleReflection && !alreadyCorrectedSmudge && finalResult > -1)
             return std::max(i + 1, finalResult);    // We return always the smudged solution
+        else if(!possibleReflection && alreadyCorrectedSmudge && i >= reflectionLine){
+            alreadyCorrectedSmudge = false;
+            reflectionLine = INT_MAX;
+            return 0;
+        }
+        else if(i >= reflectionLine)
+            reflectionLine = INT_MAX;
     }
     
     // If we reach here means we don't have reflexes
@@ -180,13 +194,9 @@ int getReflectedRowsCols(std::vector<std::vector<char>> grid, bool &alreadyCorre
 int main(){
 
     /*
-        LIST OF PROBLEMS
-
-        - In the first block I can encounter the smudge, but the first mirroring occurs before the smudged
-          one, so it is returning 3 instead of 16. This probleem might be replicated
-
-        - In some blocks I am getting possible reflection in both horizontal and vertical. I could simply avoid
-          checking the columns when I found the smudge in rows, but I want to be sure that my algorithm works 100%
+        I must confess that I am not extremely proud of this solution. There are two cases in which the algorithm is not
+        working properly: blocks 45 and 89. I found really complicated to consider those corner cases. Anyway, the algorithm
+        work for the other 98 blocks and I could fix the result by hand
 
     */
 
@@ -207,13 +217,10 @@ int main(){
     //for(auto block: blocksVector){
     for(int i = 0; i < blocksVector.size(); i++){
 
-        if(i == 7)
-            std::cout << "debug";
-
         auto block = blocksVector[i];
 
         // Debug
-        std::cout << "Nueva linea " << i <<'\n';
+        std::cout << "New Block: " << i <<'\n';
 
         // Guess the size of the grid
         int nrows = 0, ncols = 0;
@@ -227,28 +234,38 @@ int main(){
         fillCols(cols, block);
 
         bool alreadyCorrectedSmudge = false;
+        int reflectionLine = INT_MAX;
 
         // Debug
         int rowsResult = 0, colsResult = 0;
 
         // Find the reflected rows and cols
-        rowsResult += (100 * getReflectedRowsCols(rows, alreadyCorrectedSmudge));
+        rowsResult += (100 * getReflectedRowsCols(rows, alreadyCorrectedSmudge, reflectionLine));
         alreadyCorrectedSmudge = false;
-        colsResult += getReflectedRowsCols(cols, alreadyCorrectedSmudge);
+        reflectionLine = INT_MAX;
+        colsResult += getReflectedRowsCols(cols, alreadyCorrectedSmudge, reflectionLine);
 
         // Debug
         std::cout << rowsResult << "  " << colsResult << '\n';
 
         // Debug
+        /*
         printGrid(rows);
         std::cout << '\n';
         printGrid(cols);
+        */
 
         // Debug
-        if(rowsResult + colsResult == 0)
+        if (rowsResult + colsResult == 0){
             printGrid(rows);
-        if(rowsResult > 0 && colsResult > 0)
+            std::cout << '\n';
+            printGrid(cols);
+        }
+        if (rowsResult > 0 && colsResult > 0){
             printGrid(rows);
+            std::cout << '\n';
+            printGrid(cols);
+        }
 
         result += rowsResult;
         result += colsResult;
