@@ -79,6 +79,48 @@ void fillGrid(std::vector<std::vector<char>> &rows, std::vector<std::vector<char
     }
 }
 
+// Function to print the whole grid. Debug purposes
+void printGrid(std::vector<std::vector<char>> grid){
+    for(auto row: grid){
+        for(auto element: row){
+            std::cout << element;
+        }
+        std::cout << '\n';
+    }
+    std::cout << '\n';
+}
+
+// Recursive function to tilt the lever to the north
+void tilt(std::vector<char> &col, int &currentIndex){
+
+    char &currentChar = col[currentIndex];
+    char &upperChar = col[currentIndex - 1];
+
+    // Base case: If first character
+    if(currentIndex == 0){
+        currentIndex ++;
+        tilt(col, currentIndex);
+    }
+
+    // Base case: if we can't keep going 
+    if(currentIndex == col.size())
+        return;
+
+
+    // Inspect the current char. If it is an O, try to make it slide
+    if(currentChar == 'O' && upperChar == '.'){
+        upperChar = 'O';
+        currentChar = '.';
+        currentIndex --;    // If the rock could slide one position, maybe it can slide more
+    }
+    else{
+        currentIndex ++;
+    }
+
+    // Repeat the algorithm for the next position
+    return tilt(col, currentIndex);
+}
+
 int main(){
 
     // Save the example and the input in variables
@@ -86,7 +128,7 @@ int main(){
     std::string input = readInputText("input.txt");
 
     // Debug
-    //input = example;
+    input = example;
 
     // Split the input and store each line in a vector
     std::vector<std::string> splittedInput = split(input, "\n");
@@ -99,8 +141,23 @@ int main(){
     std::vector<std::vector<char>> cols(nrows, std::vector<char>(ncols)); // 2D vector for the rows
     fillGrid(rows, cols, input);
 
-    std::cout << "a";
+    /*
+        The idea is simple: iterate through all the columns and define a recursive function that tries to move the O upwards
+    */
 
+   // Debug
+   printGrid(cols);
+
+    for (auto &col : cols){
+
+        int currentIndex = 1;
+
+        // Call this recursive function
+        tilt(col, currentIndex);
+
+        // Debug
+        printGrid(cols);
+    }
 
     return 0;
 }
