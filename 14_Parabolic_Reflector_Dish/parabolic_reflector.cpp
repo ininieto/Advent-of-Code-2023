@@ -141,23 +141,34 @@ int main(){
     std::vector<std::vector<char>> cols(nrows, std::vector<char>(ncols)); // 2D vector for the rows
     fillGrid(rows, cols, input);
 
-    /*
-        The idea is simple: iterate through all the columns and define a recursive function that tries to move the O upwards
-    */
-
    // Debug
-   printGrid(cols);
+   //printGrid(cols);
 
     for (auto &col : cols){
 
+        // We start in the second position, as we cannot slide out of bounds
         int currentIndex = 1;
 
         // Call this recursive function
         tilt(col, currentIndex);
 
         // Debug
-        printGrid(cols);
+        //printGrid(cols);
     }
+
+    // Now we need to calculate the total load
+    uint64_t totalLoad = 0;
+
+    for(auto col: cols){
+
+        // Iterate through the columns
+        for(int i = 0; i < cols.size(); i++){
+            if(col[i] == 'O')
+                totalLoad += (col.size() - i);
+        }        
+    }
+
+    std::cout << "The result is " << totalLoad << '\n';
 
     return 0;
 }
