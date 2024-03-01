@@ -60,9 +60,9 @@ void getGridDimensions(std::string input, int &nrows, int &ncols){
 }
 
 // Function to fill in the grid
-void fillGrid(std::vector<std::vector<char>> &grid, std::string input){
+void fillGrid(std::vector<std::vector<char>> &rows, std::vector<std::vector<char>> &cols, std::string input){
 
-    int nrows = grid.size(), ncols = grid[0].size();
+    int nrows = rows.size(), ncols = rows[0].size();
 
     int strCounter = 0;
 
@@ -72,7 +72,8 @@ void fillGrid(std::vector<std::vector<char>> &grid, std::string input){
             if (input[strCounter] == '\n')
                 strCounter ++;
 
-            grid[i][j] = input[strCounter];
+            rows[i][j] = input[strCounter];
+            cols[j][i] = input[strCounter];
             strCounter ++;
         }
     }
@@ -94,8 +95,11 @@ int main(){
     int nrows = 0, ncols = 0;
     getGridDimensions(input, nrows, ncols);
     
-    std::vector<std::vector<char>> grid(nrows, std::vector<char>(ncols)); // 2D vector for the rows
-    fillGrid(grid, input);
+    std::vector<std::vector<char>> rows(nrows, std::vector<char>(ncols)); // 2D vector for the rows
+    std::vector<std::vector<char>> cols(nrows, std::vector<char>(ncols)); // 2D vector for the rows
+    fillGrid(rows, cols, input);
+
+    std::cout << "a";
 
 
     return 0;
