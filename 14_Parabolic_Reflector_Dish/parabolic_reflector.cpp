@@ -99,13 +99,12 @@ void tilt(std::vector<char> &col, int &currentIndex){
     // Base case: If first character
     if(currentIndex == 0){
         currentIndex ++;
-        tilt(col, currentIndex);
+        return tilt(col, currentIndex);
     }
 
     // Base case: if we can't keep going 
     if(currentIndex == col.size())
         return;
-
 
     // Inspect the current char. If it is an O, try to make it slide
     if(currentChar == 'O' && upperChar == '.'){
@@ -113,9 +112,8 @@ void tilt(std::vector<char> &col, int &currentIndex){
         currentChar = '.';
         currentIndex --;    // If the rock could slide one position, maybe it can slide more
     }
-    else{
+    else
         currentIndex ++;
-    }
 
     // Repeat the algorithm for the next position
     return tilt(col, currentIndex);
@@ -128,7 +126,7 @@ int main(){
     std::string input = readInputText("input.txt");
 
     // Debug
-    input = example;
+    //input = example;
 
     // Split the input and store each line in a vector
     std::vector<std::string> splittedInput = split(input, "\n");
@@ -141,19 +139,14 @@ int main(){
     std::vector<std::vector<char>> cols(nrows, std::vector<char>(ncols)); // 2D vector for the rows
     fillGrid(rows, cols, input);
 
-   // Debug
-   //printGrid(cols);
-
+    // Tilt the whole columns vector
     for (auto &col : cols){
 
         // We start in the second position, as we cannot slide out of bounds
         int currentIndex = 1;
 
-        // Call this recursive function
+        // Tilt this column
         tilt(col, currentIndex);
-
-        // Debug
-        //printGrid(cols);
     }
 
     // Now we need to calculate the total load
@@ -164,10 +157,11 @@ int main(){
         // Iterate through the columns
         for(int i = 0; i < cols.size(); i++){
             if(col[i] == 'O')
-                totalLoad += (col.size() - i);
+                totalLoad += (col.size() - i);  // The first row must count col.size() (10 in example), then 9, then 8...
         }        
     }
 
+    // Print the result
     std::cout << "The result is " << totalLoad << '\n';
 
     return 0;
