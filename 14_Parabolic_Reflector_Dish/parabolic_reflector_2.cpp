@@ -90,25 +90,25 @@ void printGrid(std::vector<std::vector<char>> grid){
     std::cout << '\n';
 }
 
-// Recursive function to tilt the lever to the north
-void tilt(std::vector<char> &col, int &currentIndex){
+// Recursive function to tilt the lever to the north / west
+void tiltNorthWest(std::vector<char> &line, int &currentIndex){
 
-    char &currentChar = col[currentIndex];
-    char &upperChar = col[currentIndex - 1];
+    char &currentChar = line[currentIndex];
+    char &prevChar = line[currentIndex - 1];
 
     // Base case: If first character
     if(currentIndex == 0){
         currentIndex ++;
-        return tilt(col, currentIndex);
+        return tiltNorthWest(line, currentIndex);
     }
 
     // Base case: if we can't keep going 
-    if(currentIndex == col.size())
+    if(currentIndex == line.size())
         return;
 
     // Inspect the current char. If it is an O, try to make it slide
-    if(currentChar == 'O' && upperChar == '.'){
-        upperChar = 'O';
+    if(currentChar == 'O' && prevChar == '.'){
+        prevChar = 'O';
         currentChar = '.';
         currentIndex --;    // If the rock could slide one position, maybe it can slide more
     }
@@ -116,7 +116,36 @@ void tilt(std::vector<char> &col, int &currentIndex){
         currentIndex ++;
 
     // Repeat the algorithm for the next position
-    return tilt(col, currentIndex);
+    return tiltNorthWest(line, currentIndex);
+}
+
+// Recursive function to tilt the lever to the south / east
+void tiltSouthEast(std::vector<char> &line, int &currentIndex){
+
+    char &currentChar = line[currentIndex];
+    char &prevChar = line[currentIndex + 1];
+
+    // Base case: If first character
+    if(currentIndex == line.size() - 1){
+        currentIndex --;
+        return tiltSouthEast(line, currentIndex);
+    }
+
+    // Base case: if we can't keep going 
+    if(currentIndex == -1)
+        return;
+
+    // Inspect the current char. If it is an O, try to make it slide
+    if(currentChar == 'O' && prevChar == '.'){
+        prevChar = 'O';
+        currentChar = '.';
+        currentIndex ++;    // If the rock could slide one position, maybe it can slide more
+    }
+    else
+        currentIndex --;
+
+    // Repeat the algorithm for the next position
+    return tiltSouthEast(line, currentIndex);
 }
 
 int main(){
@@ -126,7 +155,7 @@ int main(){
     std::string input = readInputText("input.txt");
 
     // Debug
-    //input = example;
+    input = example;
 
     // Split the input and store each line in a vector
     std::vector<std::string> splittedInput = split(input, "\n");
@@ -139,14 +168,15 @@ int main(){
     std::vector<std::vector<char>> cols(nrows, std::vector<char>(ncols)); // 2D vector for the rows
     fillGrid(rows, cols, input);
 
-    // Tilt the whole columns vector
-    for (auto &col : cols){
+    // Tilt the whole vector. Could be either columns or rows
+    for (auto &line : cols){
 
         // We start in the second position, as we cannot slide out of bounds
-        int currentIndex = 1;
+        int startingIndexNorthWest = 1;
+        int startingIndexSouthEast = line.size() - 2;
 
         // Tilt this column
-        tilt(col, currentIndex);
+        tiltSouthEast(line, startingIndexSouthEast);
     }
 
     // Now we need to calculate the total load
@@ -160,6 +190,9 @@ int main(){
                 totalLoad += (col.size() - i);  // The first row must count col.size() (10 in example), then 9, then 8...
         }        
     }
+
+    // Debug
+    printGrid(cols);
 
     // Print the result
     std::cout << "The result is " << totalLoad << '\n';
