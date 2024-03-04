@@ -174,6 +174,27 @@ void tiltPlatformSouthEast(std::vector<std::vector<char>> &lines){
     }
 }
 
+// Function to convert columns into rows
+void colsToRows(std::vector<std::vector<char>> &cols, std::vector<std::vector<char>> &rows){
+
+    for(int i = 0; i < cols.size(); i++){
+        for(int j = 0; j < cols[0].size(); j++){
+            rows[j][i] = cols[i][j];
+        }
+    }
+} 
+
+// Function to convert rows into columns
+void rowsToCols(std::vector<std::vector<char>> &rows, std::vector<std::vector<char>> &cols){
+
+    for(int i = 0; i < rows.size(); i++){
+        for(int j = 0; j < rows[0].size(); j++){
+            cols[j][i] = rows[i][j];
+        }
+    }
+} 
+
+
 int main(){
 
     // Save the example and the input in variables
@@ -200,29 +221,25 @@ int main(){
         We need to define functions to convert rows <-> columns
     */
 
-    for(uint64_t i = 0; i < 1; i++){
+    for(uint64_t i = 0; i < 1000000000; i++){
 
        // Take the columns and tilt north
        tiltPlatformNorthWest(cols);
        
-       // TODO: Create a rows vector based on the cols
-
-       // Tilt the rows west
+       // Convert columns into rows and tilt them west
+       colsToRows(cols, rows);
        tiltPlatformNorthWest(rows);
 
-       // TODO: Create a cols vector based on the rows
-
-       // Tilt the cols south
-
-       // Tilt the cols south
+       // Convert rows into columns and tilt south
+       rowsToCols(rows, cols);
        tiltPlatformSouthEast(cols);
 
-       // TODO: Create a rows vector based on the cols
-
-       // Till the rows east
+       // Convert columns into rows and tilt them east
+       colsToRows(cols, rows);
        tiltPlatformSouthEast(rows);
 
-       // TODO: Create a cols vector based on the rows
+       // Convert rows into columns
+       rowsToCols(rows, cols);
 
     }
 
@@ -239,7 +256,7 @@ int main(){
     }
 
     // Debug
-    printGrid(cols);
+    printGrid(rows);
 
     // Print the result
     std::cout << "The result is " << totalLoad << '\n';
