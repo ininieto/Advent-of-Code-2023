@@ -91,7 +91,7 @@ void printGrid(std::vector<std::vector<char>> grid){
 }
 
 // Recursive function to tilt the lever to the north / west
-void tiltNorthWest(std::vector<char> &line, int &currentIndex){
+void tiltRowColNorthWest(std::vector<char> &line, int &currentIndex){
 
     char &currentChar = line[currentIndex];
     char &prevChar = line[currentIndex - 1];
@@ -99,7 +99,7 @@ void tiltNorthWest(std::vector<char> &line, int &currentIndex){
     // Base case: If first character
     if(currentIndex == 0){
         currentIndex ++;
-        return tiltNorthWest(line, currentIndex);
+        return tiltRowColNorthWest(line, currentIndex);
     }
 
     // Base case: if we can't keep going 
@@ -116,11 +116,11 @@ void tiltNorthWest(std::vector<char> &line, int &currentIndex){
         currentIndex ++;
 
     // Repeat the algorithm for the next position
-    return tiltNorthWest(line, currentIndex);
+    return tiltRowColNorthWest(line, currentIndex);
 }
 
 // Recursive function to tilt the lever to the south / east
-void tiltSouthEast(std::vector<char> &line, int &currentIndex){
+void tiltRowColSouthEast(std::vector<char> &line, int &currentIndex){
 
     char &currentChar = line[currentIndex];
     char &prevChar = line[currentIndex + 1];
@@ -128,7 +128,7 @@ void tiltSouthEast(std::vector<char> &line, int &currentIndex){
     // Base case: If first character
     if(currentIndex == line.size() - 1){
         currentIndex --;
-        return tiltSouthEast(line, currentIndex);
+        return tiltRowColSouthEast(line, currentIndex);
     }
 
     // Base case: if we can't keep going 
@@ -145,7 +145,33 @@ void tiltSouthEast(std::vector<char> &line, int &currentIndex){
         currentIndex --;
 
     // Repeat the algorithm for the next position
-    return tiltSouthEast(line, currentIndex);
+    return tiltRowColSouthEast(line, currentIndex);
+}
+
+// Function that tilts the platform to the north / west
+void tiltPlatformNorthWest(std::vector<std::vector<char>> &lines){
+
+    for (auto &line : lines){
+
+        // We start in the second position, as we cannot slide out of bounds
+        int startingIndex = 1;
+
+        // Tilt this row / column
+        tiltRowColNorthWest(line, startingIndex);
+    }
+}
+
+// Function that tilts the platform to the south / east
+void tiltPlatformSouthEast(std::vector<std::vector<char>> &lines){
+
+    for (auto &line : lines){
+
+        // We start in the penultimate position, as we cannot slide out of bounds
+        int startingIndex = line.size() - 2;
+
+        // Tilt this row / column
+        tiltRowColSouthEast(line, startingIndex);
+    }
 }
 
 int main(){
@@ -168,15 +194,36 @@ int main(){
     std::vector<std::vector<char>> cols(nrows, std::vector<char>(ncols)); // 2D vector for the rows
     fillGrid(rows, cols, input);
 
-    // Tilt the whole vector. Could be either columns or rows
-    for (auto &line : cols){
+    /*
+        Now we need to encapsulate this process of tilting every column in a function tiltNorth()
+        Then we can call, inside a loop, tiltNorth(), tiltWest(), tiltSouth(), tiltEast()
+        We need to define functions to convert rows <-> columns
+    */
 
-        // We start in the second position, as we cannot slide out of bounds
-        int startingIndexNorthWest = 1;
-        int startingIndexSouthEast = line.size() - 2;
+    for(uint64_t i = 0; i < 1; i++){
 
-        // Tilt this column
-        tiltSouthEast(line, startingIndexSouthEast);
+       // Take the columns and tilt north
+       tiltPlatformNorthWest(cols);
+       
+       // TODO: Create a rows vector based on the cols
+
+       // Tilt the rows west
+       tiltPlatformNorthWest(rows);
+
+       // TODO: Create a cols vector based on the rows
+
+       // Tilt the cols south
+
+       // Tilt the cols south
+       tiltPlatformSouthEast(cols);
+
+       // TODO: Create a rows vector based on the cols
+
+       // Till the rows east
+       tiltPlatformSouthEast(rows);
+
+       // TODO: Create a cols vector based on the rows
+
     }
 
     // Now we need to calculate the total load
