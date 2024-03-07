@@ -51,13 +51,42 @@ std::string readInputText(std::string inputText){
 int main(){
 
     // Save the example and the input in variables
+    //std::string example = "HASH";
     std::string example = "rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7";
     std::string input = readInputText("input.txt");
 
     // Debug
     //input = example;
 
-    std::cout << input << '\n';
+    // Split the input by commas
+    std::vector<std::string> splittedInput = split(input, ",");
+
+    float finalResult = 0;
+
+    // Big loop
+    for(std::string word: splittedInput){
+
+        int currentValue = 0;
+
+        // For every character
+        for(char c: word){
+
+            // Get the ascii code
+            currentValue += (int)c;
+
+            // Multiply by 17
+            currentValue *= 17;
+
+            // Remainder of 256
+            currentValue %= 256;
+        }
+
+        finalResult += currentValue;
+    }
+
+    // Log the result
+    // I got an answer of 505357 but it is too low
+    std::cout << finalResult << '\n';
 
 
     return 0;
