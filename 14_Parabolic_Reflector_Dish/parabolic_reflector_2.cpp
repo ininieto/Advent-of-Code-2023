@@ -14,9 +14,9 @@
 
 // Struct with all the characteristics of row/column tilting
 struct tiltStruct{
-    int startIdx;
-    int endIdx;
-    int step;
+    const int startIdx;
+    const int endIdx;
+    const int step;
 
     // Default constructor. I was getting an error "no matching function for call to 'tiltStruct::tiltStruct()" without it
     tiltStruct() : startIdx(0), endIdx(0), step(0) {}
@@ -77,7 +77,6 @@ void getGridDimensions(std::string input, int &nrows, int &ncols){
 void fillGrid(std::vector<std::vector<char>> &rows, std::vector<std::vector<char>> &cols, std::string input){
 
     int nrows = rows.size(), ncols = rows[0].size();
-
     int strCounter = 0;
 
     for (int i = 0; i < nrows; i++){
@@ -111,7 +110,7 @@ void tiltLine(std::vector<char> &line, int &currentIndex, tiltStruct &params){
     char &prevChar = line[currentIndex - params.step];
 
     // Base case: If first character
-    if(currentIndex == params.startIdx - params.step){ // N/W: If lower than 1,   S/E: If greater than 98 
+    if(currentIndex == params.startIdx - params.step){ // N/W: If equal to 0,   S/E: If equal to line.size() - 1
         currentIndex += params.step;
         return tiltLine(line, currentIndex, params);
     }
@@ -133,13 +132,12 @@ void tiltLine(std::vector<char> &line, int &currentIndex, tiltStruct &params){
     return tiltLine(line, currentIndex, params);
 }
 
-// Function that tilts the platform to the north / west
+// Function that tilts the platform north, south, east or west
 void tiltPlatform(std::vector<std::vector<char>> &lines, tiltStruct &params){
     
-
     for (auto &line : lines){
 
-        // We start in the second position, as we cannot slide out of bounds
+        // We start in the second/penultimate position, as we cannot slide out of bounds
         int startingIndex = params.startIdx;
 
         // Tilt this row / column
@@ -147,24 +145,19 @@ void tiltPlatform(std::vector<std::vector<char>> &lines, tiltStruct &params){
     }
 }
 
-// Function to convert columns into rows
-void colsToRows(std::vector<std::vector<char>> &cols, std::vector<std::vector<char>> &rows){
+// Function to transpose v1 into v2. Only works with square matrixes (nrows = ncols)
+std::vector<std::vector<char>> transpose(std::vector<std::vector<char>> &v){
 
-    for(int i = 0; i < cols.size(); i++){
-        for(int j = 0; j < cols[0].size(); j++)
-            rows[j][i] = cols[i][j];
+    std::vector<std::vector<char>> transposedVector = v;    // This way we assure that the size of transposedVector is the same as v
+
+    for(int i = 0; i < v.size(); i++){
+        for(int j = 0; j < v[0].size(); j++)
+            transposedVector[j][i] = v[i][j];
     }
+    return transposedVector;
 } 
 
-// Function to convert rows into columns
-void rowsToCols(std::vector<std::vector<char>> &rows, std::vector<std::vector<char>> &cols){
-
-    for(int i = 0; i < rows.size(); i++){
-        for(int j = 0; j < rows[0].size(); j++)
-            cols[j][i] = rows[i][j];
-    }
-} 
-
+// Function to calculate load
 int calculateLoad(std::vector<std::vector<char>> &cols){
 
     int totalLoad = 0;
@@ -177,11 +170,8 @@ int calculateLoad(std::vector<std::vector<char>> &cols){
                 totalLoad += (col.size() - i);  // The first row must count col.size() (10 in example), then 9, then 8...
         }        
     }
-
     return totalLoad;
-
 }
-
 
 int main(){
 
@@ -228,30 +218,26 @@ int main(){
        tiltPlatform(cols, tiltMap['N']);
        
        // Convert columns into rows and tilt them west
-       colsToRows(cols, rows);
+       rows = transpose(cols);
        tiltPlatform(rows, tiltMap['W']);
 
        // Convert rows into columns and tilt south
-       rowsToCols(rows, cols);
+       cols = transpose(rows);
        tiltPlatform(cols, tiltMap['S']);
 
        // Convert columns into rows and tilt them east
-       colsToRows(cols, rows);
+       rows = transpose(cols);
        tiltPlatform(rows, tiltMap['E']);
 
        // Convert rows into columns
-       rowsToCols(rows, cols);
+       cols = transpose(rows);
 
        // Print the load
-       int load = calculateLoad(cols);
-       std::cout << i + 1<< ". Load: " << load << '\n';
+       std::cout << i + 1 << ". Load: " << calculateLoad(cols) << '\n';
     }
 
     // Now we need to calculate the total load
     uint64_t totalLoad = calculateLoad(cols);
-
-    // Debug
-    printGrid(rows);
 
     // Print the result
     std::cout << "The result is " << totalLoad << '\n';
