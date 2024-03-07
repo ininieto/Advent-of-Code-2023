@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <map>
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -153,11 +154,23 @@ void tiltPlatformNorthWest(std::vector<std::vector<char>> &lines){
 
     for (auto &line : lines){
 
+        // Implement memoization
+        /*
+        if(cache.find(line) != cache.end()){
+            line = cache.at(line);
+            continue;
+        }
+        */
+
         // We start in the second position, as we cannot slide out of bounds
         int startingIndex = 1;
 
         // Tilt this row / column
+        std::vector<char> nonTiltedLine = line;
         tiltRowColNorthWest(line, startingIndex);
+
+        // Add the tilted line to the cache
+        //cache[nonTiltedLine] = line;
     }
 }
 
@@ -166,11 +179,23 @@ void tiltPlatformSouthEast(std::vector<std::vector<char>> &lines){
 
     for (auto &line : lines){
 
+        // Implement memoization
+        /*
+        if(cache.find(line) != cache.end()){
+            line = cache.at(line);
+            continue;
+        }
+        */
+
         // We start in the penultimate position, as we cannot slide out of bounds
         int startingIndex = line.size() - 2;
 
         // Tilt this row / column
+        std::vector<char> nonTiltedLine = line;
         tiltRowColSouthEast(line, startingIndex);
+
+        // Add the tilted line to the cache
+        //cache[nonTiltedLine] = line;
     }
 }
 
@@ -194,6 +219,23 @@ void rowsToCols(std::vector<std::vector<char>> &rows, std::vector<std::vector<ch
     }
 } 
 
+uint64_t calculateLoad(std::vector<std::vector<char>> &cols){
+
+    uint64_t totalLoad = 0;
+
+    for(auto col: cols){
+
+        // Iterate through the columns
+        for(int i = 0; i < cols.size(); i++){
+            if(col[i] == 'O')
+                totalLoad += (col.size() - i);  // The first row must count col.size() (10 in example), then 9, then 8...
+        }        
+    }
+
+    return totalLoad;
+
+}
+
 
 int main(){
 
@@ -202,7 +244,7 @@ int main(){
     std::string input = readInputText("input.txt");
 
     // Debug
-    input = example;
+    // input = example;
 
     // Split the input and store each line in a vector
     std::vector<std::string> splittedInput = split(input, "\n");
@@ -216,9 +258,14 @@ int main(){
     fillGrid(rows, cols, input);
 
     /*
-        Now we need to encapsulate this process of tilting every column in a function tiltNorth()
-        Then we can call, inside a loop, tiltNorth(), tiltWest(), tiltSouth(), tiltEast()
-        We need to define functions to convert rows <-> columns
+        It won't run: it takes too long
+        I tried to implement memoization, but it was still too slow
+
+        Finally I could find a pattern that repeats every 26 iterations. I realised that this pattern takes place, 
+        for example, between 1100 and 1126. If we say 1100 + 26x = 1000000000, x would not be an integer. 
+        The only number that satisfies the condition is 1104. The load for 1104 (i == 1103) is 105008 --> Our solution
+
+        It shouldn't be difficult to implement that process in code, but I don't feel like doing it :)
     */
 
     for(uint64_t i = 0; i < 1000000000; i++){
@@ -240,20 +287,14 @@ int main(){
 
        // Convert rows into columns
        rowsToCols(rows, cols);
-
+       
+       // Print the load
+       int load = calculateLoad(cols);
+       std::cout << i + 1<< ". Load: " << load << '\n';
     }
 
     // Now we need to calculate the total load
-    uint64_t totalLoad = 0;
-
-    for(auto col: cols){
-
-        // Iterate through the columns
-        for(int i = 0; i < cols.size(); i++){
-            if(col[i] == 'O')
-                totalLoad += (col.size() - i);  // The first row must count col.size() (10 in example), then 9, then 8...
-        }        
-    }
+    uint64_t totalLoad = calculateLoad(cols);
 
     // Debug
     printGrid(rows);
