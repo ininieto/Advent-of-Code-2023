@@ -12,6 +12,19 @@
 #include <vector>
 #include <map>
 
+// Struct with all the characteristics of row/column tilting
+struct tiltStruct{
+    int startIdx;
+    int endIdx;
+    int step;
+
+    // Default constructor. I was getting an error "no matching function for call to 'tiltStruct::tiltStruct()" without it
+    tiltStruct() : startIdx(0), endIdx(0), step(0) {}
+
+    // Constructor
+    tiltStruct(int v1, int v2, int v3) : startIdx(v1), endIdx(v2), step(v3) {}
+};
+
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
 
@@ -91,111 +104,46 @@ void printGrid(std::vector<std::vector<char>> grid){
     std::cout << '\n';
 }
 
-// Recursive function to tilt the lever to the north / west
-void tiltRowColNorthWest(std::vector<char> &line, int &currentIndex){
+// Recursive function to tilt a line north, south, east or west
+void tiltLine(std::vector<char> &line, int &currentIndex, tiltStruct &params){
 
     char &currentChar = line[currentIndex];
-    char &prevChar = line[currentIndex - 1];
+    char &prevChar = line[currentIndex - params.step];
 
     // Base case: If first character
-    if(currentIndex == 0){
-        currentIndex ++;
-        return tiltRowColNorthWest(line, currentIndex);
+    if(currentIndex == params.startIdx - params.step){ // N/W: If lower than 1,   S/E: If greater than 98 
+        currentIndex += params.step;
+        return tiltLine(line, currentIndex, params);
     }
 
     // Base case: if we can't keep going 
-    if(currentIndex == line.size())
+    if(currentIndex == params.endIdx)
         return;
 
     // Inspect the current char. If it is an O, try to make it slide
     if(currentChar == 'O' && prevChar == '.'){
         prevChar = 'O';
         currentChar = '.';
-        currentIndex --;    // If the rock could slide one position, maybe it can slide more
+        currentIndex -= params.step;    // If the rock could slide one position, maybe it can slide more
     }
     else
-        currentIndex ++;
+        currentIndex += params.step;
 
     // Repeat the algorithm for the next position
-    return tiltRowColNorthWest(line, currentIndex);
-}
-
-// Recursive function to tilt the lever to the south / east
-void tiltRowColSouthEast(std::vector<char> &line, int &currentIndex){
-
-    char &currentChar = line[currentIndex];
-    char &prevChar = line[currentIndex + 1];
-
-    // Base case: If first character
-    if(currentIndex == line.size() - 1){
-        currentIndex --;
-        return tiltRowColSouthEast(line, currentIndex);
-    }
-
-    // Base case: if we can't keep going 
-    if(currentIndex == -1)
-        return;
-
-    // Inspect the current char. If it is an O, try to make it slide
-    if(currentChar == 'O' && prevChar == '.'){
-        prevChar = 'O';
-        currentChar = '.';
-        currentIndex ++;    // If the rock could slide one position, maybe it can slide more
-    }
-    else
-        currentIndex --;
-
-    // Repeat the algorithm for the next position
-    return tiltRowColSouthEast(line, currentIndex);
+    return tiltLine(line, currentIndex, params);
 }
 
 // Function that tilts the platform to the north / west
-void tiltPlatformNorthWest(std::vector<std::vector<char>> &lines){
+void tiltPlatform(std::vector<std::vector<char>> &lines, tiltStruct &params){
+    
 
     for (auto &line : lines){
-
-        // Implement memoization
-        /*
-        if(cache.find(line) != cache.end()){
-            line = cache.at(line);
-            continue;
-        }
-        */
 
         // We start in the second position, as we cannot slide out of bounds
-        int startingIndex = 1;
+        int startingIndex = params.startIdx;
 
         // Tilt this row / column
-        std::vector<char> nonTiltedLine = line;
-        tiltRowColNorthWest(line, startingIndex);
-
-        // Add the tilted line to the cache
-        //cache[nonTiltedLine] = line;
-    }
-}
-
-// Function that tilts the platform to the south / east
-void tiltPlatformSouthEast(std::vector<std::vector<char>> &lines){
-
-    for (auto &line : lines){
-
-        // Implement memoization
-        /*
-        if(cache.find(line) != cache.end()){
-            line = cache.at(line);
-            continue;
-        }
-        */
-
-        // We start in the penultimate position, as we cannot slide out of bounds
-        int startingIndex = line.size() - 2;
-
-        // Tilt this row / column
-        std::vector<char> nonTiltedLine = line;
-        tiltRowColSouthEast(line, startingIndex);
-
-        // Add the tilted line to the cache
-        //cache[nonTiltedLine] = line;
+        tiltLine(line, startingIndex, params);
     }
 }
 
@@ -203,9 +151,8 @@ void tiltPlatformSouthEast(std::vector<std::vector<char>> &lines){
 void colsToRows(std::vector<std::vector<char>> &cols, std::vector<std::vector<char>> &rows){
 
     for(int i = 0; i < cols.size(); i++){
-        for(int j = 0; j < cols[0].size(); j++){
+        for(int j = 0; j < cols[0].size(); j++)
             rows[j][i] = cols[i][j];
-        }
     }
 } 
 
@@ -213,15 +160,14 @@ void colsToRows(std::vector<std::vector<char>> &cols, std::vector<std::vector<ch
 void rowsToCols(std::vector<std::vector<char>> &rows, std::vector<std::vector<char>> &cols){
 
     for(int i = 0; i < rows.size(); i++){
-        for(int j = 0; j < rows[0].size(); j++){
+        for(int j = 0; j < rows[0].size(); j++)
             cols[j][i] = rows[i][j];
-        }
     }
 } 
 
-uint64_t calculateLoad(std::vector<std::vector<char>> &cols){
+int calculateLoad(std::vector<std::vector<char>> &cols){
 
-    uint64_t totalLoad = 0;
+    int totalLoad = 0;
 
     for(auto col: cols){
 
@@ -257,6 +203,14 @@ int main(){
     std::vector<std::vector<char>> cols(nrows, std::vector<char>(ncols)); // 2D vector for the rows
     fillGrid(rows, cols, input);
 
+    // Map to associate cardinal points to starting indexes, ending indexes and increment step
+    std::map<char, tiltStruct> tiltMap = {
+        {'N', {1, ncols, 1}},
+        {'S', {ncols - 2, -1, -1}},
+        {'E', {nrows - 2, -1, -1}},
+        {'W', {1, nrows, 1}},
+    };
+
     /*
         It won't run: it takes too long
         I tried to implement memoization, but it was still too slow
@@ -271,23 +225,23 @@ int main(){
     for(uint64_t i = 0; i < 1000000000; i++){
 
        // Take the columns and tilt north
-       tiltPlatformNorthWest(cols);
+       tiltPlatform(cols, tiltMap['N']);
        
        // Convert columns into rows and tilt them west
        colsToRows(cols, rows);
-       tiltPlatformNorthWest(rows);
+       tiltPlatform(rows, tiltMap['W']);
 
        // Convert rows into columns and tilt south
        rowsToCols(rows, cols);
-       tiltPlatformSouthEast(cols);
+       tiltPlatform(cols, tiltMap['S']);
 
        // Convert columns into rows and tilt them east
        colsToRows(cols, rows);
-       tiltPlatformSouthEast(rows);
+       tiltPlatform(rows, tiltMap['E']);
 
        // Convert rows into columns
        rowsToCols(rows, cols);
-       
+
        // Print the load
        int load = calculateLoad(cols);
        std::cout << i + 1<< ". Load: " << load << '\n';
