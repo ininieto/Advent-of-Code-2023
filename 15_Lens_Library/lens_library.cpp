@@ -42,7 +42,6 @@ std::string readInputText(std::string inputText){
 
         while (getline(inputfile, tp)){
             inputData += tp;
-            inputData += "\n";
         }
     }
     return inputData;
@@ -80,14 +79,11 @@ int main(){
             // Remainder of 256
             currentValue %= 256;
         }
-
         finalResult += currentValue;
     }
 
     // Log the result
-    // I got an answer of 505357 but it is too low
     std::cout << finalResult << '\n';
-
 
     return 0;
 }
