@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unordered_map>
 
 // Function to split a std::string by a specific delimitator
 std::vector<std::string> split(std::string text, std::string delim){
@@ -81,17 +82,35 @@ int main(){
     // Split the input by commas
     std::vector<std::string> splittedInput = split(input, ",");
 
-    float finalResult = 0;
+    // Define the hashmaps
+    std::unordered_map<std::string, int> labelToBoxNum;
+    std::unordered_map<int, std::vector<std::pair<std::string, int>>> boxesMap;
 
     // Big loop
     for(std::string word: splittedInput){
 
-        int currentValue = hash(word);
-        finalResult += currentValue;
+        // Extract the label and the operation
+        std::string label = (word.find('=') != std::string::npos) ? word.substr(0, word.find('=')) : word.substr(0, word.find('-'));
+        char operation = (word.find('=') != std::string::npos) ? '=' : '-';
+        
+        // Get the box number by its HASH
+        int boxNum = hash(label);
+
+        // Perform the operation
+        if(operation == '-'){
+
+            
+
+
+        }
+        else{
+
+
+        }
+
     }
 
-    // Log the result
-    std::cout << finalResult << '\n';
+
 
     return 0;
 }
