@@ -79,11 +79,11 @@ int main(){
     // Debug
     input = example;
 
+
     // Split the input by commas
     std::vector<std::string> splittedInput = split(input, ",");
 
-    // Define the hashmaps
-    std::unordered_map<std::string, int> labelToBoxNum;
+    // Define the hashmap
     std::unordered_map<int, std::vector<std::pair<std::string, int>>> boxesMap;
 
     // Big loop
@@ -99,15 +99,35 @@ int main(){
         // Perform the operation
         if(operation == '-'){
 
-            
-
-
+            // Remove the lens with the same label
+            for(auto& box: boxesMap){
+                auto& vec = box.second;
+                for(int i = 0; i < vec.size(); i++){
+                    if(vec[i].first == label)
+                        vec.erase(vec.begin() + i);
+                }
+            }
         }
         else{
 
+            int focalLength = stoi(word.substr(word.find('=') + 1));
+            bool correctedFocalLength = false;
 
+            // Check if there is already something wiht that label
+            for(auto& box: boxesMap){
+                auto&vec = box.second;
+                for(auto& pair: vec){
+                    if(pair.first == label){
+                        pair.second = focalLength;
+                        correctedFocalLength = true;
+                    }
+                }
+            }
+
+            // If not corrected, add to map
+            if(!correctedFocalLength)
+                boxesMap[boxNum].push_back(std::make_pair(label, focalLength));
         }
-
     }
 
 
