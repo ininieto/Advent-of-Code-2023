@@ -77,7 +77,7 @@ int main(){
     std::string input = readInputText("input.txt");
 
     // Debug
-    input = example;
+    //input = example;
 
 
     // Split the input by commas
@@ -130,6 +130,18 @@ int main(){
         }
     }
 
+    // Calculate the focusing power
+    uint64_t focusingPower = 0;
+
+    for(auto& box: boxesMap){
+        auto& vec = box.second;
+        for(int i = 0; i < vec.size(); i++){
+            focusingPower += (box.first + 1) * (i + 1) * vec[i].second;
+        }
+    }
+
+    // Log the result
+    std::cout << focusingPower << '\n';
 
 
     return 0;
