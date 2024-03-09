@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unordered_map>
 
 struct Node{
 
@@ -20,9 +21,16 @@ struct Node{
     // Default constructor
     Node(): x(-1), y(-1), tile('?') {}
 
-    // Constructor with parameters
+    // Constructor with parameters (not sure if I will need this)
     Node(int x_p, int y_p, char tile_p): x(x_p), y(y_p), tile(tile_p) {}
 
+};
+
+std::unordered_map<char, std::pair<int, int>> move = {
+    {'U', std::make_pair(0, -1)},
+    {'D', std::make_pair(0, 1)},
+    {'L', std::make_pair(-1, 0)},
+    {'R', std::make_pair(1, 0)} 
 };
 
 // Function to split a std::string by a specific delimitator
@@ -93,6 +101,17 @@ void fillGrid(std::vector<std::vector<Node>> &grid, std::string input){
     }
 }
 
+// Recursive function
+void lavaFlow(std::vector<std::vector<Node>> &grid, std::pair<int, int> currentPosition, std::vector<std::pair<int, int>> nextPositions){
+
+    // Set the current position as energized
+
+    // Depending on the next position, guess the next ones
+
+    // Call the function for those tiles
+}
+
+
 int main(){
 
     // Read the input
@@ -102,16 +121,29 @@ int main(){
     // Debug
     input = example;
 
-    // I want to have a 2d grid of Nodes
+    // Store the input in a 2d Node grid
     int nrows = 0, ncols = 0;
     getGridDimensions(input, nrows, ncols);
 
     std::vector<std::vector<Node>> grid(nrows, std::vector<Node>(ncols)); // 2D vector for the rows
     fillGrid(grid, input);
 
-    std::cout << example << '\n';
+    /*
+        Bunch of ideas:
+            - Maybe I could define a map relating "up", "down"... to std::pairs like (0, 1), (1, 0)... 
+              This way I can say nextCoord = currentCoords + move["up"]
 
-    std::cout << input << '\n';
+            - Recursive function: lavaFlow(currentPosition, nextPosition)
+              Watch out: there could be more that one nextPosition. Maybe it should be a vector nextPositions
+    */
+
+   // Start in the origin and move right
+   std::pair<int, int> currentPosition(0, 0);
+   std::vector<std::pair<int, int>> nextPositions;
+   nextPositions.push_back(std::make_pair(0, 1));
+
+   lavaFlow(grid,currentPosition, nextPositions);
+
 
 
     return 0;
