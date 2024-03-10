@@ -27,10 +27,10 @@ struct Node{
 };
 
 std::unordered_map<char, std::pair<int, int>> move = {
-    {'U', std::make_pair(0, -1)},
-    {'D', std::make_pair(0, 1)},
-    {'L', std::make_pair(-1, 0)},
-    {'R', std::make_pair(1, 0)} 
+    {'U', std::make_pair(-1, 0)},
+    {'D', std::make_pair(1, 0)},
+    {'L', std::make_pair(0, -1)},
+    {'R', std::make_pair(0, 1)} 
 };
 
 // Function to split a std::string by a specific delimitator
@@ -102,13 +102,25 @@ void fillGrid(std::vector<std::vector<Node>> &grid, std::string input){
 }
 
 // Recursive function
-void lavaFlow(std::vector<std::vector<Node>> &grid, std::pair<int, int> currentPosition, std::vector<std::pair<int, int>> nextPositions){
+void lavaFlow(std::vector<std::vector<Node>> &grid, std::pair<int, int> currentPosition, std::vector<char> nextDirections){
 
     // Set the current position as energized
+    grid[currentPosition.first][currentPosition.second].energized = true;
 
-    // Depending on the next position, guess the next ones
+    // Depending on the next directions, guess the next positions
+    for(auto& direction: nextDirections){
+        
+        // See the tile of the next position
+        std::pair<int, int> nextPosition = std::make_pair(currentPosition.first + move[direction].first, currentPosition.second + move[direction].second);
+        char nextTile = grid[nextPosition.first][nextPosition.second].tile;
 
-    // Call the function for those tiles
+        // Decide the next direction
+        
+
+        // Call the function for this tile
+    }
+
+    
 }
 
 
@@ -138,11 +150,7 @@ int main(){
     */
 
    // Start in the origin and move right
-   std::pair<int, int> currentPosition(0, 0);
-   std::vector<std::pair<int, int>> nextPositions;
-   nextPositions.push_back(std::make_pair(0, 1));
-
-   lavaFlow(grid,currentPosition, nextPositions);
+   lavaFlow(grid, std::make_pair(0, 0), std::vector<char>{'R'});
 
 
 
