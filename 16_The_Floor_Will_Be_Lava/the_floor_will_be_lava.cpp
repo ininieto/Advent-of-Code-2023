@@ -101,26 +101,125 @@ void fillGrid(std::vector<std::vector<Node>> &grid, std::string input){
     }
 }
 
+// Function to print the whole grid. Debug purposes
+void printGrid(std::vector<std::vector<Node>> &grid){
+    for(const auto &row: grid){
+        for(const auto &element: row){
+            std::cout << element.tile;
+        }
+        std::cout << '\n';
+    }
+    std::cout << '\n';
+}
+
+// Debug function to print the energized tiles 
+void printEnergizedTiles(std::vector<std::vector<Node>> &grid){
+    for(const auto &row: grid){
+        for(const auto &element: row){
+            if(element.energized)
+                std::cout << '#';
+            else
+                std::cout << '.';
+        }
+        std::cout << '\n';
+    }
+    std::cout << '\n';
+}
+
+// Function that implements the logic of the problem
+std::vector<char> decideNextDirections(char direction, char nextTile){
+
+    std::vector<char> nextDirections;
+
+        // If we are moving to the right
+        if(direction == 'R'){
+            if(nextTile == '/')
+                nextDirections.push_back('U');
+            else if(nextTile == '\\')   
+                nextDirections.push_back('D');
+            else if(nextTile == '|'){
+                nextDirections.push_back('U');
+                nextDirections.push_back('D');
+            }
+            else    
+                nextDirections.push_back('R');
+        }
+        // If we are moving to the left
+        else if(direction == 'L'){
+            if(nextTile == '/')
+                nextDirections.push_back('D');
+            else if(nextTile == '\\')   
+                nextDirections.push_back('U');
+            else if(nextTile == '|'){
+                nextDirections.push_back('U');
+                nextDirections.push_back('D');
+            }
+            else    
+                nextDirections.push_back('L');
+        }
+        // If we are moving up
+        else if(direction == 'U'){
+            if(nextTile == '/')
+                nextDirections.push_back('R');
+            else if(nextTile == '\\')   
+                nextDirections.push_back('L');
+            else if(nextTile == '-'){
+                nextDirections.push_back('L');
+                nextDirections.push_back('R');
+            }
+            else    
+                nextDirections.push_back('U');
+        }
+        // If we are moving down
+        else if(direction == 'D'){
+            if(nextTile == '/')
+                nextDirections.push_back('L');
+            else if(nextTile == '\\')   
+                nextDirections.push_back('R');
+            else if(nextTile == '-'){
+                nextDirections.push_back('L');
+                nextDirections.push_back('R');
+            }
+            else    
+                nextDirections.push_back('D');
+        }
+
+        return nextDirections;
+}
+
 // Recursive function
 void lavaFlow(std::vector<std::vector<Node>> &grid, std::pair<int, int> currentPosition, std::vector<char> nextDirections){
+
+    // If there are no next directions, exit
+    if(nextDirections.empty())
+        return;
+        
+    // Debug: Print the grid
+    printGrid(grid);
+    printEnergizedTiles(grid);
 
     // Set the current position as energized
     grid[currentPosition.first][currentPosition.second].energized = true;
 
     // Depending on the next directions, guess the next positions
-    for(auto& direction: nextDirections){
+    for(const auto& direction: nextDirections){
         
         // See the tile of the next position
         std::pair<int, int> nextPosition = std::make_pair(currentPosition.first + move[direction].first, currentPosition.second + move[direction].second);
+
+        // Check if we are out of bounds
+        if(nextPosition.first < 0 || nextPosition.first >= grid.size() || nextPosition.second < 0 || nextPosition.second >= grid[0].size())
+            continue;
+
+        // Obtain the next tile
         char nextTile = grid[nextPosition.first][nextPosition.second].tile;
 
-        // Decide the next direction
-        
+        // Decide the next direction. Example: if direction == 'R' and nextTile == / --> will go up --> nextDirection = 'U'
+        std::vector<char> nextNextDirections = decideNextDirections(direction, nextTile);
 
         // Call the function for this tile
+        lavaFlow(grid, nextPosition, nextNextDirections);
     }
-
-    
 }
 
 
@@ -139,15 +238,6 @@ int main(){
 
     std::vector<std::vector<Node>> grid(nrows, std::vector<Node>(ncols)); // 2D vector for the rows
     fillGrid(grid, input);
-
-    /*
-        Bunch of ideas:
-            - Maybe I could define a map relating "up", "down"... to std::pairs like (0, 1), (1, 0)... 
-              This way I can say nextCoord = currentCoords + move["up"]
-
-            - Recursive function: lavaFlow(currentPosition, nextPosition)
-              Watch out: there could be more that one nextPosition. Maybe it should be a vector nextPositions
-    */
 
    // Start in the origin and move right
    lavaFlow(grid, std::make_pair(0, 0), std::vector<char>{'R'});
