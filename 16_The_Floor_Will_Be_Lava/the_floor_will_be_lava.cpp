@@ -214,6 +214,12 @@ void lavaFlow(std::vector<std::vector<Node>> &grid, std::pair<int, int> currentP
         // Obtain the next tile
         char nextTile = grid[nextPosition.first][nextPosition.second].tile;
 
+        /*
+            I found an infinite loop. I need to, somehow, avoid this situations
+            The first idea that comes to my mind is to check if I'm in an energized tile and I'm going to another energized, that might be a loop.
+        
+        */
+
         // Decide the next direction. Example: if direction == 'R' and nextTile == / --> will go up --> nextDirection = 'U'
         std::vector<char> nextNextDirections = decideNextDirections(direction, nextTile);
 
