@@ -19,13 +19,16 @@ public:
     // Getters
     int getX() const;
     int getY() const;
+    int getHeatLoss() const;
 
     // Setters
     void setX(int x);
     void setY(int y);
+    void setHeatLoss(int heatLoss);
 
 private:
 
+    int heatLoss = -1;
     coords pos;
 };
 

@@ -25,6 +25,10 @@ int Node::getX() const{
 int Node::getY() const{
     return pos.y;
 }
+int Node::getHeatLoss() const{
+    return heatLoss;
+}
+
 
 // Setters
 void Node::setX(int x){
@@ -32,6 +36,9 @@ void Node::setX(int x){
 }
 void Node::setY(int y){
     pos.y = y;
+}
+void Node::setHeatLoss(int heatLoss){
+    this->heatLoss = heatLoss;
 }
 
 
