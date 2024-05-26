@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-// This function will ONLY return the adjacent elements. Won't perform any further calculation
+// This function will ONLY return the adjacent elements position. Won't perform any further calculation
 std::vector<coords> getSurroundings(Node* currentNode, int nrows, int ncols){
   
     coords pos = currentNode->getCoords();
@@ -69,23 +69,29 @@ std::vector<coords> getSurroundings(Node* currentNode, int nrows, int ncols){
     return surroundings;
     
 }
-/*
+
 
 // Check the surroundings of the current node and decide which ones are eligible to jump into
-std::vector<std::pair<int, int>> getPossibleJumps(Node* currentNode, std::vector<std::pair<int, int>> surroundings, std::vector<std::vector <int>> grid){
+std::vector<coords> getPossibleJumps(Node* currentNode, std::vector<coords> surroundings, std::vector<std::vector <Node>> &grid){
 
-    std::pair<int, int> currentPosition = currentNode->getPosition();
-    std::vector<std::pair<int, int>> possibleJumps;    
-    int currentElement = grid[currentPosition.first][currentPosition.second];
+    coords currentPosition = currentNode->getCoords();
+    std::vector<coords> possibleJumps;    
+    Node currentElement = grid[currentPosition.y][currentPosition.x];    // C++ reads first the row and then the column
 
-    // Check which of the surrounding elements are eligible to jump
-    for(auto s : surroundings){
-        if(grid[s.first][s.second] <= currentElement + 1)  // We can only jump to lower value, same value or 1 higher
-            possibleJumps.push_back(s);
-    }
+    // TODO: Check which of the surrounding elements are eligible to jump
+
+    // Lava can only flow in the same direction, left or right. After three (3) steps in the same direction, it 
+    // must turn right or left. I think I will make an extern function checkThreeStraightSteps for it. Should I 
+    // include a member variable std::vector<coords> lastThreeCoords[3] ? Maybe it is the simplest solution
+
+    for(auto &s: surroundings){
+        
+    } 
 
     return possibleJumps;
 }
+
+/* ---------- I will leave this function commented by now, as I'm not sure wheteher I will need it or not ------------
 
 // Recursive function that searchs all over the graph to check if there already exists a node. By reference, it is possible to "return" the target node
 void checkIfNodeExists(Node* currentNode, Node* &targetNode, std::pair<int, int> targetPosition){
@@ -106,12 +112,13 @@ void checkIfNodeExists(Node* currentNode, Node* &targetNode, std::pair<int, int>
 
     return;
 }
+*/
+/*  Original dijkstra function for Hill Climbing from AoC 2022. Needs to be refactored as iterative instead of recursive
+
 
 // This function will be recursive. It will be called for the root node, and then, call itself for each child
-
 int dijkstra(Node* startNode, Node* currentNode, std::vector<Node*> unexploredNodes, std::vector<std::vector <int>> grid, std::pair<int, int> endPosition, int &numNodes){
     
-    /*  Original dijkstra function. Needs to be refactored as iterative instead of recursive
 
 
     // Debug
@@ -178,8 +185,9 @@ int dijkstra(Node* startNode, Node* currentNode, std::vector<Node*> unexploredNo
     return dijkstra(startNode, smallestDistanceNode, unexploredNodes, grid, endPosition, numNodes);
 
     
+    
 }
 
-
-
 */
+
+

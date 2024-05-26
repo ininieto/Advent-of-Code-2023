@@ -13,6 +13,7 @@
 
 #include "Node.h"
 #include "utils.h"
+#include "dijkstra.h"
 
 int main(){
 
@@ -26,6 +27,12 @@ int main(){
     getGridDimensions(inputData, nrows, ncols);
     std::vector<std::vector <Node>> grid(nrows, std::vector<Node>(ncols));
     fillGrid(grid, inputData);
+
+    // Create the root node and launch the algorithm
+    Node* startNode = new Node();
+    startNode = &grid[12][12];
+    std::vector<coords> surroundings = getSurroundings(startNode, nrows, ncols);
+
 
     // Debug
     printGrid(grid);
