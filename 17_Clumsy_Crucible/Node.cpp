@@ -19,24 +19,21 @@ Node::Node() : pos{0, 0} {}
 Node::Node(int x, int y) : pos{x, y} {}
 
 // Getters
-int Node::getX() const{
-    return pos.x;
+coords Node::getCoords() const{
+    return pos;
 }
-int Node::getY() const{
-    return pos.y;
-}
+
 int Node::getHeatLoss() const{
     return heatLoss;
 }
 
 
 // Setters
-void Node::setX(int x){
-    pos.x = x;
+void Node::setCoords(coords coord){
+    pos.x = coord.x;
+    pos.y = coord.y;
 }
-void Node::setY(int y){
-    pos.y = y;
-}
+
 void Node::setHeatLoss(int heatLoss){
     this->heatLoss = heatLoss;
 }

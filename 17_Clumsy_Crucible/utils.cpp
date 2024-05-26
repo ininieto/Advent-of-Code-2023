@@ -74,8 +74,7 @@ void fillGrid(std::vector<std::vector<Node>> &grid, std::string input){
             if (input[strCounter] == '\n')
                 strCounter ++;
 
-            grid[i][j].setY(i);
-            grid[i][j].setX(j);
+            grid[i][j].setCoords(coords{j, i}); // x is horizontal, y is vertical
             grid[i][j].setHeatLoss(static_cast<int>(input[strCounter]) - 48);
             strCounter ++;
         }

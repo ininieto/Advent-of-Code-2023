@@ -17,13 +17,11 @@ public:
     Node(int x, int y);
 
     // Getters
-    int getX() const;
-    int getY() const;
+    coords getCoords() const;
     int getHeatLoss() const;
 
     // Setters
-    void setX(int x);
-    void setY(int y);
+    void setCoords(coords coord);
     void setHeatLoss(int heatLoss);
 
 private:
