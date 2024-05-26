@@ -1,62 +1,60 @@
-/*
-
 #include "dijkstra.h"
+#include "Node.h"
 
 #include <iostream>
 #include <vector>
 
 // This function will ONLY return the adjacent elements. Won't perform any further calculation
+std::vector<coords> getSurroundings(Node* currentNode, int nrows, int ncols){
+  
+    coords pos = currentNode->getCoords();
+    std::vector<coords> surroundings;
 
-std::vector<std::pair<int, int>> getSurroundings(Node* currentNode, int nrows, int ncols){
+    // These variables will act as vectors: they indicate how much do I need to increment x and y
+    coords up = {pos.x, pos.y - 1};
+    coords down = {pos.x, pos.y + 1};
+    coords left = {pos.x - 1, pos.y};
+    coords right = {pos.x + 1, pos.y};
 
-    
-    std::pair<int, int> position = currentNode->getPosition();
-    std::vector<std::pair<int, int>> surroundings;
-
-    std::pair<int, int> up = std::make_pair(position.first - 1, position.second);
-    std::pair<int, int> down = std::make_pair(position.first + 1, position.second);
-    std::pair<int, int> left = std::make_pair(position.first, position.second - 1);
-    std::pair<int, int> right = std::make_pair(position.first, position.second + 1);
-
-    if(position == std::make_pair(0, 0)){   // Top left corner
+    if(pos.x == 0 && pos.y == 0){   // Top left corner
         
         surroundings.push_back(right);
         surroundings.push_back(down); 
     }
-    else if(position == std::make_pair(0, ncols - 1)){  // Top right corner
+    else if(pos.x == ncols - 1 && pos.y == 0){  // Top right corner
 
         surroundings.push_back(left);
         surroundings.push_back(down); 
     }
-    else if(position == std::make_pair(nrows - 1, 0)){  // Bottom left corner
+    else if(pos.x == 0 && pos.y == nrows - 1){  // Bottom left corner
 
         surroundings.push_back(right);
         surroundings.push_back(up); 
     }
-    else if(position == std::make_pair(nrows - 1, ncols - 1)){  // Bottom right corner
+    else if(pos.x == ncols - 1 && pos.y == nrows - 1){  // Bottom right corner
 
         surroundings.push_back(left); 
         surroundings.push_back(up); 
     }
-    else if(position.first == 0){   // First row
+    else if(pos.y == 0){   // First row
 
         surroundings.push_back(left); 
         surroundings.push_back(right); 
         surroundings.push_back(down); 
     }
-    else if(position.first == nrows - 1){   // Last row
+    else if(pos.y == nrows - 1){   // Last row
 
         surroundings.push_back(left); 
         surroundings.push_back(right); 
         surroundings.push_back(up); 
     }
-    else if(position.second == 0){  // First column
+    else if(pos.x == 0){  // First column
 
         surroundings.push_back(right); 
         surroundings.push_back(up); 
         surroundings.push_back(down); 
     }
-    else if(position.second == ncols - 1){   // Last column
+    else if(pos.x == ncols - 1){   // Last column
 
         surroundings.push_back(left); 
         surroundings.push_back(up); 
@@ -71,9 +69,9 @@ std::vector<std::pair<int, int>> getSurroundings(Node* currentNode, int nrows, i
     return surroundings;
     
 }
+/*
 
 // Check the surroundings of the current node and decide which ones are eligible to jump into
-
 std::vector<std::pair<int, int>> getPossibleJumps(Node* currentNode, std::vector<std::pair<int, int>> surroundings, std::vector<std::vector <int>> grid){
 
     std::pair<int, int> currentPosition = currentNode->getPosition();
