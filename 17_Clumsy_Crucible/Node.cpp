@@ -18,6 +18,7 @@ Node::Node() : pos{0, 0} {}
 // Parameterized constructor
 Node::Node(int x, int y) : pos{x, y} {}
 
+
 // Getters
 coords Node::getCoords() const{
     return pos;
@@ -27,6 +28,18 @@ int Node::getHeatLoss() const{
     return heatLoss;
 }
 
+Node::History Node::getHistory() const{
+    return hist;
+}
+
+// Modify the history of a Node
+void Node::addprevNode(Node* node){
+    hist.prevNodes.push_back(node);
+}
+
+void Node::setDistance(int dist){
+    hist.distance = dist;
+}
 
 // Setters
 void Node::setCoords(coords coord){

@@ -32,7 +32,8 @@ int main(){
     Node* startNode = new Node();
     startNode = &grid[0][0];
     
-
+    // Call the big function
+    dijkstra(startNode, grid, nrows, ncols);
 
     // Debug
     printGrid(grid);

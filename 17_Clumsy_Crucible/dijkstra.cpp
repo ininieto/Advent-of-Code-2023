@@ -87,6 +87,8 @@ std::vector<coords> getPossibleJumps(Node* currentNode, std::vector<coords> surr
     // Anyway I need to deal with the fact that there are different ways to reach a Node. The same block can be inspected at 
     // the same time by different routes. That needs to be carefully inspected
 
+    // I created the history member variable to check the last Nodes. With that, I can track the path the lava is following
+
     for(auto &s: surroundings){
         
     } 
@@ -179,6 +181,7 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
     // It is a good idea to use a priority queue with std::greater<>, so that the smallest element always appears on top
 
     std::vector<coords> surroundings = getSurroundings(startNode, nrows, ncols);
+    std::vector<coords> possibleJumps = getPossibleJumps(startNode, surroundings, grid);    // TODO: Implement this function
 
 }
 
