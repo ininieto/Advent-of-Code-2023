@@ -84,6 +84,9 @@ std::vector<coords> getPossibleJumps(Node* currentNode, std::vector<coords> surr
     // must turn right or left. I think I will make an extern function checkThreeStraightSteps for it. Should I 
     // include a member variable std::vector<coords> lastThreeCoords[3] ? Maybe it is the simplest solution
 
+    // Anyway I need to deal with the fact that there are different ways to reach a Node. The same block can be inspected at 
+    // the same time by different routes. That needs to be carefully inspected
+
     for(auto &s: surroundings){
         
     } 
@@ -170,9 +173,12 @@ int dijkstra(Node* startNode, Node* currentNode, std::vector<Node*> unexploredNo
 */
 
 // This will be the big boy. It will be iterative instead of recursive :)
-void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid){
+void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows, int ncols){
 
     // Here I will need to define a queue and initialize it with the first Node. Then, perform a while(!queue.empty())
+    // It is a good idea to use a priority queue with std::greater<>, so that the smallest element always appears on top
+
+    std::vector<coords> surroundings = getSurroundings(startNode, nrows, ncols);
 
 }
 
