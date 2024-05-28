@@ -113,7 +113,7 @@ void checkIfNodeExists(Node* currentNode, Node* &targetNode, std::pair<int, int>
     return;
 }
 */
-/*  Original dijkstra function for Hill Climbing from AoC 2022. Needs to be refactored as iterative instead of recursive
+/*  Original dijkstra function for Hill Climbing from AoC 2022. Needs to be refactored as iterative instead of recursive 
 
 
 // This function will be recursive. It will be called for the root node, and then, call itself for each child
@@ -188,6 +188,13 @@ int dijkstra(Node* startNode, Node* currentNode, std::vector<Node*> unexploredNo
     
 }
 
+
 */
 
+// This will be the big boy. It will be iterative instead of recursive :)
+void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid){
+
+    // Here I will need to define a queue and initialize it with the first Node. Then, perform a while(!queue.empty())
+
+}
 
