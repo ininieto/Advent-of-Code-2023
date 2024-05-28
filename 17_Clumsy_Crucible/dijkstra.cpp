@@ -91,28 +91,6 @@ std::vector<coords> getPossibleJumps(Node* currentNode, std::vector<coords> surr
     return possibleJumps;
 }
 
-/* ---------- I will leave this function commented by now, as I'm not sure wheteher I will need it or not ------------
-
-// Recursive function that searchs all over the graph to check if there already exists a node. By reference, it is possible to "return" the target node
-void checkIfNodeExists(Node* currentNode, Node* &targetNode, std::pair<int, int> targetPosition){
-
-    if(currentNode == NULL)
-        return;
-
-    // Check if the node has the target position
-    if(currentNode->getPosition() == targetPosition){
-        targetNode = currentNode;
-        return;
-    }
-    
-    std::vector<Node*> children = currentNode->getChildren();
-
-    for (auto child : children)
-        checkIfNodeExists(child, targetNode, targetPosition);
-
-    return;
-}
-*/
 /*  Original dijkstra function for Hill Climbing from AoC 2022. Needs to be refactored as iterative instead of recursive 
 
 
