@@ -28,6 +28,7 @@ private:
 
     int heatLoss = -1;
     coords pos;
+    int minDistance = __INT_MAX__;
 };
 
 #endif  // NODE_H
