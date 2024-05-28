@@ -30,8 +30,8 @@ int main(){
 
     // Create the root node and launch the algorithm
     Node* startNode = new Node();
-    startNode = &grid[12][12];
-    std::vector<coords> surroundings = getSurroundings(startNode, nrows, ncols);
+    startNode = &grid[0][0];
+    
 
 
     // Debug
