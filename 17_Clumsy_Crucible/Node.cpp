@@ -33,8 +33,8 @@ Node::History Node::getHistory() const{
 }
 
 // Modify the history of a Node
-void Node::addprevNode(Node* node){
-    hist.prevNodes.push_back(node);
+void Node::addprevNodeToPath(Node* node, int pathId){
+    hist.paths[pathId].push(node);
 }
 
 void Node::setDistance(int dist){

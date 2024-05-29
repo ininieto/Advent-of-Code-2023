@@ -4,6 +4,7 @@
 #define NODE_H
 
 #include <vector>
+#include <stack>
 
 // Structure that will replace the coordinates being a std::pair
 struct coords{
@@ -13,9 +14,12 @@ struct coords{
 class Node{
 
 public:
+
+    // Struct that keeps track of the path that lava is following
     struct History{
-        std::vector<Node *> prevNodes;
-        int distance;
+        std::vector<std::stack<Node *>> paths;  // There can be more than one way to reach a Node -> I call them path
+        int distance = __INT_MAX__;
+        int countStraightSteps = 0;
     };
 
     // Constructors
@@ -32,7 +36,7 @@ public:
     void setHeatLoss(int heatLoss);
 
     // Modify history of a Node
-    void addprevNode(Node* prevNode);
+    void addprevNodeToPath(Node* prevNode, int pathId);
     void setDistance(int dist);
 
 private:
