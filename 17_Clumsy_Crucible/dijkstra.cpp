@@ -72,26 +72,39 @@ std::vector<coords> getSurroundings(Node* currentNode, int nrows, int ncols){
 
 
 // Check the surroundings of the current node and decide which ones are eligible to jump into
-std::vector<coords> getPossibleJumps(Node* currentNode, std::vector<coords> surroundings, std::vector<std::vector <Node>> &grid){
+std::vector<coords> getPossibleJumps(Node* currentNode, Node* prevNode, std::vector<coords> surroundings, std::vector<std::vector <Node>> &grid){
+
+    // Base case: all the nodes are possible jumps
+    if(prevNode == NULL){
+        return surroundings;
+    }
+
+    /* TODO: Maybe I could refactor all this part of the code and:
+
+        - Remove the getSurroundings function, as I can already check here if there exist a Node
+        - Return a vector of Node* instead of coords. I guess it is more practical and makes more sense
+    */
+    
 
     coords currentPosition = currentNode->getCoords();
+    coords prevPosition = prevNode->getCoords();
     std::vector<coords> possibleJumps;    
-    Node currentElement = grid[currentPosition.y][currentPosition.x];    // C++ reads first the row and then the column
 
-    // TODO: Check which of the surrounding elements are eligible to jump
+    // It is important to know the previous Node to guess the path that the lava is following
+    coords direction{currentPosition.x - prevPosition.x, currentPosition.y - prevPosition.y};   // We get the vector direction
+    coords directionLeft{direction.x - 1, direction.y};
+    coords directionRight{direction.x + 1, direction.y};
 
-    // Lava can only flow in the same direction, left or right. After three (3) steps in the same direction, it 
-    // must turn right or left. I think I will make an extern function checkThreeStraightSteps for it. Should I 
-    // include a member variable std::vector<coords> lastThreeCoords[3] ? Maybe it is the simplest solution
+    // Check if there exists a Node in those coords
+    if(&grid[directionLeft.y][directionLeft.x] != NULL){
+        // possibleJumps.push_back(&grid[directionLeft.y][directionLeft.x]);    // Add the left Node
+    }
+    if(&grid[directionRight.y][directionRight.x] != NULL){
+        // possibleJumps.push_back(&grid[directionRight.y][directionRight.x]); // Add the right Node
+    }
+    if(&grid[direction.y][direction.x] != NULL && currentNode->getHistory().countStraightSteps < 3) 
+        // possibleJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
 
-    // Anyway I need to deal with the fact that there are different ways to reach a Node. The same block can be inspected at 
-    // the same time by different routes. That needs to be carefully inspected
-
-    // I created the history member variable to check the last Nodes. With that, I can track the path the lava is following
-
-    for(auto &s: surroundings){
-        
-    } 
 
     return possibleJumps;
 }
@@ -181,7 +194,7 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
     // It is a good idea to use a priority queue with std::greater<>, so that the smallest element always appears on top
 
     std::vector<coords> surroundings = getSurroundings(startNode, nrows, ncols);
-    std::vector<coords> possibleJumps = getPossibleJumps(startNode, surroundings, grid);    // TODO: Implement this function
+    std::vector<coords> possibleJumps = getPossibleJumps(startNode, NULL, surroundings, grid);    // TODO: Implement this function
 
 }
 
