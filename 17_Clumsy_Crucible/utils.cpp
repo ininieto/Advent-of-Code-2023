@@ -82,9 +82,9 @@ void fillGrid(std::vector<std::vector<Node>> &grid, std::string input){
 }
 
 // Function to check if a position is in bounds
-bool isInBounds(int x, int y, std::vector<std::vector<Node>> &grid){
+bool isInBounds(int x, int y, std::vector<std::vector<Node>> &grid){    
 
-    int nrows = grid.size(), ncols = grid[0].size();
+    int nrows = grid.size(), ncols = grid[0].size(); // Honestly, I don't like to recalculate nrows and ncols all the times. Might find a way to improve that 
 
     return x >= 0 && x < ncols && y >= 0 && y < nrows;
 }
