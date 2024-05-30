@@ -29,8 +29,7 @@ int main(){
     fillGrid(grid, inputData);
 
     // Create the root node and launch the algorithm
-    Node* startNode = new Node();
-    startNode = &grid[0][0];
+    Node* startNode = &grid[0][0];  // I think I don't really need to new() Node
     
     // Call the big function
     dijkstra(startNode, grid, nrows, ncols);

@@ -56,5 +56,16 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
 
     std::vector<Node*> possibleJumps = getPossibleJumps(startNode, nullptr, grid);
 
+    /*      TODO
+
+        - Create the queue with the next Nodes that need to be scanned
+        - Set the new nodes as children of the old ones
+        - Linked to that, manage the Paths
+        - Go setting the total Heat Loss
+    
+    
+    
+    */
+
 }
 
