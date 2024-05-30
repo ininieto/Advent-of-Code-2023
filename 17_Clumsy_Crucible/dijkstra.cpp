@@ -9,12 +9,11 @@
 // Calculate the number of forward steps that lava has done so far
 int getNumForwardSteps(Node* currentNode, coords direction){
 
-    int numForwardSteps = 0;
     Node* prevNode = currentNode->getPrevNode();
 
     for(int i = 0; i < 4; i++){
         
-        // TODO
+        
 
     }
 
@@ -42,20 +41,20 @@ std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<s
     coords direction = coords{currentPosition.x - prevPosition.x, currentPosition.y - prevPosition.y}; // We get the vector direction
 
     coords posForward = coords{currentPosition.x + direction.x, currentPosition.y + direction.y};
+    coords posLeft, posRight;
 
-    // TODO: This is wrong. Must calculate left and right based on the forward direction
-    coords posLeft = coords{currentPosition.x - 1, currentPosition.y};
-    coords posRight = coords{currentPosition.x + 1, currentPosition.y};
+    // Fill in the left and right position
+    getLeftAndRightPositions(currentPosition, direction, posLeft, posRight);
     
     // If not out of bounds and not explored, we add it to nextJumps
-    if(isInBounds(posLeft.x, posLeft.y, grid) && grid[posLeft.y][posLeft.x].getExplored() == false){    // TODO: Test that!! Not sure at all
+    if(isInBounds(posLeft.x, posLeft.y, grid) && grid[posLeft.y][posLeft.x].getExplored() == false){    
         nextJumps.push_back(&grid[posLeft.y][posLeft.x]);    // Add the left Node
     }
     if(isInBounds(posRight.x, posRight.y, grid) && grid[posRight.y][posRight.x].getExplored() == false){
         nextJumps.push_back(&grid[posRight.y][posRight.x]);  // Add the right Node
     }
     if(isInBounds(posForward.x, posForward.y, grid) && grid[posForward.y][posForward.x].getExplored() == false && currentNode->getCountForwardSteps() < 3) 
-        nextJumps.push_back(&grid[posForward.y][posForward.x]);            // Add the straight Node
+        nextJumps.push_back(&grid[posForward.y][posForward.x]); // Add the straight Node
 
     return nextJumps;
 }

@@ -88,3 +88,24 @@ bool isInBounds(int x, int y, std::vector<std::vector<Node>> &grid){
 
     return x >= 0 && x < ncols && y >= 0 && y < nrows;
 }
+
+// Function to find the left and right positions given a point and forward direction
+void getLeftAndRightPositions(coords position, coords direction, coords &leftPosition, coords &rightPosition){
+
+    /*
+    Essentially I want to rotate 90 degrees the direction vector. For that, I will use the 2x2 rotation matrix. 
+    The problem is that my y axis grows downwards: (0, 1) points down! So the rotation is a bit different
+
+    For 90 degrees (left):
+                             x' = y,  y' = -x
+
+    For -90 degrees (right):
+                              x' = -y, y' = x
+    */
+
+    coords vecLeft{direction.y, (-1) * direction.x};
+    coords vecRight{(-1) * direction.y, direction.x};
+
+    leftPosition = coords{position.x + vecLeft.x, position.y + vecLeft.y};
+    rightPosition = coords{position.x + vecRight.x, position.y + vecRight.y};
+}
