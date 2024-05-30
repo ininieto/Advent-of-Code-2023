@@ -80,3 +80,11 @@ void fillGrid(std::vector<std::vector<Node>> &grid, std::string input){
         }
     }
 }
+
+// Function to check if a position is in bounds
+bool isInBounds(int x, int y, std::vector<std::vector<Node>> &grid){
+
+    int nrows = grid.size(), ncols = grid[0].size();
+
+    return x >= 0 && x < ncols && y >= 0 && y < nrows;
+}

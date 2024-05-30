@@ -13,8 +13,6 @@ std::string readInputText(std::string inputText);
 void getGridDimensions(std::string input, int &nrows, int &ncols);
 void printGrid(std::vector<std::vector<Node>> &grid);
 void fillGrid(std::vector<std::vector<Node>> &grid, std::string input);
-
-
-
+bool isInBounds(int x, int y, std::vector<std::vector<Node>> &grid);
 
 #endif // UTILS_H
