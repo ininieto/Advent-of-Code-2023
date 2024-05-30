@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
+
 
 // Check the surroundings of the current node and decide which ones are eligible to jump into
 std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vector<std::vector <Node>> &grid){
@@ -44,10 +46,35 @@ std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vect
 // This will be the big boy. It will be iterative instead of recursive :)
 void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows, int ncols){
 
-    // Here I will need to define a queue and initialize it with the first Node. Then, perform a while(!queue.empty())
-    // It is a good idea to use a priority queue with std::greater<>, so that the smallest element always appears on top
+    std::priority_queue<Node *, std::vector<Node *>, SmallestDistanceFirst> nextNodes; // The next Nodes to be scanned will be automatically ordered by its distance
 
-    std::vector<Node*> possibleJumps = getPossibleJumps(startNode, nullptr, grid);
+    startNode->setMinDistance(0);
+    startNode->markAsExplored();
+
+    // Include our startNode in the queue and start the loop
+    nextNodes.push(startNode);
+
+    /*  Dijkstra algorithm
+
+        - Set the root node as 'explored' and set its distance to 0
+        - Scan the adjacent nodes (getPossibleJumps)
+        - Calculate the compound distance to all of them and add them to a priority queue
+        - Start the algorithm over with the first element of the queue (the one with the smallest distance)
+
+        - Note that whenever we deal with a node and scan its surroundings, we have already found the minimum distance
+          for that Node -> This implies that we can NEVER jump to an explored Node
+
+    */
+
+    while (!nextNodes.empty()){
+
+        Node* currentNode = nextNodes.top();    // Extract the first node in the queue
+        nextNodes.pop();                        // Eliminate the current Node from the queue
+
+        std::vector<Node *> possibleJumps = getPossibleJumps(startNode, nullptr, grid);
+
+        // Dijkstra algorithm here
+    }
 
     /*      TODO
 

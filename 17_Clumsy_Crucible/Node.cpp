@@ -42,3 +42,8 @@ void Node::setCountStraightSteps(int numSteps){
 void Node::setMinDistance(int dist){
     this->minDistance = dist;
 }
+
+// Mark Node as explored
+void Node::markAsExplored(){
+    this->explored = true;
+}
