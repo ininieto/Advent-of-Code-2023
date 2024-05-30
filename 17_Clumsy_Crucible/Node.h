@@ -5,7 +5,6 @@
 
 #include <iostream> // Needed for NULL
 #include <climits>  // Needed for INT_MAX
-#include <stack>
 
 // Structure that will replace the coordinates being a std::pair
 struct coords{
@@ -36,8 +35,7 @@ public:
     void setPrevNode(Node* prevNode);
     
     void setAsExplored();
-
-
+    
 private:
 
     bool explored = false;

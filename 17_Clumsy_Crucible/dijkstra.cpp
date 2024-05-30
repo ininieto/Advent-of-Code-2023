@@ -6,6 +6,20 @@
 #include <vector>
 #include <queue>
 
+// Calculate the number of forward steps that lava has done so far
+int getNumForwardSteps(Node* currentNode, coords direction){
+
+    int numForwardSteps = 0;
+    Node* prevNode = currentNode->getPrevNode();
+
+    for(int i = 0; i < 4; i++){
+        
+        // TODO
+
+    }
+
+}
+
 
 // Check the surroundings of the current node and decide which ones are eligible to jump into
 std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<std::vector <Node>> &grid){
@@ -24,11 +38,12 @@ std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<s
     coords currentPosition = currentNode->getCoords();
     coords prevPosition = prevNode->getCoords();
        
-
     // It is important to know the previous Node to guess the direction that the lava is following
     coords direction = coords{currentPosition.x - prevPosition.x, currentPosition.y - prevPosition.y}; // We get the vector direction
 
     coords posForward = coords{currentPosition.x + direction.x, currentPosition.y + direction.y};
+
+    // TODO: This is wrong. Must calculate left and right based on the forward direction
     coords posLeft = coords{currentPosition.x - 1, currentPosition.y};
     coords posRight = coords{currentPosition.x + 1, currentPosition.y};
     
@@ -62,13 +77,11 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
 
     std::priority_queue<Node *, std::vector<Node *>, SmallestDistanceFirst> nextNodesQueue; // The next Nodes to be scanned will be automatically ordered by its distance
 
+    // Set the distance of the start node to 0
     startNode->setMinDistance(0);
-
 
     // Include our startNode in the queue and start the loop
     nextNodesQueue.push(startNode);
-
-
 
     while (!nextNodesQueue.empty()){
 
@@ -85,27 +98,23 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
         // Calculate the distance for those Nodes and add to queue
         for(auto& nextJump : nextJumps){
 
-            // TODO: Update the forward steps
+            // The new minimum distance must be the min(what the next node already has, the distance from this node)
+            int newMinDistance = std::min(currentNode->getMinDistance() + nextJump->getHeatLoss(), nextJump->getMinDistance());
 
-            nextJump->setMinDistance(currentNode->getMinDistance() + nextJump->getHeatLoss());  // TODO: min(oldMinDistance, newMinDistance)
+            // If new distance is smaller than current minDist, update the prevNode
+            if(newMinDistance < nextJump->getMinDistance()){
+                nextJump->setPrevNode(currentNode);
+            }
+
+            nextJump->setMinDistance(newMinDistance);  
+
+            // TODO: Must take care of the 3 forward steps rule
+            
+            // Add this new node to the queue
             nextNodesQueue.push(nextJump);
         }
 
-        // For the first element in queue (the next node we are gonna explore) we set the father Node
-        nextNodesQueue.top()->setPrevNode(currentNode);
-
     }
-
-    /*      TODO
-
-        - Create the queue with the next Nodes that need to be scanned
-        - Set the new nodes as children of the old ones
-        - Linked to that, manage the Paths
-        - Go setting the total Heat Loss
-    
-    
-    
-    */
 
 }
 

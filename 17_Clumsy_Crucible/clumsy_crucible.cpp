@@ -37,5 +37,17 @@ int main(){
     // Debug
     printGrid(grid);
 
+    // Check the minDistance of the endNode
+    Node* endNode = &grid[ncols - 1][nrows - 1];
+    std::cout << endNode->getMinDistance() << '\n';
+
+    // Debug: Try to paint the lava flow
+    Node* nextNode = endNode;
+    while(nextNode != nullptr){
+        nextNode->setHeatLoss(0);
+        nextNode = nextNode->getPrevNode();
+    }
+    printGrid(grid);
+
     return 0;
 }
