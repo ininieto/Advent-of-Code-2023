@@ -72,11 +72,17 @@ std::vector<coords> getSurroundings(Node* currentNode, int nrows, int ncols){
 
 
 // Check the surroundings of the current node and decide which ones are eligible to jump into
-std::vector<coords> getPossibleJumps(Node* currentNode, Node* prevNode, std::vector<coords> surroundings, std::vector<std::vector <Node>> &grid){
+std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vector<coords> surroundings, std::vector<std::vector <Node>> &grid){
+
+    std::vector<Node*> possibleJumps;   // This vector will contain all the jump-able nodes 
 
     // Base case: all the nodes are possible jumps
     if(prevNode == NULL){
-        return surroundings;
+        
+        for(auto &s: surroundings){
+            possibleJumps.push_back(&grid[s.y][s.x]);
+        }
+        return possibleJumps;
     }
 
     /* TODO: Maybe I could refactor all this part of the code and:
@@ -88,7 +94,7 @@ std::vector<coords> getPossibleJumps(Node* currentNode, Node* prevNode, std::vec
 
     coords currentPosition = currentNode->getCoords();
     coords prevPosition = prevNode->getCoords();
-    std::vector<coords> possibleJumps;    
+       
 
     // It is important to know the previous Node to guess the path that the lava is following
     coords direction{currentPosition.x - prevPosition.x, currentPosition.y - prevPosition.y};   // We get the vector direction
@@ -97,13 +103,13 @@ std::vector<coords> getPossibleJumps(Node* currentNode, Node* prevNode, std::vec
 
     // Check if there exists a Node in those coords
     if(&grid[directionLeft.y][directionLeft.x] != NULL){
-        // possibleJumps.push_back(&grid[directionLeft.y][directionLeft.x]);    // Add the left Node
+        possibleJumps.push_back(&grid[directionLeft.y][directionLeft.x]);    // Add the left Node
     }
     if(&grid[directionRight.y][directionRight.x] != NULL){
-        // possibleJumps.push_back(&grid[directionRight.y][directionRight.x]); // Add the right Node
+        possibleJumps.push_back(&grid[directionRight.y][directionRight.x]); // Add the right Node
     }
     if(&grid[direction.y][direction.x] != NULL && currentNode->getHistory().countStraightSteps < 3) 
-        // possibleJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
+        possibleJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
 
 
     return possibleJumps;
@@ -194,7 +200,7 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
     // It is a good idea to use a priority queue with std::greater<>, so that the smallest element always appears on top
 
     std::vector<coords> surroundings = getSurroundings(startNode, nrows, ncols);
-    std::vector<coords> possibleJumps = getPossibleJumps(startNode, NULL, surroundings, grid);    // TODO: Implement this function
+    std::vector<Node*> possibleJumps = getPossibleJumps(startNode, NULL, surroundings, grid);    // TODO: Implement this function
 
 }
 
