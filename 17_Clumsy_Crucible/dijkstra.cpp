@@ -31,17 +31,12 @@ std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vect
     // We check if the Node exists by its coordinates
     if(isInBounds(directionLeft.x, directionLeft.y, grid)){
         possibleJumps.push_back(&grid[directionLeft.y][directionLeft.x]);    // Add the left Node
-        currentNode->setCountStraightSteps(0);              // Reset the number of straight steps
     }
     if(isInBounds(directionRight.x, directionRight.y, grid)){
         possibleJumps.push_back(&grid[directionRight.y][directionRight.x]);  // Add the right Node
-        currentNode->setCountStraightSteps(0);              // Reset the number of straight steps
     }
     if(isInBounds(direction.x, direction.y, grid) && currentNode->getCountStraightSteps() < 3) 
         possibleJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
-        int countStraightSteps = currentNode->getCountStraightSteps();
-        currentNode->setCountStraightSteps(countStraightSteps + 1);            // Increase the number of straight steps
-
 
     return possibleJumps;
 }
