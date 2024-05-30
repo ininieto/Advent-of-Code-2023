@@ -78,19 +78,12 @@ std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vect
 
     // Base case: all the nodes are possible jumps
     if(prevNode == NULL){
-        
-        for(auto &s: surroundings){
+
+        for(auto &s: surroundings)
             possibleJumps.push_back(&grid[s.y][s.x]);
-        }
+
         return possibleJumps;
     }
-
-    /* TODO: Maybe I could refactor all this part of the code and:
-
-        - Remove the getSurroundings function, as I can already check here if there exist a Node
-        - Return a vector of Node* instead of coords. I guess it is more practical and makes more sense
-    */
-    
 
     coords currentPosition = currentNode->getCoords();
     coords prevPosition = prevNode->getCoords();
