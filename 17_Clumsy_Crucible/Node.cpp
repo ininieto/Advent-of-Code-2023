@@ -25,6 +25,10 @@ int Node::getMinDistance() const{
     return minDistance;
 }
 
+bool Node::getExplored() const{
+    return explored;
+}
+
 // Setters
 void Node::setCoords(coords coord){
     pos.x = coord.x;

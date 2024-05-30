@@ -8,17 +8,17 @@
 
 
 // Check the surroundings of the current node and decide which ones are eligible to jump into
-std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vector<std::vector <Node>> &grid){
+std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<std::vector <Node>> &grid){
 
-    std::vector<Node*> possibleJumps;   // This vector will contain all the jump-able nodes 
+    std::vector<Node*> nextJumps;   // This vector will contain all the jump-able nodes 
 
     // Base case: first Node
     if(prevNode == nullptr){
 
-        possibleJumps.push_back(&grid[1][0]);   // We know that in the base case we can jump right or down
-        possibleJumps.push_back(&grid[0][1]);
+        nextJumps.push_back(&grid[1][0]);   // We know that in the base case we can jump right or down
+        nextJumps.push_back(&grid[0][1]);
 
-        return possibleJumps;
+        return nextJumps;
     }
 
     coords currentPosition = currentNode->getCoords();
@@ -30,17 +30,17 @@ std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vect
     coords directionLeft  = coords{direction.x - 1, direction.y};
     coords directionRight = coords{direction.x + 1, direction.y};
 
-    // We check if the Node exists by its coordinates
-    if(isInBounds(directionLeft.x, directionLeft.y, grid)){
-        possibleJumps.push_back(&grid[directionLeft.y][directionLeft.x]);    // Add the left Node
+    // If not out of bounds and not explored, we add it to nextJumps
+    if(isInBounds(directionLeft.x, directionLeft.y, grid) && grid[directionLeft.y][directionLeft.x].getExplored() == false){    // TODO: Test that!! Not sure at all
+        nextJumps.push_back(&grid[directionLeft.y][directionLeft.x]);    // Add the left Node
     }
-    if(isInBounds(directionRight.x, directionRight.y, grid)){
-        possibleJumps.push_back(&grid[directionRight.y][directionRight.x]);  // Add the right Node
+    if(isInBounds(directionRight.x, directionRight.y, grid) && grid[directionRight.y][directionRight.x].getExplored() == false){
+        nextJumps.push_back(&grid[directionRight.y][directionRight.x]);  // Add the right Node
     }
-    if(isInBounds(direction.x, direction.y, grid) && currentNode->getCountStraightSteps() < 3) 
-        possibleJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
+    if(isInBounds(direction.x, direction.y, grid) && grid[direction.y][direction.x].getExplored() == false && currentNode->getCountStraightSteps() < 3) 
+        nextJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
 
-    return possibleJumps;
+    return nextJumps;
 }
 
 // This will be the big boy. It will be iterative instead of recursive :)
@@ -71,7 +71,7 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
         Node* currentNode = nextNodes.top();    // Extract the first node in the queue
         nextNodes.pop();                        // Eliminate the current Node from the queue
 
-        std::vector<Node *> possibleJumps = getPossibleJumps(startNode, nullptr, grid);
+        std::vector<Node*> nextJumps = getNextJumps(startNode, nullptr, grid);
 
         // Dijkstra algorithm here
     }

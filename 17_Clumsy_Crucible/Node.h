@@ -24,6 +24,7 @@ public:
     int getHeatLoss() const;
     int getCountStraightSteps() const;
     int getMinDistance() const;
+    bool getExplored() const;
 
     // Setters
     void setCoords(coords coord);
@@ -32,6 +33,7 @@ public:
     void setMinDistance(int dist);
     
     void markAsExplored();
+
 
 private:
 
