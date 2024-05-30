@@ -28,17 +28,25 @@ int Node::getHeatLoss() const{
     return heatLoss;
 }
 
-Node::History Node::getHistory() const{
-    return hist;
+std::vector<Node::Path> Node::getPaths() const{
+    return paths;
 }
 
-// Modify the history of a Node
+// ------ Modify the Path of a Node ---------
+
+// Add previous Node to a specific path
 void Node::addprevNodeToPath(Node* node, int pathId){
-    hist.paths[pathId].push(node);
+    paths[pathId].prevNodes.push(node);
 }
 
-void Node::setDistance(int dist){
-    hist.distance = dist;
+// Set the total amount of heat loss of a Node in a specific path
+void Node::setDistance(int dist, int pathId){
+    paths[pathId].distance = dist;
+}
+
+// Set the number of straight steps that a path has followed
+void Node::setCountStraightSteps(int numSteps, int pathId){     // Maybe I should split that into increaseNumSteps() and resetNumSteps() ??
+    paths[pathId].countStraightSteps = numSteps;
 }
 
 // Setters

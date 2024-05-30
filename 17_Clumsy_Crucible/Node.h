@@ -16,10 +16,10 @@ class Node{
 public:
 
     // Struct that keeps track of the path that lava is following
-    struct History{
-        std::vector<std::stack<Node *>> paths;  // There can be more than one way to reach a Node -> I call them path
-        int distance = __INT_MAX__;
-        int countStraightSteps = 0;
+    struct Path{
+        std::stack<Node *> prevNodes;  // Succession of Nodes that the lava has followed to reach the current Node
+        int distance = __INT_MAX__;    // Total amount of heat loss of the whole Path
+        int countStraightSteps = 0;    // Number of consecutive straight steps that the lava has followed
     };
 
     // Constructors
@@ -29,21 +29,22 @@ public:
     // Getters
     coords getCoords() const;
     int getHeatLoss() const;
-    History getHistory() const;
+    std::vector<Path> getPaths() const;
 
     // Setters
     void setCoords(coords coord);
     void setHeatLoss(int heatLoss);
 
-    // Modify history of a Node
+    // Modify the Path of a Node
     void addprevNodeToPath(Node* prevNode, int pathId);
-    void setDistance(int dist);
+    void setDistance(int dist, int pathId);
+    void setCountStraightSteps(int numSteps, int pathId);
 
 private:
 
     int heatLoss = -1;
     coords pos;
-    History hist;   // The best way I found to track multiple paths. Every path will have its associated distance 
+    std::vector<Path> paths;    // We need a vector, as there are multiple Paths to reach a Node
 };
 
 #endif  // NODE_H

@@ -87,6 +87,9 @@ std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vect
 
     coords currentPosition = currentNode->getCoords();
     coords prevPosition = prevNode->getCoords();
+
+    // TODO: With the prevNode, I need to guess the pathId. Before I implement it, we will suppose pathId = 0
+    int pathId = 0;
        
 
     // It is important to know the previous Node to guess the path that the lava is following
@@ -101,7 +104,7 @@ std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vect
     if(&grid[directionRight.y][directionRight.x] != NULL){
         possibleJumps.push_back(&grid[directionRight.y][directionRight.x]); // Add the right Node
     }
-    if(&grid[direction.y][direction.x] != NULL && currentNode->getHistory().countStraightSteps < 3) 
+    if(&grid[direction.y][direction.x] != NULL && currentNode->getPaths()[pathId ].countStraightSteps < 3) 
         possibleJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
 
 
