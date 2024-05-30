@@ -21,9 +21,6 @@ std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vect
 
     coords currentPosition = currentNode->getCoords();
     coords prevPosition = prevNode->getCoords();
-
-    // TODO: With the prevNode, I need to guess the pathId. Before I implement it, we will suppose pathId = 0
-    int pathId = 0;
        
 
     // It is important to know the previous Node to guess the direction that the lava is following
@@ -34,15 +31,16 @@ std::vector<Node*> getPossibleJumps(Node* currentNode, Node* prevNode, std::vect
     // We check if the Node exists by its coordinates
     if(isInBounds(directionLeft.x, directionLeft.y, grid)){
         possibleJumps.push_back(&grid[directionLeft.y][directionLeft.x]);    // Add the left Node
-        currentNode->getPaths()[pathId].countStraightSteps = 0;              // Reset the number of straight steps
+        currentNode->setCountStraightSteps(0);              // Reset the number of straight steps
     }
     if(isInBounds(directionRight.x, directionRight.y, grid)){
         possibleJumps.push_back(&grid[directionRight.y][directionRight.x]);  // Add the right Node
-        currentNode->getPaths()[pathId].countStraightSteps = 0;              // Reset the number of straight steps
+        currentNode->setCountStraightSteps(0);              // Reset the number of straight steps
     }
-    if(isInBounds(direction.x, direction.y, grid) && currentNode->getPaths()[pathId].countStraightSteps < 3) 
+    if(isInBounds(direction.x, direction.y, grid) && currentNode->getCountStraightSteps() < 3) 
         possibleJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
-        currentNode->getPaths()[pathId].countStraightSteps++;                // Increase the number of straight steps
+        int countStraightSteps = currentNode->getCountStraightSteps();
+        currentNode->setCountStraightSteps(countStraightSteps + 1);            // Increase the number of straight steps
 
 
     return possibleJumps;
