@@ -3,6 +3,7 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <iostream> // Needed for NULL
 #include <climits>  // Needed for INT_MAX
 #include <stack>
 
@@ -22,17 +23,19 @@ public:
     // Getters
     coords getCoords() const;
     int getHeatLoss() const;
-    int getCountStraightSteps() const;
+    int getCountForwardSteps() const;
     int getMinDistance() const;
     bool getExplored() const;
+    Node* getPrevNode() const;
 
     // Setters
     void setCoords(coords coord);
     void setHeatLoss(int heatLoss);
-    void setCountStraightSteps(int numSteps);
+    void setCountForwardSteps(int numSteps);
     void setMinDistance(int dist);
+    void setPrevNode(Node* prevNode);
     
-    void markAsExplored();
+    void setAsExplored();
 
 
 private:
@@ -40,7 +43,8 @@ private:
     bool explored = false;
     int heatLoss = -1;
     coords pos;
-    int countStraightSteps = 0;
+    Node* prevNode = NULL;
+    int countForwardSteps = 0;
     int minDistance = INT_MAX;
 };
 

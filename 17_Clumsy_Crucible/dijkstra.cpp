@@ -26,33 +26,24 @@ std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<s
        
 
     // It is important to know the previous Node to guess the direction that the lava is following
-    coords direction      = coords{currentPosition.x - prevPosition.x, currentPosition.y - prevPosition.y};   // We get the vector direction
-    coords directionLeft  = coords{direction.x - 1, direction.y};
-    coords directionRight = coords{direction.x + 1, direction.y};
+    coords direction = coords{currentPosition.x - prevPosition.x, currentPosition.y - prevPosition.y}; // We get the vector direction
 
+    coords posForward = coords{currentPosition.x + direction.x, currentPosition.y + direction.y};
+    coords posLeft = coords{currentPosition.x - 1, currentPosition.y};
+    coords posRight = coords{currentPosition.x + 1, currentPosition.y};
+    
     // If not out of bounds and not explored, we add it to nextJumps
-    if(isInBounds(directionLeft.x, directionLeft.y, grid) && grid[directionLeft.y][directionLeft.x].getExplored() == false){    // TODO: Test that!! Not sure at all
-        nextJumps.push_back(&grid[directionLeft.y][directionLeft.x]);    // Add the left Node
+    if(isInBounds(posLeft.x, posLeft.y, grid) && grid[posLeft.y][posLeft.x].getExplored() == false){    // TODO: Test that!! Not sure at all
+        nextJumps.push_back(&grid[posLeft.y][posLeft.x]);    // Add the left Node
     }
-    if(isInBounds(directionRight.x, directionRight.y, grid) && grid[directionRight.y][directionRight.x].getExplored() == false){
-        nextJumps.push_back(&grid[directionRight.y][directionRight.x]);  // Add the right Node
+    if(isInBounds(posRight.x, posRight.y, grid) && grid[posRight.y][posRight.x].getExplored() == false){
+        nextJumps.push_back(&grid[posRight.y][posRight.x]);  // Add the right Node
     }
-    if(isInBounds(direction.x, direction.y, grid) && grid[direction.y][direction.x].getExplored() == false && currentNode->getCountStraightSteps() < 3) 
-        nextJumps.push_back(&grid[direction.y][direction.x]);            // Add the straight Node
+    if(isInBounds(posForward.x, posForward.y, grid) && grid[posForward.y][posForward.x].getExplored() == false && currentNode->getCountForwardSteps() < 3) 
+        nextJumps.push_back(&grid[posForward.y][posForward.x]);            // Add the straight Node
 
     return nextJumps;
 }
-
-// This will be the big boy. It will be iterative instead of recursive :)
-void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows, int ncols){
-
-    std::priority_queue<Node *, std::vector<Node *>, SmallestDistanceFirst> nextNodes; // The next Nodes to be scanned will be automatically ordered by its distance
-
-    startNode->setMinDistance(0);
-    startNode->markAsExplored();
-
-    // Include our startNode in the queue and start the loop
-    nextNodes.push(startNode);
 
     /*  Dijkstra algorithm
 
@@ -66,14 +57,43 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
 
     */
 
-    while (!nextNodes.empty()){
+// This will be the big boy. It will be iterative instead of recursive :)
+void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows, int ncols){
 
-        Node* currentNode = nextNodes.top();    // Extract the first node in the queue
-        nextNodes.pop();                        // Eliminate the current Node from the queue
+    std::priority_queue<Node *, std::vector<Node *>, SmallestDistanceFirst> nextNodesQueue; // The next Nodes to be scanned will be automatically ordered by its distance
 
-        std::vector<Node*> nextJumps = getNextJumps(startNode, nullptr, grid);
+    startNode->setMinDistance(0);
 
-        // Dijkstra algorithm here
+
+    // Include our startNode in the queue and start the loop
+    nextNodesQueue.push(startNode);
+
+
+
+    while (!nextNodesQueue.empty()){
+
+        // Extract the first Node and remove it from the queue
+        Node* currentNode = nextNodesQueue.top();    
+        nextNodesQueue.pop();     
+
+        // Set this Node as explored
+        currentNode->setAsExplored();                  
+
+        // Get the next possible jumps
+        std::vector<Node*> nextJumps = getNextJumps(currentNode, currentNode->getPrevNode(), grid);  
+
+        // Calculate the distance for those Nodes and add to queue
+        for(auto& nextJump : nextJumps){
+
+            // TODO: Update the forward steps
+
+            nextJump->setMinDistance(currentNode->getMinDistance() + nextJump->getHeatLoss());  // TODO: min(oldMinDistance, newMinDistance)
+            nextNodesQueue.push(nextJump);
+        }
+
+        // For the first element in queue (the next node we are gonna explore) we set the father Node
+        nextNodesQueue.top()->setPrevNode(currentNode);
+
     }
 
     /*      TODO

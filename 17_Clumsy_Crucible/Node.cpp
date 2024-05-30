@@ -17,8 +17,8 @@ int Node::getHeatLoss() const{
     return heatLoss;
 }
 
-int Node::getCountStraightSteps() const{
-    return countStraightSteps;
+int Node::getCountForwardSteps() const{
+    return countForwardSteps;
 }
 
 int Node::getMinDistance() const{
@@ -27,6 +27,10 @@ int Node::getMinDistance() const{
 
 bool Node::getExplored() const{
     return explored;
+}
+
+Node* Node::getPrevNode() const{
+    return prevNode;
 }
 
 // Setters
@@ -39,15 +43,19 @@ void Node::setHeatLoss(int heatLoss){
     this->heatLoss = heatLoss;
 }
 
-void Node::setCountStraightSteps(int numSteps){
-    this->countStraightSteps = numSteps;
+void Node::setCountForwardSteps(int numSteps){
+    this->countForwardSteps = numSteps;
 }
 
 void Node::setMinDistance(int dist){
     this->minDistance = dist;
 }
 
+void Node::setPrevNode(Node* prevNode){
+    this->prevNode = prevNode;
+}
+
 // Mark Node as explored
-void Node::markAsExplored(){
+void Node::setAsExplored(){
     this->explored = true;
 }
