@@ -9,14 +9,11 @@
 // Calculate the number of forward steps that lava has done so far
 int getNumForwardSteps(Node* currentNode, coords direction){
 
-    Node* prevNode = currentNode->getPrevNode();
+    int numForwardSteps = 0;
 
-    for(int i = 0; i < 4; i++){
-        
-        
+    // TODO: Implement this function
 
-    }
-
+    return numForwardSteps;
 }
 
 
@@ -40,6 +37,10 @@ std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<s
     // It is important to know the previous Node to guess the direction that the lava is following
     coords direction = coords{currentPosition.x - prevPosition.x, currentPosition.y - prevPosition.y}; // We get the vector direction
 
+    // Check how many consecutive straight steps the lava has followed
+    int numForwardSteps = getNumForwardSteps(currentNode, direction);
+    //int numForwardSteps = 0;
+
     coords posForward = coords{currentPosition.x + direction.x, currentPosition.y + direction.y};
     coords posLeft, posRight;
 
@@ -53,7 +54,7 @@ std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<s
     if(isInBounds(posRight.x, posRight.y, grid) && grid[posRight.y][posRight.x].getExplored() == false){
         nextJumps.push_back(&grid[posRight.y][posRight.x]);  // Add the right Node
     }
-    if(isInBounds(posForward.x, posForward.y, grid) && grid[posForward.y][posForward.x].getExplored() == false && currentNode->getCountForwardSteps() < 3) 
+    if(isInBounds(posForward.x, posForward.y, grid) && grid[posForward.y][posForward.x].getExplored() == false && numForwardSteps < 3) 
         nextJumps.push_back(&grid[posForward.y][posForward.x]); // Add the straight Node
 
     return nextJumps;
@@ -101,7 +102,7 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
             int newMinDistance = std::min(currentNode->getMinDistance() + nextJump->getHeatLoss(), nextJump->getMinDistance());
 
             // If new distance is smaller than current minDist, update the prevNode
-            if(newMinDistance < nextJump->getMinDistance()){
+            if(currentNode->getMinDistance() + nextJump->getHeatLoss() < nextJump->getMinDistance()){
                 nextJump->setPrevNode(currentNode);
             }
 

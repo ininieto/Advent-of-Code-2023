@@ -17,10 +17,6 @@ int Node::getHeatLoss() const{
     return heatLoss;
 }
 
-int Node::getCountForwardSteps() const{
-    return countForwardSteps;
-}
-
 int Node::getMinDistance() const{
     return minDistance;
 }
@@ -41,10 +37,6 @@ void Node::setCoords(coords coord){
 
 void Node::setHeatLoss(int heatLoss){
     this->heatLoss = heatLoss;
-}
-
-void Node::setCountForwardSteps(int numSteps){
-    this->countForwardSteps = numSteps;
 }
 
 void Node::setMinDistance(int dist){

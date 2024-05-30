@@ -42,7 +42,6 @@ private:
     int heatLoss = -1;
     coords pos;
     Node* prevNode = NULL;
-    int countForwardSteps = 0;
     int minDistance = INT_MAX;
 };
 
