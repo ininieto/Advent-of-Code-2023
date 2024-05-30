@@ -75,7 +75,7 @@ void fillGrid(std::vector<std::vector<Node>> &grid, std::string input){
                 strCounter ++;
 
             grid[i][j].setCoords(coords{j, i}); // x is horizontal, y is vertical
-            grid[i][j].setHeatLoss(static_cast<int>(input[strCounter]) - 48);
+            grid[i][j].setHeatLoss(static_cast<int>(input[strCounter]) - 48);   // Convert number from char to int
             strCounter ++;
         }
     }
