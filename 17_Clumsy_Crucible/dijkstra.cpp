@@ -9,9 +9,49 @@
 // Calculate the number of forward steps that lava has done so far
 int getNumForwardSteps(Node* currentNode, coords direction){
 
-    int numForwardSteps = 0;
+    int numForwardSteps = 1;
 
-    // TODO: Implement this function
+    Node* prevNode = currentNode->getPrevNode();
+    coords prevPosition;
+    Node* prevPrevNode = nullptr;
+    coords prevPrevPosition;
+    Node* prevPrevPrevNode = nullptr;
+    coords prevPrevPrevPosition;
+
+    // Get all the ancestors, if they exist
+
+    if(prevNode != nullptr){
+        prevPosition = prevNode->getCoords();
+        prevPrevNode = prevNode->getPrevNode();
+    }
+
+    if(prevPrevNode != nullptr){
+        prevPrevPosition = prevPrevNode->getCoords();
+        prevPrevPrevNode = prevPrevNode->getPrevNode();
+    }
+
+    if(prevPrevPrevNode != nullptr){
+        prevPrevPrevPosition = prevPrevPrevNode->getCoords();
+
+        // There exists, at least, 4 ancestors. Let's calculate the directions
+
+        // Compare direction with prevDirection
+        coords prevDirection = coords{prevPosition.x - prevPrevPosition.x, prevPosition.y - prevPrevPosition.y};
+
+        if(prevDirection.x == direction.x && prevDirection.y == direction.y)
+            numForwardSteps++;
+        else
+            return numForwardSteps;
+
+        // Compare prevDirection with prevPrevDirection
+        coords prevPrevDirection = coords{prevPrevPosition.x - prevPrevPrevPosition.x, prevPrevPosition.y - prevPrevPrevPosition.y};
+
+        if(prevPrevDirection.x == prevDirection.x && prevPrevDirection.y == prevDirection.y)
+            numForwardSteps++;
+        else
+            return numForwardSteps;
+    }
+
 
     return numForwardSteps;
 }
@@ -39,7 +79,6 @@ std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<s
 
     // Check how many consecutive straight steps the lava has followed
     int numForwardSteps = getNumForwardSteps(currentNode, direction);
-    //int numForwardSteps = 0;
 
     coords posForward = coords{currentPosition.x + direction.x, currentPosition.y + direction.y};
     coords posLeft, posRight;

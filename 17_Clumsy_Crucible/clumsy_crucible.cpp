@@ -34,14 +34,11 @@ int main(){
     // Call the big function
     dijkstra(startNode, grid, nrows, ncols);
 
-    // Debug
-    printGrid(grid);
-
     // Check the minDistance of the endNode
     Node* endNode = &grid[ncols - 1][nrows - 1];
     std::cout << endNode->getMinDistance() << '\n';
 
-    // Debug: Try to paint the lava flow
+    // Debug: Try to paint the lava flow with 0s
     Node* nextNode = endNode;
     while(nextNode != nullptr){
         nextNode->setHeatLoss(0);
