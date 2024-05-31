@@ -6,52 +6,44 @@
 #include <vector>
 #include <queue>
 
-// Calculate the number of forward steps that lava has done so far
-int getNumForwardSteps(Node* currentNode, coords direction){
 
+// Helper function to calculate direction between two nodes
+coords calculateDirection(const coords& from, const coords& to) {
+    return { to.x - from.x, to.y - from.y };
+}
+
+// Function to calculate the number of forward steps in the same direction
+int getNumForwardSteps(Node* currentNode, const coords& direction) {
     int numForwardSteps = 1;
-
+    
     Node* prevNode = currentNode->getPrevNode();
-    coords prevPosition;
-    Node* prevPrevNode = nullptr;
-    coords prevPrevPosition;
-    Node* prevPrevPrevNode = nullptr;
-    coords prevPrevPrevPosition;
+    if (!prevNode) 
+        return numForwardSteps;
 
-    // Get all the ancestors, if they exist
+    coords prevPosition = prevNode->getCoords();
+    Node* prevPrevNode = prevNode->getPrevNode();
+    if (!prevPrevNode) 
+        return numForwardSteps;
 
-    if(prevNode != nullptr){
-        prevPosition = prevNode->getCoords();
-        prevPrevNode = prevNode->getPrevNode();
-    }
+    coords prevPrevPosition = prevPrevNode->getCoords();
+    Node* prevPrevPrevNode = prevPrevNode->getPrevNode();
+    if (!prevPrevPrevNode) 
+        return numForwardSteps;
 
-    if(prevPrevNode != nullptr){
-        prevPrevPosition = prevPrevNode->getCoords();
-        prevPrevPrevNode = prevPrevNode->getPrevNode();
-    }
+    coords prevPrevPrevPosition = prevPrevPrevNode->getCoords();
 
-    if(prevPrevPrevNode != nullptr){
-        prevPrevPrevPosition = prevPrevPrevNode->getCoords();
+    // Calculate directions
+    coords prevDirection = calculateDirection(prevPrevPosition, prevPosition);
 
-        // There exists, at least, 4 ancestors. Let's calculate the directions
+    if (prevDirection.x == direction.x && prevDirection.y == direction.y) 
+        numForwardSteps++;
+    else 
+        return numForwardSteps;
 
-        // Compare direction with prevDirection
-        coords prevDirection = coords{prevPosition.x - prevPrevPosition.x, prevPosition.y - prevPrevPosition.y};
+    coords prevPrevDirection = calculateDirection(prevPrevPrevPosition, prevPrevPosition);
 
-        if(prevDirection.x == direction.x && prevDirection.y == direction.y)
-            numForwardSteps++;
-        else
-            return numForwardSteps;
-
-        // Compare prevDirection with prevPrevDirection
-        coords prevPrevDirection = coords{prevPrevPosition.x - prevPrevPrevPosition.x, prevPrevPosition.y - prevPrevPrevPosition.y};
-
-        if(prevPrevDirection.x == prevDirection.x && prevPrevDirection.y == prevDirection.y)
-            numForwardSteps++;
-        else
-            return numForwardSteps;
-    }
-
+    if (prevPrevDirection.x == prevDirection.x && prevPrevDirection.y == prevDirection.y) 
+        numForwardSteps++;
 
     return numForwardSteps;
 }
@@ -114,7 +106,8 @@ std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<s
 // This will be the big boy. It will be iterative instead of recursive :)
 void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows, int ncols){
 
-    std::priority_queue<Node *, std::vector<Node *>, SmallestDistanceFirst> nextNodesQueue; // The next Nodes to be scanned will be automatically ordered by its distance
+    // Declaration of our proirity queue -> Will order the Node* by its minDistance (smallest first)
+    std::priority_queue<Node *, std::vector<Node *>, SmallestDistanceFirst> nextNodesQueue; 
 
     // Set the distance of the start node to 0
     startNode->setMinDistance(0);
@@ -146,14 +139,10 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
             }
 
             nextJump->setMinDistance(newMinDistance);  
-
-            // TODO: Must take care of the 3 forward steps rule
             
             // Add this new node to the queue
             nextNodesQueue.push(nextJump);
         }
-
     }
-
 }
 
