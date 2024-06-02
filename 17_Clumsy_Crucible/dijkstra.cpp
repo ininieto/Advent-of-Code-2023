@@ -6,7 +6,6 @@
 #include <vector>
 #include <queue>
 
-
 // Helper function to calculate direction between two nodes
 coords calculateDirection(const coords& from, const coords& to) {
     return { to.x - from.x, to.y - from.y };
@@ -109,6 +108,20 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
     // Declaration of our proirity queue -> Will order the Node* by its minDistance (smallest first)
     std::priority_queue<Node *, std::vector<Node *>, SmallestDistanceFirst> nextNodesQueue; 
 
+    /*
+        I found a bug: the same node is being included in the queue several times. After some research, it seems that I cannot 
+        perform a queue.find() or something similar, and the most common solution for that is to use an auxiliary std::unordered_set
+
+        I personally don't find that elegant at all. I would rather use a simple std::vector<Node*> nextNodesQueue and instead of
+        push_back the Nodes, create a self-made function that inserts the Nodes already in order. That has the advantage of the find()
+        method (and that I don't have to deal with templates and weird stuff)
+    
+        That is a big TODO right now - but I gotta go to the gym :) I'll be back later
+    
+    */
+
+
+
     // Set the distance of the start node to 0
     startNode->setMinDistance(0);
 
@@ -122,7 +135,12 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
         nextNodesQueue.pop();     
 
         // Set this Node as explored
-        currentNode->setAsExplored();                  
+        currentNode->setAsExplored();    
+
+        // Check if we have finished
+        coords currentPosition = currentNode->getCoords();
+        if(currentPosition.x == ncols - 1 && currentPosition.y == nrows - 1)
+            return;          
 
         // Get the next possible jumps
         std::vector<Node*> nextJumps = getNextJumps(currentNode, currentNode->getPrevNode(), grid);  
@@ -130,17 +148,26 @@ void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows,
         // Calculate the distance for those Nodes and add to queue
         for(auto& nextJump : nextJumps){
 
+            // Debug
+            /*
+            coords nextPosition = nextJump->getCoords();
+            if (nextPosition.x == ncols - 1 && nextPosition.y == nrows - 1)
+                std::cout << "a";
+            */
+
             // The new minimum distance must be the min(what the next node already has, the distance from this node)
             int newMinDistance = std::min(currentNode->getMinDistance() + nextJump->getHeatLoss(), nextJump->getMinDistance());
 
             // If new distance is smaller than current minDist, update the prevNode
             if(currentNode->getMinDistance() + nextJump->getHeatLoss() < nextJump->getMinDistance()){
                 nextJump->setPrevNode(currentNode);
+                
             }
 
             nextJump->setMinDistance(newMinDistance);  
             
             // Add this new node to the queue
+            // TODO: Check if it was not already in the queue
             nextNodesQueue.push(nextJump);
         }
     }

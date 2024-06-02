@@ -36,7 +36,7 @@ int main(){
 
     // Check the minDistance of the endNode
     Node* endNode = &grid[ncols - 1][nrows - 1];
-    std::cout << endNode->getMinDistance() << '\n';
+    std::cout << endNode->getMinDistance() << "\n\n";
 
     // Debug: Try to paint the lava flow with 0s
     Node* nextNode = endNode;
