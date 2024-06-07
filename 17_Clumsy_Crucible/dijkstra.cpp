@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <vector>
-#include <queue>
+#include <algorithm> // Needed for std::find
 
 // Helper function to calculate direction between two nodes
 coords calculateDirection(const coords& from, const coords& to) {
@@ -105,70 +105,48 @@ std::vector<Node*> getNextJumps(Node* currentNode, Node* prevNode, std::vector<s
 // This will be the big boy. It will be iterative instead of recursive :)
 void dijkstra(Node* startNode, std::vector<std::vector <Node>> &grid, int nrows, int ncols){
 
-    // Declaration of our proirity queue -> Will order the Node* by its minDistance (smallest first)
-    std::priority_queue<Node *, std::vector<Node *>, SmallestDistanceFirst> nextNodesQueue; 
-
-    /*
-        I found a bug: the same node is being included in the queue several times. After some research, it seems that I cannot 
-        perform a queue.find() or something similar, and the most common solution for that is to use an auxiliary std::unordered_set
-
-        I personally don't find that elegant at all. I would rather use a simple std::vector<Node*> nextNodesQueue and instead of
-        push_back the Nodes, create a self-made function that inserts the Nodes already in order. That has the advantage of the find()
-        method (and that I don't have to deal with templates and weird stuff)
-    
-        That is a big TODO right now - but I gotta go to the gym :) I'll be back later
-    
-    */
-
-
+   // I replaced the priority queue for a vector. It is easier to work with it 
+   std::vector<Node*> nextNodesVector;
 
     // Set the distance of the start node to 0
     startNode->setMinDistance(0);
 
     // Include our startNode in the queue and start the loop
-    nextNodesQueue.push(startNode);
+    nextNodesVector.push_back(startNode);
 
-    while (!nextNodesQueue.empty()){
+    while (!nextNodesVector.empty()){
 
         // Extract the first Node and remove it from the queue
-        Node* currentNode = nextNodesQueue.top();    
-        nextNodesQueue.pop();     
+        Node* currentNode = nextNodesVector[0];  
+        nextNodesVector.erase(nextNodesVector.begin());   
 
         // Set this Node as explored
         currentNode->setAsExplored();    
 
-        // Check if we have finished
+        // Check if we have finished 
         coords currentPosition = currentNode->getCoords();
         if(currentPosition.x == ncols - 1 && currentPosition.y == nrows - 1)
-            return;          
-
+            return;       
+           
         // Get the next possible jumps
         std::vector<Node*> nextJumps = getNextJumps(currentNode, currentNode->getPrevNode(), grid);  
 
         // Calculate the distance for those Nodes and add to queue
         for(auto& nextJump : nextJumps){
 
-            // Debug
-            /*
-            coords nextPosition = nextJump->getCoords();
-            if (nextPosition.x == ncols - 1 && nextPosition.y == nrows - 1)
-                std::cout << "a";
-            */
-
             // The new minimum distance must be the min(what the next node already has, the distance from this node)
             int newMinDistance = std::min(currentNode->getMinDistance() + nextJump->getHeatLoss(), nextJump->getMinDistance());
 
             // If new distance is smaller than current minDist, update the prevNode
-            if(currentNode->getMinDistance() + nextJump->getHeatLoss() < nextJump->getMinDistance()){
+            if(currentNode->getMinDistance() + nextJump->getHeatLoss() < nextJump->getMinDistance())
                 nextJump->setPrevNode(currentNode);
-                
-            }
 
+            // Update the node's minimum distance
             nextJump->setMinDistance(newMinDistance);  
-            
-            // Add this new node to the queue
-            // TODO: Check if it was not already in the queue
-            nextNodesQueue.push(nextJump);
+
+            // If the node is not already on the queue, add it
+            if(std::find(nextNodesVector.begin(), nextNodesVector.end(), nextJump) == nextNodesVector.end())
+                insertNodeInNextNodesVector(nextNodesVector, nextJump);
         }
     }
 }

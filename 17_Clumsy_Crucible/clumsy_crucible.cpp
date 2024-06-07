@@ -1,7 +1,7 @@
 /*
-    Advent of Code 2023 - 16.12.2023
+    Advent of Code 2023 - 17.12.2023
 
-    Link to the problem: https://adventofcode.com/2023/day/16
+    Link to the problem: https://adventofcode.com/2023/day/17
     
     Author of the solution: Íñigo Nieto Cuadrado
 
@@ -29,7 +29,7 @@ int main(){
     fillGrid(grid, inputData);
 
     // Create the root node and launch the algorithm
-    Node* startNode = &grid[0][0];  // I think I don't really need to new() Node
+    Node* startNode = &grid[0][0]; 
     
     // Call the big function
     dijkstra(startNode, grid, nrows, ncols);

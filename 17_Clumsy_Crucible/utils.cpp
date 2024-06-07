@@ -109,3 +109,27 @@ void getLeftAndRightPositions(coords position, coords direction, coords &leftPos
     leftPosition = coords{position.x + vecLeft.x, position.y + vecLeft.y};
     rightPosition = coords{position.x + vecRight.x, position.y + vecRight.y};
 }
+
+// Function to add a Node to the nextNodesVector. It will already insert the Node in its corresponding position
+void insertNodeInNextNodesVector(std::vector<Node*> &nextNodesVector, Node* node){
+
+    // Base case: the vector is empty
+    if(nextNodesVector.empty())
+        nextNodesVector.push_back(node);
+    // Traverse the vector and insert the node
+    else{
+
+        int nodeDistance = node->getMinDistance();
+
+        for(int i = 0; i < nextNodesVector.size(); i++){
+            if(nextNodesVector[i]->getMinDistance() > nodeDistance){
+                nextNodesVector.insert(nextNodesVector.begin() + i, node);
+                return;
+            }
+        }
+
+        // If we reach here, it means that the new node has the biggest distance. We'll just place it at the end
+        nextNodesVector.push_back(node);
+    }
+    return;
+}

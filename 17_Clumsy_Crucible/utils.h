@@ -15,5 +15,6 @@ void printGrid(std::vector<std::vector<Node>> &grid);
 void fillGrid(std::vector<std::vector<Node>> &grid, std::string input);
 bool isInBounds(int x, int y, std::vector<std::vector<Node>> &grid);
 void getLeftAndRightPositions(coords position, coords direction, coords &leftPosition, coords &rightPosition);
+void insertNodeInNextNodesVector(std::vector<Node*> &nextNodesVector, Node* node);
 
 #endif // UTILS_H
